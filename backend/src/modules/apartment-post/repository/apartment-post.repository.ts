@@ -2,7 +2,7 @@ import { Collection, DeleteResult, InsertOneResult, ObjectId, UpdateResult } fro
 import { ApartmentPost, } from "../../../models/apartmentPost";
 import { provideMongoCollection } from "../../../db/db-provider";
 import { Comment } from "../../../models/comment"
-
+import {RatingType} from "../../../models/rating";
 const apartmentPostCollection: Collection<ApartmentPost> = provideMongoCollection('posts');
 
 export const fetchAllApartmentPosts = (config?: { page: number, pageSize: number }): Promise<ApartmentPost[]> =>
@@ -12,6 +12,7 @@ export const fetchApartmentPostByUser = (email: string): Promise<ApartmentPost[]
     apartmentPostCollection.find({ userName: email }, {}).toArray();
 
 export const insertApartmentPost = (userSight: ApartmentPost): Promise<InsertOneResult<ApartmentPost>> => apartmentPostCollection.insertOne(userSight);
+
 export const insertCommentOnApartment = async (comment: Comment): Promise<UpdateResult> =>
     apartmentPostCollection.updateOne({ _id: new ObjectId(comment.apartmentPostId) }, { $push: { comments: comment } });
 
@@ -20,3 +21,9 @@ export const editApartmentPost = (sightId: string, userSight: ApartmentPost): Pr
 
 export const removeApartmentPost = (sightId: string): Promise<DeleteResult> =>
     apartmentPostCollection.deleteOne({ _id: new ObjectId(sightId) });
+
+export const updateApartmentRating = async (sightId: string, rating: RatingType, amount: number): Promise<UpdateResult<ApartmentPost>> => {
+    const fieldToUpdate: string = rating === RatingType.like ? 'likesAmount' : 'dislikesAmount';
+    return apartmentPostCollection
+        .updateOne({ _id: new ObjectId(sightId) }, { $inc: { [fieldToUpdate]: amount } });
+}
