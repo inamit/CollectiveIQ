@@ -38,20 +38,6 @@ apartmentPostRouter.get('/by-user', async (req, res) => {
     }
 });
 
-apartmentPostRouter.post('/comment', async (req, res) => {
-    const comment: Comment = req.body as Comment;
-    const userName: string = res.locals.authUser.authorUsername;
-    comment.authorUsername = userName;
-    console.log('Got request to add comment from user: ' + userName);
-    try {
-        await commentOnApartment(comment);
-        res.status(201).send();
-    } catch (error) {
-        console.error('Failed to add comment. ', error);
-        res.status(500).send({ error: (error as Error).message });
-    }
-});
-
 apartmentPostRouter.post('/upload', userApartmentsUpload.single('file'), async (req, res) => {
     const userEmail: string = res.locals.authUser.email;
     console.log('Got request to upload apartment post from user', userEmail);
@@ -63,6 +49,20 @@ apartmentPostRouter.post('/upload', userApartmentsUpload.single('file'), async (
         res.status(201).send();
     } catch (error) {
         console.error('Failed to upload new apartment post. ', error);
+        res.status(500).send({ error: (error as Error).message });
+    }
+});
+
+apartmentPostRouter.post('/comment', async (req, res) => {
+    const comment: Comment = req.body as Comment;
+    const userName: string = res.locals.authUser.authorUsername;
+    comment.authorUsername = userName;
+    console.log('Got request to add comment from user: ' + userName);
+    try {
+        await commentOnApartment(comment);
+        res.status(201).send();
+    } catch (error) {
+        console.error('Failed to add comment. ', error);
         res.status(500).send({ error: (error as Error).message });
     }
 });
@@ -100,4 +100,19 @@ apartmentPostRouter.delete('/delete', userApartmentsUpload.single('file'), async
     }
 });
 
-//TODO: ADD authMiddleware into delete,edit,upload,comment
+apartmentPostRouter.post('/rate', async (req, res) => {
+    //TODO: won't work till the authMiddleware gets in
+    const userEmail: string = res.locals.authUser.email;
+    console.log(`Got request to rate apartment from user ${userEmail}`);
+    // const postId: string = req.body.postId;
+    // const ratingType: RatingType = req.body.ratingType;
+    try {
+     //   await rateApartment(ratingType, postId, userEmail);
+        res.status(201).send();
+    } catch (error) {
+        console.error('Failed to rate apartment', error);
+        res.status(500).send({ error: (error as Error).message });
+    }
+});
+
+//TODO: ADD authMiddleware into delete,edit,upload,comment,rate
