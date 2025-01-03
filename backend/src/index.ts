@@ -1,7 +1,6 @@
 import bodyParser from "body-parser";
 import express, { Application } from "express";
 import cors from "cors";
-import path from "path";
 import { userRouter } from "./modules/user/routes/user.routes";
 import { GlobalConfig } from "./config/config";
 
