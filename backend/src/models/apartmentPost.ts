@@ -1,5 +1,5 @@
 
-export interface ApartmentPost {
+export interface ApartmentPost extends Likeable {
   id:string
   userName: string;
   title: string;
@@ -9,3 +9,11 @@ export interface ApartmentPost {
   comments?: Comment[];
 }
 
+/**
+ * represents an object that can be liked or disliked
+ */
+export interface Likeable {
+  timestampInMilliseconds: number;
+  likesAmount?: number;
+  dislikesAmount?: number;
+}
