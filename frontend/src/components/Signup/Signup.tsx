@@ -1,11 +1,12 @@
 import "./Signup.css";
+import CryptoJS from "crypto-js";
+import { gapi } from "gapi-script";
 import { toast } from "react-toastify";
-import React, { useState, useEffect } from "react";
+import config from '../../config.json';
 import { GoArrowRight } from "react-icons/go";
+import React, { useState, useEffect } from "react";
 import { useUserCredentials } from "../../hooks/userCredentials.tsx";
 import { SignUserUp } from "../../services/Signup/SignupService.tsx";
-import { gapi } from "gapi-script";
-import CryptoJS from "crypto-js";
 
 export default function Signup({ className }) {
   const { username, setUsername, password, setPassword, email, setEmail } = useUserCredentials();
@@ -19,7 +20,7 @@ export default function Signup({ className }) {
     script.onload = () => {
       gapi.load("client:auth2", () => {
         gapi.client.init({
-          clientId: "1071756969594-h4t1vafuh2jeqnphvvd0pfc8b9a7bfk8.apps.googleusercontent.com",
+          clientId: config.googleClientid,
           scope: "email",
         });
       });
@@ -57,7 +58,7 @@ export default function Signup({ className }) {
   const onGoogleSignInSuccess = async (response) => {
     const profile = response.getBasicProfile();
     const googleEmail = profile.getEmail();
-    const googleUsername = googleEmail;
+    const googleUsername = profile.getName(); // Use Google username
     const googlePassword = CryptoJS.SHA256(googleEmail).toString(CryptoJS.enc.Hex);
 
     setUsername(googleUsername);
