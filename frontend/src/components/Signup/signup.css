@@ -1,7 +1,11 @@
+body {
+  background-color: rgb(31, 31, 31);
+  color: white;
+}
+
 .signup-inputs-flexbox {
   width: 70%;
   height: 80vh;
-  border: 1px solid;
   border-radius: 10px;
   padding: 40px;
   margin: auto;
@@ -10,7 +14,6 @@
   flex-direction: column;
   animation: expand 0.5s;
   position: relative;
-  background: rgb(240, 240, 240);
 }
 
 .signup-inputs-flexbox h1 {
@@ -33,9 +36,10 @@
   padding: 8px;
   width: 100%;
   max-width: 500px;
-  border: 1px solid #ccc;
+  border: 1px solid rgb(92, 92, 92);;
   border-radius: 5px;
   align-self: center;
+  background-color: rgb(92, 92, 92);
 }
 
 .signup-buttons-row {
@@ -46,7 +50,7 @@
 
 .signup-button {
   padding: 10px 20px;
-  background-color: #11949c;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
@@ -57,9 +61,13 @@
 }
 
 .signup-button:hover {
-  background-color: #0a595e;
+  background-color: #0056b3;
 }
 
 .signup-icon {
   margin-left: 10px;
+}
+
+.signup-input::placeholder {
+  color: white;
 }
