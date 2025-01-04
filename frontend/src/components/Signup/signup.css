@@ -38,19 +38,22 @@
   align-self: center;
 }
 
-.signup-button {
-  color: white;
+.signup-buttons-row {
   display: flex;
   justify-content: center;
-  align-items: center;
-  font-weight: 600;
-  background-color: #11949c;
+  gap: 10px;
+}
+
+.signup-button {
   padding: 10px 20px;
+  background-color: #11949c;
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
-  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .signup-button:hover {
