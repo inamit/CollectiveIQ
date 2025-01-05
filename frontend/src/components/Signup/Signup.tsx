@@ -12,24 +12,35 @@ export default function Signup({ className }) {
   const { username, setUsername, password, setPassword, email, setEmail } = useUserCredentials();
   const [passwordVerification, setPasswordVerification] = useState("");
 
-  const initializeGoogleSignIn = () => {
-    const script = document.createElement("script");
-    script.src = "https://apis.google.com/js/platform.js";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      gapi.load("client:auth2", () => {
-        gapi.client.init({
-          clientId: config.googleClientid,
-          scope: "email",
-        });
-      });
-    };
-    document.body.appendChild(script);
-  };
-
   useEffect(() => {
-    initializeGoogleSignIn();
+    const loadGoogleScript = () => {
+      if (!document.querySelector('script[src="https://apis.google.com/js/platform.js"]')) {
+        const script = document.createElement("script");
+        script.src = "https://apis.google.com/js/platform.js";
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+          gapi.load("client:auth2", () => {
+            gapi.client.init({
+              clientId: config.googleClientid,
+              scope: "email",
+            }).catch(() => {
+              toast.error("Failed to initialize Google connection. Please try again.");
+            });
+          });
+        };
+        document.body.appendChild(script);
+      } else {
+        gapi.load("client:auth2", () => {
+          gapi.client.init({
+            clientId: config.googleClientid,
+            scope: "email",
+          });
+        });
+      }
+    };
+
+    loadGoogleScript();
   }, []);
 
   const onSignupButtonClicked = async () => {
@@ -58,7 +69,7 @@ export default function Signup({ className }) {
   const onGoogleSignInSuccess = async (response) => {
     const profile = response.getBasicProfile();
     const googleEmail = profile.getEmail();
-    const googleUsername = profile.getName(); // Use Google username
+    const googleUsername = profile.getName();
     const googlePassword = CryptoJS.SHA256(googleEmail).toString(CryptoJS.enc.Hex);
 
     setUsername(googleUsername);
@@ -81,54 +92,58 @@ export default function Signup({ className }) {
 
   return (
     <div className={`signup-inputs-flexbox ${className}`}>
-      <h1>
-        Welcome to CollectiveIQ!
-        <br />
-        Please sign Up
-      </h1>
+      <h1>Sign Up</h1>
       <p>Sign up to ask questions and start interacting with AI</p>
-      <div className="bold">Username</div>
-      <input
-        className="signup-input"
-        maxLength={30}
-        type="text"
-        value={username}
-        placeholder="Enter Username"
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <div className="bold">Email</div>
-      <input
-        className="signup-input"
-        maxLength={50}
-        type="email"
-        value={email}
-        placeholder="Enter Email"
-        onChange={(e) => setEmail(e.target.value)}
-        onBlur={(e) => {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(e.target.value)) {
-            setEmail("")
-          }
-        }}
-      />
-      <div className="bold">Password</div>
-      <input
-        className="signup-input"
-        maxLength={30}
-        type="password"
-        value={password}
-        placeholder="Enter Password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <div className="bold">Verify Password</div>
-      <input
-        className="signup-input"
-        maxLength={30}
-        type="password"
-        value={passwordVerification}
-        placeholder="Verify Password"
-        onChange={(e) => setPasswordVerification(e.target.value)}
-      />
+      <div className="input-wrapper">
+        <div className="bold">Username</div>
+        <input
+          className="signup-input"
+          maxLength={30}
+          type="text"
+          value={username}
+          placeholder="Enter Username"
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+      <div className="input-wrapper">
+        <div className="bold">Email</div>
+        <input
+          className="signup-input"
+          maxLength={50}
+          type="email"
+          value={email}
+          placeholder="Enter Email"
+          onChange={(e) => setEmail(e.target.value)}
+          onBlur={(e) => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(e.target.value)) {
+              setEmail("")
+            }
+          }}
+        />
+      </div>
+      <div className="input-wrapper">
+        <div className="bold">Password</div>
+        <input
+          className="signup-input"
+          maxLength={30}
+          type="password"
+          value={password}
+          placeholder="Enter Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <div className="input-wrapper">
+        <div className="bold">Verify Password</div>
+        <input
+          className="signup-input"
+          maxLength={30}
+          type="password"
+          value={passwordVerification}
+          placeholder="Verify Password"
+          onChange={(e) => setPasswordVerification(e.target.value)}
+        />
+      </div>
       <div className="signup-buttons-row">
         <button
           onClick={onSignupButtonClicked}
