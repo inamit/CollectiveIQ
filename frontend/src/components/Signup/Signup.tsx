@@ -1,4 +1,4 @@
-import "./Signup.css";
+import "./signup.css";
 import CryptoJS from "crypto-js";
 import { gapi } from "gapi-script";
 import { toast } from "react-toastify";
@@ -61,7 +61,7 @@ export default function Signup({ className }) {
           toast.error(JSON.parse(errorMessage).error || "Error in sign in");
         }
       } catch (error) {
-        toast.error(error.message || "An unexpected error occurred");
+        toast.error("An error occurred. Please try again.");
       }
     }
   };
