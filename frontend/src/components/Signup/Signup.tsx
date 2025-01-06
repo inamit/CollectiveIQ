@@ -43,19 +43,43 @@ export default function Signup({ className }) {
     loadGoogleScript();
   }, []);
 
-  const onSignupButtonClicked = async () => {
-    if (password !== passwordVerification) {
+  const checkInput = () => {
+    let valid = true;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email) && valid) {
+      valid = false;
+      toast.error("Invalid email address. Please try again.");
+    }
+
+    else if (password !== passwordVerification && valid) {
+      valid = false;
       toast.error("Passwords do not match. Please try again.");
-    } else {
+    }
+
+    else if (password.length < 8 && valid) {
+      valid = false;
+      toast.error("Password must be at least 8 characters long. Please try again.");
+    }
+
+    return valid;
+  };
+
+  const resetVariables = () => {
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setPasswordVerification("");
+  }
+
+  const onSignupButtonClicked = async () => {
+    if (checkInput()) {
       try {
         let response = await SignUserUp(username, email, password);
 
         if (response.status === 200) {
           toast.success("Signed up successfully");
-          setUsername("");
-          setEmail("");
-          setPassword("");
-          setPasswordVerification("");
+          resetVariables();
         } else {
           const errorMessage = await response.text();
           toast.error(JSON.parse(errorMessage).error || "Error in sign in");
@@ -114,12 +138,6 @@ export default function Signup({ className }) {
           value={email}
           placeholder="Enter Email"
           onChange={(e) => setEmail(e.target.value)}
-          onBlur={(e) => {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(e.target.value)) {
-              setEmail("")
-            }
-          }}
         />
       </div>
       <div className="input-wrapper">
