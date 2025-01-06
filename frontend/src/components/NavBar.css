@@ -34,7 +34,8 @@
   flex: 1 0 0;
 }
 
-.userActions {
+.userActions,
+.guestActions {
   display: flex;
   gap: 16px;
 }

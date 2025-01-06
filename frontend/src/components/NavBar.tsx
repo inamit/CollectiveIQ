@@ -5,7 +5,50 @@ import SearchIcon from "@mui/icons-material/Search";
 import BellIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import AppTextField from "./TextField/TextField";
 
-function NavBar() {
+function getUserActions() {
+  return (
+    <span className="userActions">
+      <Button
+        variant="contained"
+        color="primary"
+        style={{ borderRadius: "12px" }}
+      >
+        Ask a Question
+      </Button>
+      <Button
+        variant="contained"
+        color="secondary"
+        style={{ borderRadius: "12px" }}
+      >
+        <BellIcon />
+      </Button>
+      <Avatar alt="User">AI</Avatar>
+    </span>
+  );
+}
+
+function getGuestActions() {
+  return (
+    <span className="guestActions">
+      <Button
+        variant="contained"
+        color="primary"
+        style={{ borderRadius: "12px" }}
+      >
+        Sign In
+      </Button>
+      <Button
+        variant="contained"
+        color="secondary"
+        style={{ borderRadius: "12px" }}
+      >
+        Sign Up
+      </Button>
+    </span>
+  );
+}
+
+function NavBar(props: { user?: any }) {
   return (
     <div className="navbarContainer">
       <nav className="navbar">
@@ -29,24 +72,7 @@ function NavBar() {
               },
             }}
           />
-
-          <span className="userActions">
-            <Button
-              variant="contained"
-              color="primary"
-              style={{ borderRadius: "12px" }}
-            >
-              Ask a Question
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              style={{ borderRadius: "12px" }}
-            >
-              <BellIcon />
-            </Button>
-            <Avatar alt="User">AI</Avatar>
-          </span>
+          {props.user ? getUserActions() : getGuestActions()}
         </span>
       </nav>
     </div>
