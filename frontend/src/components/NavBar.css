@@ -1,0 +1,40 @@
+.navbarContainer {
+  border-bottom: 1px solid #e5e8eb;
+}
+
+.navbar {
+  display: flex;
+  padding: 12px 40px;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+}
+
+.navbarAppTitle {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.appLabel {
+  color: #fafafa;
+  font-feature-settings: "dlig" on;
+  font-family: Inter;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 23px; /* 127.778% */
+}
+
+.navbarActions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 32px;
+  flex: 1 0 0;
+}
+
+.userActions {
+  display: flex;
+  gap: 16px;
+}
