@@ -117,7 +117,7 @@ export default function Signup({ className }) {
   return (
     <div className={`signup-inputs-flexbox ${className}`}>
       <h1>Sign Up</h1>
-      <p>Sign up to ask questions and start interacting with AI</p>
+      <p>Sign up to start posting and viewing</p>
       <div className="input-wrapper">
         <div className="bold">Username</div>
         <input
