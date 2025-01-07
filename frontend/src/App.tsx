@@ -1,14 +1,21 @@
 import "./App.css";
 import NavBar from "./components/NavBar";
+import { ToastContainer } from "react-toastify";
 import { Outlet } from "react-router-dom";
 
 function App() {
+  const AUTO_CLOSE_TIME = 3000;
+
   return (
     <>
-      <NavBar />
+      <div className="App">
+        <ToastContainer autoClose={AUTO_CLOSE_TIME} position="top-center" />
 
-      <div className="appContainer">
-        <Outlet />
+        <NavBar />
+
+        <div className="appContainer">
+          <Outlet />
+        </div>
       </div>
     </>
   );
