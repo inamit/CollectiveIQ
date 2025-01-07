@@ -3,6 +3,7 @@ import CryptoJS from "crypto-js";
 import { gapi } from "gapi-script";
 import { toast } from "react-toastify";
 import config from '../../config.json';
+import { FcGoogle } from "react-icons/fc";
 import { GoArrowRight } from "react-icons/go";
 import React, { useState, useEffect } from "react";
 import { useUserCredentials } from "../../hooks/userCredentials.tsx";
@@ -169,11 +170,11 @@ export default function Signup({ className }) {
         >
           Sign Up <GoArrowRight />
         </button>
-        <button
-          onClick={onGoogleSignupButtonClicked}
-          className="signup-button"
-        >
-          Sign Up with Google
+        <button onClick={onGoogleSignupButtonClicked} className="signup-button">
+            <span className="google-icon">
+            <FcGoogle size={20} />
+            <span className="google-text">Sign Up with Google</span>
+            </span>
         </button>
       </div>
     </div>

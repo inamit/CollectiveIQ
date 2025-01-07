@@ -72,3 +72,12 @@ body {
 .signup-input::placeholder {
   color: white;
 }
+
+.google-icon { 
+  display: "flex";
+  align-items: center;
+}
+
+.google-text {
+  margin-left: 8px;
+}
