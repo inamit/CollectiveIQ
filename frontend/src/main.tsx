@@ -6,6 +6,7 @@ import { ThemeProvider } from "@mui/material";
 import { theme } from "./theme.ts";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import UserProfile from "./pages/UserProfile/UserProfile.tsx";
+import Signup from "./pages/Signup/Signup.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -14,6 +15,7 @@ createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/" element={<App />}>
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/signup" element={<Signup />} />
           </Route>
         </Routes>
       </BrowserRouter>
