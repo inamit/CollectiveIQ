@@ -5,8 +5,8 @@ import App from "./App.tsx";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "./theme.ts";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import UserProfile from "./pages/UserProfile/UserProfile.tsx";
-import Signup from "./pages/Signup/Signup.tsx";
+import UserProfile, { USER_PROFILE_ROUTE } from "./pages/UserProfile/UserProfile.tsx";
+import Signup, { SIGN_UP_ROUTE } from "./pages/Signup/Signup.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -14,8 +14,8 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />}>
-            <Route path="/profile" element={<UserProfile />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path={USER_PROFILE_ROUTE} element={<UserProfile />} />
+            <Route path={SIGN_UP_ROUTE} element={<Signup />} />
           </Route>
         </Routes>
       </BrowserRouter>

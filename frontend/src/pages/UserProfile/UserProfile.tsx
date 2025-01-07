@@ -1,7 +1,9 @@
 import "./UserProfile.css";
 import { Avatar, Button } from "@mui/material";
 
-function UserProfile() {
+export const USER_PROFILE_ROUTE = "/profile";
+
+export default function UserProfile() {
   return (
     <>
       <div className="userProfile">
@@ -26,5 +28,3 @@ function UserProfile() {
     </>
   );
 }
-
-export default UserProfile;

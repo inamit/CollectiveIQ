@@ -5,7 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import BellIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import AppTextField from "./TextField/TextField";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import Signup from "../pages/Signup/Signup";
+import { SIGN_UP_ROUTE } from "../pages/Signup/Signup";
 
 function getUserActions(navigate: NavigateFunction) {
   return (
@@ -39,7 +39,7 @@ function getGuestActions(navigate: NavigateFunction) {
         variant="contained"
         color="secondary"
         onClick={() => {
-          navigate("/signup");
+          navigate(SIGN_UP_ROUTE);
         }}
       >
         Sign Up
@@ -48,7 +48,7 @@ function getGuestActions(navigate: NavigateFunction) {
   );
 }
 
-function NavBar(props: { user?: any }) {
+export default function NavBar(props: { user?: any }) {
   const navigate = useNavigate();
   return (
     <div className="navbarContainer">
@@ -79,5 +79,3 @@ function NavBar(props: { user?: any }) {
     </div>
   );
 }
-
-export default NavBar;

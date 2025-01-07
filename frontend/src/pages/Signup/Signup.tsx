@@ -15,6 +15,8 @@ interface SignupProps {
   className?: string;
 }
 
+export const SIGN_UP_ROUTE = "/signup";
+
 export default function Signup({ className }: SignupProps) {
   const { username, setUsername, password, setPassword, email, setEmail } =
     useUserCredentials();
