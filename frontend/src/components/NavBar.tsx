@@ -30,18 +30,10 @@ function getUserActions() {
 function getGuestActions() {
   return (
     <span className="guestActions">
-      <Button
-        variant="contained"
-        color="primary"
-        style={{ borderRadius: "12px" }}
-      >
+      <Button variant="contained" color="primary">
         Sign In
       </Button>
-      <Button
-        variant="contained"
-        color="secondary"
-        style={{ borderRadius: "12px" }}
-      >
+      <Button variant="contained" color="secondary">
         Sign Up
       </Button>
     </span>
