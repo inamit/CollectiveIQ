@@ -7,6 +7,44 @@ import AppTextField from "../TextField/TextField";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { SIGN_UP_ROUTE } from "../../pages/Signup/Signup";
 
+interface Props {
+  username?: string;
+}
+
+export default function NavBar(props: Props) {
+  const navigate = useNavigate();
+  return (
+    <div className="navbarContainer">
+      <nav className="navbar">
+        <span className="navbarAppTitle">
+          <img src={appIcon} alt="app icon" className="appIcon" />
+          <h1 className="appLabel">CollectiveIQ</h1>
+        </span>
+        <span className="navbarActions">
+          <AppTextField
+            id="search"
+            placeholder="Search"
+            size="small"
+            variant="outlined"
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+          {props.username
+            ? getUserActions(navigate)
+            : getGuestActions(navigate)}
+        </span>
+      </nav>
+    </div>
+  );
+}
+
 function getUserActions(navigate: NavigateFunction) {
   return (
     <span className="userActions">
@@ -45,37 +83,5 @@ function getGuestActions(navigate: NavigateFunction) {
         Sign Up
       </Button>
     </span>
-  );
-}
-
-export default function NavBar(props: { user?: any }) {
-  const navigate = useNavigate();
-  return (
-    <div className="navbarContainer">
-      <nav className="navbar">
-        <span className="navbarAppTitle">
-          <img src={appIcon} alt="app icon" className="appIcon" />
-          <h1 className="appLabel">CollectiveIQ</h1>
-        </span>
-        <span className="navbarActions">
-          <AppTextField
-            id="search"
-            placeholder="Search"
-            size="small"
-            variant="outlined"
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-          {props.user ? getUserActions(navigate) : getGuestActions(navigate)}
-        </span>
-      </nav>
-    </div>
   );
 }
