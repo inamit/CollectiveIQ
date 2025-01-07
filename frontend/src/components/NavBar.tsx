@@ -4,8 +4,10 @@ import { InputAdornment, Button, Avatar } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import BellIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import AppTextField from "./TextField/TextField";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+import Signup from "../pages/Signup/Signup";
 
-function getUserActions() {
+function getUserActions(navigate: NavigateFunction) {
   return (
     <span className="userActions">
       <Button
@@ -27,13 +29,19 @@ function getUserActions() {
   );
 }
 
-function getGuestActions() {
+function getGuestActions(navigate: NavigateFunction) {
   return (
     <span className="guestActions">
       <Button variant="contained" color="primary">
         Sign In
       </Button>
-      <Button variant="contained" color="secondary">
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={() => {
+          navigate("/signup");
+        }}
+      >
         Sign Up
       </Button>
     </span>
@@ -41,6 +49,7 @@ function getGuestActions() {
 }
 
 function NavBar(props: { user?: any }) {
+  const navigate = useNavigate();
   return (
     <div className="navbarContainer">
       <nav className="navbar">
@@ -64,7 +73,7 @@ function NavBar(props: { user?: any }) {
               },
             }}
           />
-          {props.user ? getUserActions() : getGuestActions()}
+          {props.user ? getUserActions(navigate) : getGuestActions(navigate)}
         </span>
       </nav>
     </div>
