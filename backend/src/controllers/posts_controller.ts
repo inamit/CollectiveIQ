@@ -2,6 +2,7 @@ import {Request, Response} from "express";
 import {handleMongoQueryError} from "../db/db";
 import Post, {IPost, POST_RESOURCE_NAME} from "../models/posts_model";
 import mongoose from "mongoose";
+import {saveFile} from "../middleware/file-storage/file-storage-middleware";
 
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
@@ -88,7 +89,7 @@ const updatePostById = async (req: Request, res: Response): Promise<any> => {
 };
 
 const saveImage = (req: Request, res: Response): void => {
-  res.status(200).send({url: process.env.BASE_URL! + req.file?.path});
+  saveFile(req, res);
 };
 
 function getReaction(reactionType: "likes" | "dislikes", post: IPost, userId: string) {

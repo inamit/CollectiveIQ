@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
-import { handleMongoQueryError } from "../db/db";
+import {Request, Response} from "express";
+import {handleMongoQueryError} from "../db/db";
 import User, {
-  hashPassword,
-  IUser,
-  USER_RESOURCE_NAME,
+    hashPassword,
+    IUser,
+    USER_RESOURCE_NAME,
 } from "../models/users_model";
 import token from "../middleware/auth/token";
 import bcrypt from "bcrypt";
@@ -11,6 +11,8 @@ import jwt from "jsonwebtoken";
 import path from "path";
 import * as fs from "fs";
 import {PathLike} from "fs";
+import config from "../config/fileUploadingConfig";
+import {saveFile} from "../middleware/file-storage/file-storage-middleware";
 
 const getAllUsers = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -46,7 +48,7 @@ const registerNewUser = async (req: Request, res: Response): Promise<any> => {
             email,
             password,
             avatarImage,
-        }: { username: string; email: string; password: string, avatarImage:string } = req.body;
+        }: { username: string; email: string; password: string, avatarImage: string } = req.body;
         const user = new User({
             username,
             email,
@@ -101,7 +103,8 @@ const deleteUserById = async (req: Request, res: Response): Promise<any> => {
         const deletedUser: IUser | null = await User.findByIdAndDelete(user_id);
         // Delete the post image if it exists
         if (deletedUser?.avatarUrl) {
-            const filePath = path.join(__dirname, 'uploads/avatars', deletedUser.avatarUrl.split('/').pop()!);
+            const avatarFileName: string = deletedUser.avatarUrl.split('/').pop()!;
+            const filePath: string = path.join(config.uploadsAvatarsDirectory, avatarFileName);
             deleteUserAvatarFromDirectory(filePath);
         }
         if (!deletedUser) {
@@ -198,11 +201,11 @@ const addRefreshTokenToUser = async (
         refreshTokens: existingUser.refreshTokens,
     });
 };
-const saveAvatarImage= (req: Request, res: Response): void => {
-    res.status(200).send({url: process.env.BASE_URL! + req.file?.path});
+const saveAvatarImage = (req: Request, res: Response): void => {
+    saveFile(req, res);
 };
 
-const deleteUserAvatarFromDirectory = (filePath:PathLike): void => {
+const deleteUserAvatarFromDirectory = (filePath: PathLike): void => {
     fs.unlink(filePath, (err) => {
         if (err) {
             console.error('Error deleting file:', err.message);
@@ -235,14 +238,14 @@ const registerUserWithGoogle = async (req: Request, res: Response): Promise<any>
 };
 
 export default {
-  getAllUsers,
-  getUserById,
-  registerNewUser,
-  updateUserById,
-  deleteUserById,
-  login,
-  logout,
-  refresh,
-  registerUserWithGoogle,
-  saveAvatarImage
+    getAllUsers,
+    getUserById,
+    registerNewUser,
+    updateUserById,
+    deleteUserById,
+    login,
+    logout,
+    refresh,
+    registerUserWithGoogle,
+    saveAvatarImage
 };
