@@ -3,8 +3,7 @@ import express from "express";
 const router = express.Router();
 import usersController from "../controllers/users_controller";
 import authMiddleware from "../middleware/auth/authMiddleware";
-import {userAvatarUpload, userPostsUpload} from "../middleware/file-storage/file-storage-middleware";
-import postsController from "../controllers/posts_controller";
+import {userAvatarUpload} from "../middleware/file-storage/file-storage-middleware";
 
 /**
  * @swagger
@@ -430,5 +429,5 @@ router.post("/refresh", usersController.refresh);
  *            schema:
  *              $ref: '#/components/schemas/Error'
  */
-router.post('/avatarImage', userAvatarUpload.single("file"), usersController.saveAvatarImage);
+router.post('/avatarImage',authMiddleware, userAvatarUpload.single("file"), usersController.saveAvatarImage);
 export default router;
