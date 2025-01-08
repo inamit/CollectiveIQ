@@ -9,6 +9,7 @@ function App() {
   return (
     <div className="App">
       <ToastContainer autoClose={AUTO_CLOSE_TIME} position="top-center" />
+      <Signup />
     </div>
   );
 }
