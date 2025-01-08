@@ -78,6 +78,6 @@ body {
   align-items: center;
 }
 
-.google-login-button {
-  background-color: #0056b3;
+.google-text {
+  margin-left: 8px;
 }

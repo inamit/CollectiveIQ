@@ -17,17 +17,3 @@ export async function SignUserUp(username: string, email: string, password: stri
   
   return res;
 }
-
-export async function GoogleSignUserUp(credentials: string) {
-  let res = await fetch(config.backendURL + config.signupGoogleUrl, {
-    method: "POST",
-    body: JSON.stringify({
-      credentials
-    }),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8"
-    }
-  });
-  
-  return res;
-}
