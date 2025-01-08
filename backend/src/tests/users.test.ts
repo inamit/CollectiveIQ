@@ -4,6 +4,7 @@ import initApp from "../server";
 import mongoose from "mongoose";
 import { Express } from "express";
 import usersModel, { IUser } from "../models/users_model";
+import path from "path";
 
 let app: Express;
 
@@ -260,3 +261,23 @@ describe("POST /users/logout", () => {
     expect(response.body).not.toHaveProperty("refreshToken");
   });
 });
+
+
+describe("File Tests", () => {
+  test("upload avatar", async () => {
+    const filePath = path.resolve(__dirname,`amit.jpg`);
+
+    try {
+      const response = await request(app)
+          .post("/users/avatarImage").attach('file', filePath)
+      expect(response.statusCode).toEqual(200);
+      let url = response.body.url;
+      url = url.replace(/^.*\/\/[^/]+/, '')
+      const res = await request(app).get(url)
+      expect(res.statusCode).toEqual(200);
+    } catch (err) {
+      console.log(err);
+      expect(1).toEqual(2);
+    }
+  })
+})
