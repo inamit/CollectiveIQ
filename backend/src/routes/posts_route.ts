@@ -1,7 +1,8 @@
-import { Router } from "express";
+import {Router} from "express";
 const router: Router = Router();
 import postsController from "../controllers/posts_controller";
-import authMiddleware from "../utilities/authMiddleware";
+import authMiddleware from "../middleware/auth/authMiddleware";
+import {userPostsUpload} from "../middleware/file-storage/file-storage-middleware";
 
 /**
  * @swagger
@@ -111,7 +112,7 @@ router.get("/", authMiddleware, postsController.getPosts);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.post("/", authMiddleware, postsController.saveNewPost);
+router.post("/", authMiddleware, userPostsUpload.single("file"), postsController.saveNewPost);
 
 /**
  * @swagger
@@ -197,6 +198,41 @@ router.get("/:post_id", authMiddleware, postsController.getPostById);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.put("/:post_id", authMiddleware, postsController.updatePostById);
+router.put("/:post_id", authMiddleware, userPostsUpload.single("file"), postsController.updatePostById);
 
+/**
+ * @swagger
+ * /posts/upload:
+ *   post:
+ *     summary: Upload a pic for post
+ *     tags: Post
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *      content:
+ *        multipart/form-data:
+ *          schema:
+ *            allOf:
+ *              - $ref: '#/components/schemas/PostInput'
+ *              - required:
+ *                  - file
+ *              - properties:
+ *                  file:
+ *                    type: string
+ *                    format: binary
+ *     responses:
+ *       200:
+ *         description: Sight uploaded successfully
+ *       500:
+ *         description: failed to upload
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ */
+router.post('/image', authMiddleware, userPostsUpload.single("file"), postsController.saveImage);
+
+router.post('/:postId/like', authMiddleware, postsController.likePost)
+
+router.post('/:postId/dislike', authMiddleware, postsController.dislikePost);
 export default router;

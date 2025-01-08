@@ -1,14 +1,14 @@
 import dotenv from "dotenv";
 import express, { Express } from "express";
 import bodyParser from "body-parser";
-import { connectDB } from "./db";
+import { connectDB } from "./db/db";
 import cors from "cors";
 import postsRoute from "./routes/posts_route";
 import commentsRoute from "./routes/comments_route";
 import usersRoute from "./routes/users_route";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
-import authMiddleware from "./utilities/authMiddleware";
+import authMiddleware from "./middleware/auth/authMiddleware";
 
 dotenv.config();
 
@@ -43,6 +43,7 @@ app.use(cors());
 *       bearerFormat: JWT
 */
 
+app.use("/uploads", express.static("uploads"));
 app.use("/posts", postsRoute);
 app.use("/comments", commentsRoute);
 app.use("/users", usersRoute);

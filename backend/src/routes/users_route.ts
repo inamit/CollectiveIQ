@@ -1,7 +1,9 @@
 import express from "express";
+
 const router = express.Router();
 import usersController from "../controllers/users_controller";
-import authMiddleware from "../utilities/authMiddleware";
+import authMiddleware from "../middleware/auth/authMiddleware";
+import {userAvatarUpload} from "../middleware/file-storage/file-storage-middleware";
 
 /**
  * @swagger
@@ -110,7 +112,7 @@ router.get("/", authMiddleware, usersController.getAllUsers);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.post("/", usersController.registerNewUser);
+router.post("/", userAvatarUpload.single("file"), usersController.registerNewUser);
 
 /**
  * @swagger
@@ -236,7 +238,7 @@ router.get("/:user_id", authMiddleware, usersController.getUserById);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.patch("/:user_id", authMiddleware, usersController.updateUserById);
+router.patch("/:user_id", authMiddleware, userAvatarUpload.single("file"), usersController.updateUserById);
 
 /**
  * @swagger
@@ -397,4 +399,35 @@ router.post("/logout", usersController.logout);
  */
 router.post("/refresh", usersController.refresh);
 
+/**
+ * @swagger
+ * /posts/upload:
+ *   post:
+ *     summary: Upload a pic for user avatar
+ *     tags: Post
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *      content:
+ *        multipart/form-data:
+ *          schema:
+ *            allOf:
+ *              - $ref: '#/components/schemas/UserInput'
+ *              - required:
+ *                  - file
+ *              - properties:
+ *                  file:
+ *                    type: string
+ *                    format: binary
+ *     responses:
+ *       200:
+ *         description: Sight uploaded successfully
+ *       500:
+ *         description: failed to upload
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ */
+router.post('/avatarImage',authMiddleware, userAvatarUpload.single("file"), usersController.saveAvatarImage);
 export default router;

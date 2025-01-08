@@ -4,11 +4,12 @@ import mongoose, { ObjectId, Types } from "mongoose";
 import { Express } from "express";
 import postsModel, { IPost } from "../models/posts_model";
 import usersModel, { IUser } from "../models/users_model";
-import authMiddleware from "../utilities/authMiddleware";
+import authMiddleware from "../middleware/auth/authMiddleware";
+import path from "path";
 
 let app: Express;
 
-jest.mock("../utilities/authMiddleware");
+jest.mock("../middleware/auth/authMiddleware");
 
 let testUser: IUser = {
   username: "test",
@@ -195,3 +196,24 @@ describe("PUT /posts/:post_id", () => {
     expect(response.body.sender).toBe(updatedSender);
   });
 });
+
+
+
+describe("File Tests", () => {
+  test("upload file", async () => {
+    const filePath = path.resolve(__dirname,`amit.jpg`);
+
+    try {
+      const response = await request(app)
+          .post("/posts/image").attach('file', filePath)
+      expect(response.statusCode).toEqual(200);
+      let url = response.body.url;
+      url = url.replace(/^.*\/\/[^/]+/, '')
+      const res = await request(app).get(url)
+      expect(res.statusCode).toEqual(200);
+    } catch (err) {
+      console.log(err);
+      expect(1).toEqual(2);
+    }
+  })
+})

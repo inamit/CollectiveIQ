@@ -1,13 +1,18 @@
-import { Request, Response } from "express";
-import { handleMongoQueryError } from "../db";
+import {Request, Response} from "express";
+import {handleMongoQueryError} from "../db/db";
 import User, {
-  hashPassword,
-  IUser,
-  USER_RESOURCE_NAME,
+    hashPassword,
+    IUser,
+    USER_RESOURCE_NAME,
 } from "../models/users_model";
-import token from "../utilities/token";
+import token from "../middleware/auth/token";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import path from "path";
+import * as fs from "fs";
+import {PathLike} from "fs";
+import config from "../config/fileUploadingConfig";
+import {saveFile} from "../middleware/file-storage/file-storage-middleware";
 
 const getAllUsers = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -37,70 +42,80 @@ const getUserById = async (req: Request, res: Response): Promise<any> => {
 };
 
 const registerNewUser = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const {
-      username,
-      email,
-      password,
-    }: { username: string; email: string; password: string } = req.body;
-    const user = new User({
-      username,
-      email,
-      password,
-    });
+    try {
+        const {
+            username,
+            email,
+            password,
+            avatarImage,
+        }: { username: string; email: string; password: string, avatarImage: string } = req.body;
+        const user = new User({
+            username,
+            email,
+            password,
+            avatarImage
+        });
 
-    const savedUser: IUser = await user.save();
-    return res.json(savedUser);
-  } catch (err: any) {
-    console.warn("Error registering user:", err);
-    return handleMongoQueryError(res, err, USER_RESOURCE_NAME);
-  }
+        const savedUser: IUser = await user.save();
+        return res.json(savedUser);
+    } catch (err: any) {
+        console.warn("Error registering user:", err);
+        return handleMongoQueryError(res, err, USER_RESOURCE_NAME);
+    }
 };
 
 const updateUserById = async (req: Request, res: Response): Promise<any> => {
-  const { user_id }: { user_id?: string } = req.params;
-  const updates: Partial<IUser> = req.body;
+    const {user_id}: { user_id?: string } = req.params;
+    const updates: Partial<IUser> = req.body;
 
-  try {
-    if (updates.password) {
-      updates.password = await hashPassword(updates.password);
+    try {
+        if (updates.password) {
+            updates.password = await hashPassword(updates.password);
+        }
+
+        const updatedUser: IUser | null = await User.findByIdAndUpdate(
+            user_id,
+            updates,
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
+
+        if (updatedUser?.avatarUrl) {
+            updatedUser.avatarUrl = req.file?.path ?? '';
+        }
+        if (!updatedUser) {
+            return res.status(404).json({error: "User not found"});
+        }
+
+        return res.json(updatedUser);
+    } catch (err: any) {
+        console.warn("Error updating user:", err);
+        return handleMongoQueryError(res, err, USER_RESOURCE_NAME);
     }
-
-    const updatedUser: IUser | null = await User.findByIdAndUpdate(
-      user_id,
-      updates,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-
-    if (!updatedUser) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    return res.json(updatedUser);
-  } catch (err: any) {
-    console.warn("Error updating user:", err);
-    return handleMongoQueryError(res, err, USER_RESOURCE_NAME);
-  }
 };
 
 const deleteUserById = async (req: Request, res: Response): Promise<any> => {
-  const { user_id }: { user_id?: string } = req.params;
+    const {user_id}: { user_id?: string } = req.params;
 
-  try {
-    const deletedUser: IUser | null = await User.findByIdAndDelete(user_id);
+    try {
+        const deletedUser: IUser | null = await User.findByIdAndDelete(user_id);
+        // Delete the post image if it exists
+        if (deletedUser?.avatarUrl) {
+            const avatarFileName: string = deletedUser.avatarUrl.split('/').pop()!;
+            const filePath: string = path.join(config.uploadsAvatarsDirectory, avatarFileName);
+            deleteUserAvatarFromDirectory(filePath);
+        }
+        if (!deletedUser) {
+            return res.status(404).json({error: "User not found"});
+        }
 
-    if (!deletedUser) {
-      return res.status(404).json({ error: "User not found" });
+        return res.json(deletedUser);
+    } catch (err: any) {
+        console.warn("Error deleting user:", err);
+        return handleMongoQueryError(res, err);
     }
-
-    return res.json(deletedUser);
-  } catch (err: any) {
-    console.warn("Error deleting user:", err);
-    return handleMongoQueryError(res, err);
-  }
 };
 
 const login = async (req: Request, res: Response): Promise<any> => {
@@ -113,12 +128,12 @@ const login = async (req: Request, res: Response): Promise<any> => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    const isMatchedpassword = await bcrypt.compare(
+    const isMatchedPassword = await bcrypt.compare(
       password,
       existingUser.password
     );
 
-    if (!isMatchedpassword) {
+    if (!isMatchedPassword) {
       return res
         .status(400)
         .json({ error: "wrong credentials. Please try again." });
@@ -151,41 +166,54 @@ const logout = async (req: Request, res: Response): Promise<any> => {
 };
 
 const refresh = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const user = await token.verifyRefreshToken(req.body.refreshToken);
-    if (!user) {
-      return res.status(400).send("fail");
+    try {
+        const user = await token.verifyRefreshToken(req.body.refreshToken);
+        if (!user) {
+            return res.status(400).send("fail");
+        }
+        const {refreshToken, accessToken} = await token.generateTokens(user);
+
+        if (!refreshToken || !accessToken) {
+            return res.status(500).send("Server Error");
+        }
+
+        await addRefreshTokenToUser(user, refreshToken);
+
+        return res.send({
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            _id: user._id,
+        });
+    } catch (err) {
+        return res.status(400).send("fail");
     }
-    const { refreshToken, accessToken } = await token.generateTokens(user);
-
-    if (!refreshToken || !accessToken) {
-      return res.status(500).send("Server Error");
-    }
-
-    await addRefreshTokenToUser(user, refreshToken);
-
-    return res.send({
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      _id: user._id,
-    });
-  } catch (err) {
-    return res.status(400).send("fail");
-  }
 };
 
 const addRefreshTokenToUser = async (
-  existingUser: IUser,
-  refreshToken: string
+    existingUser: IUser,
+    refreshToken: string
 ) => {
-  if (!existingUser.refreshTokens) {
-    existingUser.refreshTokens = [];
-  }
-  existingUser.refreshTokens.push(refreshToken);
-  await User.findByIdAndUpdate(existingUser._id, {
-    refreshTokens: existingUser.refreshTokens,
-  });
+    if (!existingUser.refreshTokens) {
+        existingUser.refreshTokens = [];
+    }
+    existingUser.refreshTokens.push(refreshToken);
+    await User.findByIdAndUpdate(existingUser._id, {
+        refreshTokens: existingUser.refreshTokens,
+    });
 };
+const saveAvatarImage = (req: Request, res: Response): void => {
+    saveFile(req, res);
+};
+
+const deleteUserAvatarFromDirectory = (filePath: PathLike): void => {
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error('Error deleting file:', err.message);
+        } else {
+            console.log('File deleted successfully');
+        }
+    });
+}
 
 const registerUserWithGoogle = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -210,13 +238,14 @@ const registerUserWithGoogle = async (req: Request, res: Response): Promise<any>
 };
 
 export default {
-  getAllUsers,
-  getUserById,
-  registerNewUser,
-  updateUserById,
-  deleteUserById,
-  login,
-  logout,
-  refresh,
-  registerUserWithGoogle
+    getAllUsers,
+    getUserById,
+    registerNewUser,
+    updateUserById,
+    deleteUserById,
+    login,
+    logout,
+    refresh,
+    registerUserWithGoogle,
+    saveAvatarImage
 };
