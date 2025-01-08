@@ -1,14 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import PostsList from "../../components/PostsList/PostsList";
 import "./UserProfile.css";
 import { Box, Button, Tab, Tabs } from "@mui/material";
 import UserAvatar from "../../components/UserAvatar/UserAvatar";
 import { LoadingState } from "../../services/loadingState";
 import usePosts from "../../hooks/usePosts";
-import { useNavigate } from "react-router-dom";
-// import useUser from "../../hooks/useUser";
-import { SIGN_UP_ROUTE } from "../Signup/Signup";
-import { useUser } from "../../context/userContext";
 import useAuth from "../../hooks/useAuth";
 
 export const USER_PROFILE_ROUTE = "/profile";
@@ -40,7 +36,6 @@ export default function UserProfile() {
   const [selectedTab, setSelectedTab] = useState(0);
   const { user, isUserLoaded } = useAuth();
 
-  // const { posts, postsLoadingState } = usePosts();
   const { posts, postsLoadingState } =
     isUserLoaded && user
       ? usePosts()

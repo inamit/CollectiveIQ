@@ -9,7 +9,6 @@ import { SIGN_UP_ROUTE } from "../../pages/Signup/Signup";
 import User from "../../models/user";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import { useUser } from "../../context/userContext";
-// import useUser from "../../hooks/useUser";
 
 export default function NavBar() {
   const navigate = useNavigate();

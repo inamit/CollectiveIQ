@@ -4,7 +4,6 @@ import { LoadingState } from "../services/loadingState";
 import { PostsService } from "../services/postsService";
 import { AxiosResponse } from "axios";
 import { useUser } from "../context/userContext";
-// import useUser from "./useUser";
 
 const usePosts = () => {
   const [posts, setPosts] = useState<Post[]>([]);

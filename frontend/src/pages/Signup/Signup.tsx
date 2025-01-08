@@ -1,12 +1,11 @@
 import "./signup.css";
 import { toast } from "react-toastify";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SignUpService } from "../../services/signUpService.ts";
 import { Button } from "@mui/material";
 import AppTextField from "../../components/TextField/TextField.tsx";
 import { useNavigate } from "react-router-dom";
-// import useUser from "../../hooks/useUser";
 import { USER_PROFILE_ROUTE } from "../UserProfile/UserProfile.tsx";
 import { GoogleLogin } from "@react-oauth/google";
 import { useUser } from "../../context/userContext.tsx";
