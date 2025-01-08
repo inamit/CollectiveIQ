@@ -230,5 +230,7 @@ router.put("/:post_id", authMiddleware, userPostsUpload.single("file"), postsCon
  *            schema:
  *              $ref: '#/components/schemas/Error'
  */
-router.post('/image', userPostsUpload.single("file"), postsController.saveImage);
+router.post('/image', authMiddleware, userPostsUpload.single("file"), postsController.saveImage);
+
+
 export default router;
