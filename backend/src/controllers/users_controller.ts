@@ -187,7 +187,7 @@ const addRefreshTokenToUser = async (
   });
 };
 
-const registerUserWithJwt = async (req: Request, res: Response): Promise<any> => {
+const registerUserWithGoogle = async (req: Request, res: Response): Promise<any> => {
   try {
     const { jwtToken }: { jwtToken: string } = req.body;
     const payload : any = jwt.decode(jwtToken);
@@ -218,5 +218,5 @@ export default {
   login,
   logout,
   refresh,
-  registerUserWithJwt
+  registerUserWithGoogle
 };

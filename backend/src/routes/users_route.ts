@@ -150,7 +150,7 @@ router.post("/", usersController.registerNewUser);
  *               $ref: '#/components/schemas/UnexpectedError'
  */
 
-router.post("/google", usersController.registerUserWithJwt);
+router.post("/google", usersController.registerUserWithGoogle);
 
 /**
  * @swagger
