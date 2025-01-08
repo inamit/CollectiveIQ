@@ -193,7 +193,7 @@ const registerUserWithJwt = async (req: Request, res: Response): Promise<any> =>
     const payload : any = jwt.decode(jwtToken);
 
     if (!payload) {
-      return res.status(400).json({ error: "Invalid token" });
+      return res.status(400).json({ error: "Invalid input" });
     }
 
     req.body = {
