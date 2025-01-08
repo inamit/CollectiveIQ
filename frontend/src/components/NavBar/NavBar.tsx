@@ -1,18 +1,19 @@
 import "./NavBar.css";
 import appIcon from "/appIcon.svg";
-import { InputAdornment, Button, Avatar } from "@mui/material";
+import { InputAdornment, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import BellIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import AppTextField from "../TextField/TextField";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { SIGN_UP_ROUTE } from "../../pages/Signup/Signup";
+import User from "../../models/user";
+import { useUserCredentials } from "../../hooks/userCredentials";
+import UserAvatar from "../UserAvatar/UserAvatar";
 
-interface Props {
-  username?: string;
-}
-
-export default function NavBar(props: Props) {
+export default function NavBar() {
   const navigate = useNavigate();
+  const { user } = useUserCredentials();
+
   return (
     <div className="navbarContainer">
       <nav className="navbar">
@@ -36,16 +37,14 @@ export default function NavBar(props: Props) {
               },
             }}
           />
-          {props.username
-            ? getUserActions(navigate)
-            : getGuestActions(navigate)}
+          {user ? getUserActions(user, navigate) : getGuestActions(navigate)}
         </span>
       </nav>
     </div>
   );
 }
 
-function getUserActions(navigate: NavigateFunction) {
+function getUserActions(user: User, navigate: NavigateFunction) {
   return (
     <span className="userActions">
       <Button
@@ -62,7 +61,7 @@ function getUserActions(navigate: NavigateFunction) {
       >
         <BellIcon />
       </Button>
-      <Avatar alt="User">AI</Avatar>
+      <UserAvatar user={user} />
     </span>
   );
 }

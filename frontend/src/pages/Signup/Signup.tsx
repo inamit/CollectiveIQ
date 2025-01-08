@@ -6,10 +6,11 @@ import config from "../../config.json";
 import GoogleIcon from "@mui/icons-material/Google";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useState, useEffect } from "react";
-import { useUserCredentials } from "../../hooks/userCredentials.tsx";
 import { SignUserUp } from "../../services/Signup/SignupService.tsx";
 import { Button } from "@mui/material";
 import AppTextField from "../../components/TextField/TextField.tsx";
+import { useNavigate } from "react-router-dom";
+import { useUserCredentials } from "../../hooks/userCredentials.tsx";
 
 interface SignupProps {
   className?: string;
@@ -18,9 +19,13 @@ interface SignupProps {
 export const SIGN_UP_ROUTE = "/signup";
 
 export default function Signup({ className }: SignupProps) {
-  const { username, setUsername, password, setPassword, email, setEmail } =
-    useUserCredentials();
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [passwordVerification, setPasswordVerification] = useState("");
+
+  const { setUser } = useUserCredentials();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadGoogleScript = () => {
@@ -81,13 +86,6 @@ export default function Signup({ className }: SignupProps) {
     return valid;
   };
 
-  const resetVariables = () => {
-    setUsername("");
-    setEmail("");
-    setPassword("");
-    setPasswordVerification("");
-  };
-
   const onSignupButtonClicked = async () => {
     if (checkInput()) {
       try {
@@ -95,7 +93,10 @@ export default function Signup({ className }: SignupProps) {
 
         if (response.status === 200) {
           toast.success("Signed up successfully");
-          resetVariables();
+
+          const responseJson = await response.json();
+          setUser(responseJson);
+          navigate("/profile");
         } else {
           const errorMessage = await response.text();
           toast.error(JSON.parse(errorMessage).error || "Error in sign in");

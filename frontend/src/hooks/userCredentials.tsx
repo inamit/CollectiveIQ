@@ -1,9 +1,14 @@
-import { useState } from "react";
+import User from "../models/user";
 
 export function useUserCredentials() {
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
+  const setUser = (userData: User) => {
+    sessionStorage.setItem("user", JSON.stringify(userData));
+  };
 
-  return {username, setUsername, password, setPassword, email, setEmail};
+  const sessionStorageUser = sessionStorage.getItem("user");
+  const user: User | null = sessionStorageUser
+    ? (JSON.parse(sessionStorageUser!) as User)
+    : null;
+
+  return { user, setUser };
 }
