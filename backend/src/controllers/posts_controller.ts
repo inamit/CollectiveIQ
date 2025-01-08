@@ -1,6 +1,7 @@
 import {Request, Response} from "express";
 import {handleMongoQueryError} from "../db/db";
 import Post, {IPost, POST_RESOURCE_NAME} from "../models/posts_model";
+import mongoose from "mongoose";
 
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
@@ -90,10 +91,60 @@ const saveImage = (req: Request, res: Response): void => {
   res.status(200).send({url: process.env.BASE_URL! + req.file?.path});
 };
 
+function getReaction(reactionType: "likes" | "dislikes", post: IPost, userId: string) {
+    const currentReactionArray = reactionType === 'likes' ? post.likes : post.dislikes;
+    const oppositeReactionArray = reactionType === 'likes' ? post.dislikes : post.likes;
+
+    if (currentReactionArray) {
+        const alreadyReacted:boolean = currentReactionArray.some(id => String(id) === String(userId));
+        if (alreadyReacted) {
+            post[reactionType] = currentReactionArray.filter(id => !id.equals(userId));
+        } else {
+            const userObjectId = new mongoose.Types.ObjectId(userId);
+            currentReactionArray.push(userObjectId);
+            post[reactionType === 'likes' ? 'dislikes' : 'likes'] = oppositeReactionArray?.filter(id => !id.equals(userId));
+        }
+    }
+}
+
+export const toggleReaction = async (req: Request, res: Response, reactionType: 'likes' | 'dislikes') => {
+    const userId = req.params.userId ;
+    const postId = req.params.postId;
+
+    try {
+        const post: IPost = await Post.findById(postId) as IPost;
+        if (!post) {
+            return res.status(404).json({message: 'Post not found'});
+        }
+        getReaction(reactionType, post, userId);
+
+        await Post.findOneAndUpdate(post);
+
+        res.status(200).json({
+            message: `${reactionType} toggled successfully.`,
+            likesAmount: post.likes?.length,
+            dislikesAmount: post.dislikes?.length,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: 'Internal Server Error'});
+    }
+};
+
+const likePost = async (req: Request, res: Response): Promise<any> => {
+    return toggleReaction(req, res, 'likes');
+}
+
+const dislikePost = async (req: Request, res: Response): Promise<any> => {
+    return toggleReaction(req, res, 'dislikes');
+}
+
 export default {
-  getPosts,
-  saveNewPost,
-  getPostById,
-  updatePostById,
-  saveImage
+    getPosts,
+    saveNewPost,
+    getPostById,
+    updatePostById,
+    saveImage,
+    likePost,
+    dislikePost,
 };
