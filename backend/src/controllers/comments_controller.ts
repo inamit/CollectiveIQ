@@ -1,6 +1,6 @@
 import Post from "../models/posts_model";
 import { Request, Response } from "express";
-import { handleMongoQueryError } from "../middleware/db/db";
+import { handleMongoQueryError } from "../db/db";
 import Comment, { COMMENT_RESOURCE_NAME, IComment } from "../models/comments_model";
 
 const getComments = async (req: Request, res: Response): Promise<any> => {

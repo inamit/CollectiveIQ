@@ -7,7 +7,7 @@ import usersModel, { IUser } from "../models/users_model";
 
 let app: Express;
 
-jest.mock("../utilities/authMiddleware", () => ({
+jest.mock("../middleware/auth/authMiddleware", () => ({
   __esModule: true,
   default: jest.fn((req, res, next) => next()),
 }));

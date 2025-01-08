@@ -7,7 +7,7 @@ import commentsModel, { IComment } from "../models/comments_model";
 import usersModel, { IUser } from "../models/users_model";
 import authMiddleware from "../middleware/auth/authMiddleware";
 
-jest.mock("../utilities/authMiddleware");
+jest.mock("../middleware/auth/authMiddleware");
 
 let app: Express;
 

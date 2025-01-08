@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { handleMongoQueryError } from "../middleware/db/db";
+import { handleMongoQueryError } from "../db/db";
 import User, {
   hashPassword,
   IUser,
