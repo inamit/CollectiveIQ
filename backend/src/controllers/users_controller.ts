@@ -1,12 +1,13 @@
-import {Request, Response} from "express";
-import {handleMongoQueryError} from "../db/db";
+import { Request, Response } from "express";
+import { handleMongoQueryError } from "../db";
 import User, {
-    hashPassword,
-    IUser,
-    USER_RESOURCE_NAME,
+  hashPassword,
+  IUser,
+  USER_RESOURCE_NAME,
 } from "../models/users_model";
 import token from "../middleware/auth/token";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import path from "path";
 import * as fs from "fs";
 import {PathLike} from "fs";
@@ -211,14 +212,37 @@ const deleteUserAvatarFromDirectory = (filePath:PathLike): void => {
     });
 }
 
+const registerUserWithGoogle = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { jwtToken }: { jwtToken: string } = req.body;
+    const payload : any = jwt.decode(jwtToken);
+
+    if (!payload) {
+      return res.status(400).json({ error: "Invalid input" });
+    }
+
+    req.body = {
+      username: payload.email,
+      email: payload.email,
+      password: await hashPassword(payload.password),
+    };
+
+    return registerNewUser(req, res);
+  } catch (err: any) {
+    console.warn("Error registering user with Google:", err);
+    return res.status(500).json({ error: "An error occurred while registering user with Google.", err });
+  }
+};
+
 export default {
-    getAllUsers,
-    getUserById,
-    registerNewUser,
-    updateUserById,
-    deleteUserById,
-    saveAvatarImage,
-    login,
-    logout,
-    refresh,
+  getAllUsers,
+  getUserById,
+  registerNewUser,
+  updateUserById,
+  deleteUserById,
+  login,
+  logout,
+  refresh,
+  registerUserWithGoogle,
+    saveAvatarImage
 };
