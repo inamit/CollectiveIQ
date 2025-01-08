@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import postsModel, { IPost } from "../models/posts_model";
 import commentsModel, { IComment } from "../models/comments_model";
 import usersModel, { IUser } from "../models/users_model";
-import authMiddleware from "../utilities/authMiddleware";
+import authMiddleware from "../middleware/auth/authMiddleware";
 
 jest.mock("../utilities/authMiddleware");
 

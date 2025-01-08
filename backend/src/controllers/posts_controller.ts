@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { handleMongoQueryError } from "../db";
+import { handleMongoQueryError } from "../middleware/db/db";
 import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {

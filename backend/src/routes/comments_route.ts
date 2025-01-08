@@ -1,7 +1,7 @@
 import { Router } from "express";
 const router: Router = Router();
 import commentsController from "../controllers/comments_controller";
-import authMiddleware from "../utilities/authMiddleware";
+import authMiddleware from "../middleware/auth/authMiddleware";
 
 /**
  * @swagger

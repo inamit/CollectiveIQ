@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { handleMongoQueryError } from "../db";
+import { handleMongoQueryError } from "../middleware/db/db";
 import User, {
   hashPassword,
   IUser,
   USER_RESOURCE_NAME,
 } from "../models/users_model";
-import token from "../utilities/token";
+import token from "../middleware/auth/token";
 import bcrypt from "bcrypt";
 
 const getAllUsers = async (req: Request, res: Response): Promise<any> => {
