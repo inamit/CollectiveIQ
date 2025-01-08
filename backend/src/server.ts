@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express, { Express } from "express";
 import bodyParser from "body-parser";
-import { connectDB } from "./middleware/db/db";
+import { connectDB } from "./db/db";
 import cors from "cors";
 import postsRoute from "./routes/posts_route";
 import commentsRoute from "./routes/comments_route";
@@ -43,6 +43,7 @@ app.use(cors());
 *       bearerFormat: JWT
 */
 
+app.use("/uploads", express.static("uploads"));
 app.use("/posts", postsRoute);
 app.use("/comments", commentsRoute);
 app.use("/users", usersRoute);

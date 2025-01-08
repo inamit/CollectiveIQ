@@ -2,6 +2,7 @@ import { Router } from "express";
 const router: Router = Router();
 import postsController from "../controllers/posts_controller";
 import authMiddleware from "../middleware/auth/authMiddleware";
+import {userPostsUpload} from "../middleware/file-storage/file-storage-middleware";
 
 /**
  * @swagger
@@ -111,7 +112,7 @@ router.get("/", authMiddleware, postsController.getPosts);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.post("/", authMiddleware, postsController.saveNewPost);
+router.post("/", authMiddleware, userPostsUpload.single("file"), postsController.saveNewPost);
 
 /**
  * @swagger
@@ -197,6 +198,7 @@ router.get("/:post_id", authMiddleware, postsController.getPostById);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.put("/:post_id", authMiddleware, postsController.updatePostById);
+router.put("/:post_id", authMiddleware, userPostsUpload.single("file"), postsController.updatePostById);
 
+router.post('/image', userPostsUpload.single("file"), postsController.saveImage);
 export default router;

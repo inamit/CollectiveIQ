@@ -5,6 +5,7 @@ export interface IPost {
   _id: Types.ObjectId,
   content: string;
   sender: Types.ObjectId;
+  imageUrl?:string
 }
 
 const postSchema = new Schema<IPost>({
@@ -16,6 +17,10 @@ const postSchema = new Schema<IPost>({
     type: Schema.Types.ObjectId,
     ref: USER_RESOURCE_NAME,
     required: true,
+  },
+  imageUrl: {
+    type: String,
+    required: false,
   },
 });
 
