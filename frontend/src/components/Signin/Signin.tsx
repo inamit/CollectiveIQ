@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ILoginModel } from "../../models/SignInModel";
 import { login, setToken } from "../../services/SignInService";
+import { toast } from "react-toastify";
+import { useLoginCredentials } from "../../hooks/loginCredentials";
 
 
 const Login = () => {
-  const [data, setData] = useState<ILoginModel>({ username: "", password: "" });
+  const {data, setData} = useLoginCredentials();
 
   const navigate = useNavigate();
 
@@ -18,60 +20,61 @@ const Login = () => {
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (data.username == "" || data.password == ""){
-        alert("Please fill all the fields")
-    }
-    try {
-        const res = await login(data);
-        if (res.status < 299){
-            setToken(res.data.accessToken, "accessToken");
-            setToken(res.data.refreshToken, "refreshToken");
-            navigate("/");
-        } else {
-            console.log("res.status error")
-            alert("Error while signin!")
+    if (!data.username.trim() || !data.password.trim()){
+      toast.error("Please fill all the fields");
+    } else {
+        try {
+            const res = await login(data);
+            if (res.status === 200){
+                setToken(res.data.accessToken, "accessToken");
+                setToken(res.data.refreshToken, "refreshToken");
+                navigate("/");
+            } else {
+              toast.error("Status code error: " + res.status);
+            }
+        } catch (error) {
+            toast.error("Error while signin!");
         }
-    } catch (error) {
-        console.log("error login fun")
-        alert("Error while signin!")
-    }
+      }
   }
 
   return (
-   <>
-      <div className="background">
-        <div className="shape"></div>
-        <div className="shape"></div>
-      </div>
+    <div className={`signin-inputs-flexbox`}>
       <form onSubmit={handleFormSubmit}>
-        <h3>Login Here</h3>
-
-        <label>Username</label>
-        <input
-          type="text"
-          placeholder="Username"
-          value={data.username}
-          id="username"
-          onChange={handleInputChange}
-        />
-
-        <label>Password</label>
-        <input
-          type="password"
-          placeholder="Password"
-          id="password"
-          value={data.password}
-          onChange={handleInputChange}
-        />
-
-        <button type="submit">Log In</button>
+        <h1>Sign In</h1>
+        <p>Sign In to start posting and viewing</p>
+        <div className="input-wrapper">
+          <div className="bold">Username</div>
+          <input
+                type="text"
+                id="username"
+                placeholder="Enter your username"
+                value={data.username}
+                onChange={handleInputChange}
+                className="signin-input"
+                required
+              />
+        </div>
+        <div className="input-wrapper">
+          <div className="bold">Password</div>
+          <input
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              value={data.password}
+              onChange={handleInputChange}
+              className="signin-input"
+              required
+            />
+        </div>
+        <div className="signin-buttons-row">
+          <button type="submit" className="signin-button">Log In</button>
+        </div>
         <div className="social">
-          <h4>
-            <Link to="/register">Register</Link>
-          </h4>
+            <p className="social-text">Don't have an account? <Link to="/register" className="signin-button">Register</Link></p>
         </div>
       </form>
-    </>
+    </div>
   );
 };
 
