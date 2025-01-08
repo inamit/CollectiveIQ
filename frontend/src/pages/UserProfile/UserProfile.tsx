@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PostsList from "../../components/PostsList/PostsList";
 import "./UserProfile.css";
 import { Box, Button, Tab, Tabs } from "@mui/material";
-import { useUserCredentials } from "../../hooks/userCredentials";
-import { useNavigate } from "react-router-dom";
-import { SIGN_UP_ROUTE } from "../Signup/Signup";
 import UserAvatar from "../../components/UserAvatar/UserAvatar";
+import { LoadingState } from "../../services/loadingState";
+import usePosts from "../../hooks/usePosts";
+import { useNavigate } from "react-router-dom";
+// import useUser from "../../hooks/useUser";
+import { SIGN_UP_ROUTE } from "../Signup/Signup";
+import { useUser } from "../../context/userContext";
+import useAuth from "../../hooks/useAuth";
 
 export const USER_PROFILE_ROUTE = "/profile";
 
@@ -34,14 +38,13 @@ function CustomTabPanel(props: TabPanelProps) {
 
 export default function UserProfile() {
   const [selectedTab, setSelectedTab] = useState(0);
-  const { user } = useUserCredentials();
-  const navigate = useNavigate();
+  const { user, isUserLoaded } = useAuth();
 
-  useEffect(() => {
-    if (!user) {
-      navigate(SIGN_UP_ROUTE);
-    }
-  }, [user, navigate]);
+  // const { posts, postsLoadingState } = usePosts();
+  const { posts, postsLoadingState } =
+    isUserLoaded && user
+      ? usePosts()
+      : { posts: null, postsLoadingState: LoadingState.LOADING };
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
@@ -86,34 +89,21 @@ export default function UserProfile() {
             </Tabs>
           </Box>
           <CustomTabPanel value={selectedTab} index={0}>
-            <PostsList maxPostsPerPage={5} posts={getPosts(100)} />
+            <PostsList
+              maxPostsPerPage={5}
+              posts={posts ?? []}
+              loadingState={postsLoadingState}
+            />
           </CustomTabPanel>
           <CustomTabPanel value={selectedTab} index={1}>
-            <PostsList posts={[]} maxPostsPerPage={5} />
+            <PostsList
+              posts={[]}
+              maxPostsPerPage={5}
+              loadingState={LoadingState.LOADING}
+            />
           </CustomTabPanel>
         </div>
       </div>
     </>
   );
 }
-
-const post = (index: number) => ({
-  title: `Example question ${index}`,
-  content: "Just an example",
-  id: index.toString(),
-  sender: {
-    username: "Amit Inbar",
-    email: "a@test.com",
-    id: "123",
-  },
-  date: new Date(),
-});
-
-const getPosts = (num: number) => {
-  const posts = [];
-  for (let index = 0; index < num; index++) {
-    posts.push(post(index));
-  }
-
-  return posts;
-};

@@ -1,16 +1,15 @@
 import "./signup.css";
-import CryptoJS from "crypto-js";
-import { gapi } from "gapi-script";
 import { toast } from "react-toastify";
-import config from "../../config.json";
-import GoogleIcon from "@mui/icons-material/Google";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useState, useEffect } from "react";
-import { SignUserUp } from "../../services/Signup/SignupService.tsx";
+import { SignUpService } from "../../services/signUpService.ts";
 import { Button } from "@mui/material";
 import AppTextField from "../../components/TextField/TextField.tsx";
 import { useNavigate } from "react-router-dom";
-import { useUserCredentials } from "../../hooks/userCredentials.tsx";
+// import useUser from "../../hooks/useUser";
+import { USER_PROFILE_ROUTE } from "../UserProfile/UserProfile.tsx";
+import { GoogleLogin } from "@react-oauth/google";
+import { useUser } from "../../context/userContext.tsx";
 
 interface SignupProps {
   className?: string;
@@ -24,47 +23,8 @@ export default function Signup({ className }: SignupProps) {
   const [email, setEmail] = useState<string>("");
   const [passwordVerification, setPasswordVerification] = useState("");
 
-  const { setUser } = useUserCredentials();
+  const { setUser } = useUser();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const loadGoogleScript = () => {
-      if (
-        !document.querySelector(
-          'script[src="https://apis.google.com/js/platform.js"]'
-        )
-      ) {
-        const script = document.createElement("script");
-        script.src = "https://apis.google.com/js/platform.js";
-        script.async = true;
-        script.defer = true;
-        script.onload = () => {
-          gapi.load("client:auth2", () => {
-            gapi.client
-              .init({
-                clientId: config.googleClientid,
-                scope: "email",
-              })
-              .catch(() => {
-                toast.error(
-                  "Failed to initialize Google connection. Please try again."
-                );
-              });
-          });
-        };
-        document.body.appendChild(script);
-      } else {
-        gapi.load("client:auth2", () => {
-          gapi.client.init({
-            clientId: config.googleClientid,
-            scope: "email",
-          });
-        });
-      }
-    };
-
-    loadGoogleScript();
-  }, []);
 
   const checkInput = () => {
     let valid = true;
@@ -88,49 +48,57 @@ export default function Signup({ className }: SignupProps) {
 
   const onSignupButtonClicked = async () => {
     if (checkInput()) {
-      try {
-        let response = await SignUserUp(username, email, password);
+      let signUpService = new SignUpService();
 
-        if (response.status === 200) {
-          toast.success("Signed up successfully");
+      signUpService
+        .signUp(username, email, password)
+        .then((response) => {
+          if (response.status === 200) {
+            toast.success("Signed up successfully");
 
-          const responseJson = await response.json();
-          setUser(responseJson);
-          navigate("/profile");
-        } else {
-          const errorMessage = await response.text();
-          toast.error(JSON.parse(errorMessage).error || "Error in sign in");
-        }
-      } catch (error) {
-        toast.error("An error occurred. Please try again.");
-      }
+            const responseJson = response.data;
+            setUser({
+              username: responseJson.username,
+              email: responseJson.email,
+              refreshToken: responseJson.refreshTokens[0],
+              accessToken: responseJson.accessToken,
+              _id: responseJson._id,
+            });
+            navigate(USER_PROFILE_ROUTE);
+          } else {
+            const errorMessage = response.data;
+            toast.error(JSON.parse(errorMessage).error || "Error in sign in");
+          }
+        })
+        .catch((error) => {
+          console.log("Error in sign up: ", error);
+          toast.error("An error occurred. Please try again.");
+        });
     }
   };
 
   const onGoogleSignInSuccess = async (response: any) => {
-    const profile = response.getBasicProfile();
-    const googleEmail = profile.getEmail();
-    const googleUsername = profile.getName();
-    const googlePassword = CryptoJS.SHA256(googleEmail).toString(
-      CryptoJS.enc.Hex
-    );
+    const credential = response.credential;
+    let signUpService = new SignUpService();
 
-    setUsername(googleUsername);
-    setEmail(googleEmail);
-    setPassword(googlePassword);
-    setPasswordVerification(googlePassword);
-
-    onSignupButtonClicked();
+    signUpService
+      .googleSignUp(credential)
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success("Signed up successfully");
+        } else {
+          const errorMessage = res.data;
+          toast.error(JSON.parse(errorMessage).error || "Error in sign in");
+        }
+      })
+      .catch((error) => {
+        console.log("Error in google sign up: ", error);
+        toast.error("An error occurred. Please try again.");
+      });
   };
 
-  const onGoogleSignInFailure = (error: any) => {
-    console.log("Google Sign-In Error: ", error);
+  const onGoogleSignInFailure = () => {
     toast.error("Google Sign-In failed. Please try again.");
-  };
-
-  const onGoogleSignupButtonClicked = () => {
-    const auth2 = gapi.auth2.getAuthInstance();
-    auth2.signIn().then(onGoogleSignInSuccess).catch(onGoogleSignInFailure);
   };
 
   return (
@@ -189,15 +157,15 @@ export default function Signup({ className }: SignupProps) {
         >
           Sign Up <ArrowForwardIcon />
         </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={onGoogleSignupButtonClicked}
-          className="signup-button"
-        >
-          <GoogleIcon />
-          <span className="google-text">Sign Up with Google</span>
-        </Button>
+        <GoogleLogin
+          onSuccess={onGoogleSignInSuccess}
+          onError={onGoogleSignInFailure}
+          containerProps={{ className: "google-login-button" }}
+          text="signup_with"
+          shape="pill"
+          useOneTap
+          context="signup"
+        />
       </div>
     </div>
   );

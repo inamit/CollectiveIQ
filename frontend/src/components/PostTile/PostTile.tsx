@@ -1,4 +1,4 @@
-import { Avatar, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import "./PostTile.css";
 import Post from "../../models/post";
 import UserAvatar from "../UserAvatar/UserAvatar";
@@ -15,7 +15,7 @@ export default function PostTile({ post }: Props) {
         <div className="postTileContent">
           <Typography variant="body1">{post.title}</Typography>
           <Typography variant="caption">
-            Asked on {post.date.toDateString()} by {post.sender.username}
+            Asked on {new Date(post.date).toDateString()} by {post.sender.username}
           </Typography>
           <Typography variant="caption">{post.content}</Typography>
         </div>

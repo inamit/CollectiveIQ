@@ -1,11 +1,12 @@
 import { useEffect } from "react";
-import { useUserCredentials } from "../hooks/userCredentials";
 import { useNavigate } from "react-router-dom";
 import { USER_PROFILE_ROUTE } from "./UserProfile/UserProfile";
 import { SIGN_UP_ROUTE } from "./Signup/Signup";
+// import useUser from "../hooks/useUser";
+import { useUser } from "../context/userContext";
 
 export default function AuthRedirect() {
-  const { user } = useUserCredentials();
+  const { user } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,7 +15,7 @@ export default function AuthRedirect() {
     } else {
       navigate(SIGN_UP_ROUTE);
     }
-  }, [user, navigate]);
+  }, [user]);
 
   return <></>;
 }

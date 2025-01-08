@@ -4,7 +4,7 @@ export default interface Post {
   title: string;
   content: string;
   imageUrl?: string;
-  id: string;
+  _id: string;
   sender: User;
-  date: Date;
+  date: string;
 }

@@ -19,7 +19,8 @@ function stringToColor(string: string) {
   return color;
 }
 
-function stringAvatar(name: string) {
+function stringAvatar(name?: string) {
+  if (!name) return null;
   return {
     sx: {
       bgcolor: stringToColor(name),
@@ -34,7 +35,7 @@ export default function UserAvatar({
   user,
   className,
 }: {
-  user: User;
+  user?: User;
   className?: string;
 }) {
   return (

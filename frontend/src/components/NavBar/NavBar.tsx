@@ -7,12 +7,13 @@ import AppTextField from "../TextField/TextField";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { SIGN_UP_ROUTE } from "../../pages/Signup/Signup";
 import User from "../../models/user";
-import { useUserCredentials } from "../../hooks/userCredentials";
 import UserAvatar from "../UserAvatar/UserAvatar";
+import { useUser } from "../../context/userContext";
+// import useUser from "../../hooks/useUser";
 
 export default function NavBar() {
   const navigate = useNavigate();
-  const { user } = useUserCredentials();
+  const { user } = useUser();
 
   return (
     <div className="navbarContainer">
