@@ -124,12 +124,12 @@ const login = async (req: Request, res: Response): Promise<any> => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    const isMatchedpassword = await bcrypt.compare(
+    const isMatchedPassword = await bcrypt.compare(
       password,
       existingUser.password
     );
 
-    if (!isMatchedpassword) {
+    if (!isMatchedPassword) {
       return res
         .status(400)
         .json({ error: "wrong credentials. Please try again." });
