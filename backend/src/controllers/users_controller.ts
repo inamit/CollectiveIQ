@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { handleMongoQueryError } from "../db";
+import { handleMongoQueryError } from "../db/db";
 import User, {
   hashPassword,
   IUser,
@@ -244,5 +244,5 @@ export default {
   logout,
   refresh,
   registerUserWithGoogle,
-    saveAvatarImage
+  saveAvatarImage
 };
