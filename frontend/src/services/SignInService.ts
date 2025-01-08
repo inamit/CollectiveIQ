@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios"
 import { ILoginModel, ITokenData } from "../models/SignInModel";
-import config from '../../config.json';
+import config from '../config.json';
 
 const bufferTime = 5000;
 const millisecondsPerSecond = 1000;

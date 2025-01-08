@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ILoginModel } from "../../models/SignInModel";
 import { login, setToken } from "../../services/SignInService";
 import { toast } from "react-toastify";
 import { useLoginCredentials } from "../../hooks/loginCredentials";
@@ -51,7 +49,7 @@ const Login = () => {
                 placeholder="Enter your username"
                 value={data.username}
                 onChange={handleInputChange}
-                className="signin-input"
+                className="signup-input"
                 required
               />
         </div>
@@ -63,7 +61,7 @@ const Login = () => {
               placeholder="Enter your password"
               value={data.password}
               onChange={handleInputChange}
-              className="signin-input"
+              className="signup-input"
               required
             />
         </div>
@@ -71,7 +69,7 @@ const Login = () => {
           <button type="submit" className="signin-button">Log In</button>
         </div>
         <div className="social">
-            <p className="social-text">Don't have an account? <Link to="/register" className="signin-button">Register</Link></p>
+            <p className="social-text">Don't have an account? <Link to="/Signup" className="signin-button">Signup</Link></p>
         </div>
       </form>
     </div>

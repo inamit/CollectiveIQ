@@ -1,0 +1,83 @@
+body {
+  background-color: rgb(31, 31, 31);
+  color: white;
+}
+
+.signup-inputs-flexbox {
+  width: 70%;
+  height: 80vh;
+  border-radius: 10px;
+  padding: 40px;
+  margin: auto;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  animation: expand 0.5s;
+  position: relative;
+}
+
+.signup-inputs-flexbox h1 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.bold {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+@keyframes expand {
+  0% { top: -20%; }
+  100% { top: 0; }
+}
+
+.signup-input {
+  margin: 5px 0 30px 0;
+  padding: 8px;
+  width: 100%;
+  max-width: 500px;
+  border: 1px solid rgb(92, 92, 92);;
+  border-radius: 5px;
+  align-self: center;
+  color: white;
+  background-color: rgb(92, 92, 92);
+}
+
+.signup-buttons-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.signup-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signup-button:hover {
+  background-color: #0056b3;
+}
+
+.signup-icon {
+  margin-left: 10px;
+}
+
+.signup-input::placeholder {
+  color: white;
+}
+
+.google-icon { 
+  display: "flex";
+  align-items: center;
+}
+
+.google-text {
+  margin-left: 8px;
+}
