@@ -1,4 +1,4 @@
-import { Router } from "express";
+import {Router} from "express";
 const router: Router = Router();
 import postsController from "../controllers/posts_controller";
 import authMiddleware from "../middleware/auth/authMiddleware";
@@ -232,5 +232,7 @@ router.put("/:post_id", authMiddleware, userPostsUpload.single("file"), postsCon
  */
 router.post('/image', authMiddleware, userPostsUpload.single("file"), postsController.saveImage);
 
+router.post('/:postId/like', authMiddleware, postsController.likePost)
 
+router.post('/:postId/dislike', authMiddleware, postsController.dislikePost);
 export default router;
