@@ -115,6 +115,46 @@ router.post("/", usersController.registerNewUser);
 /**
  * @swagger
  * paths:
+ *  /users/google:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: Register new user using Google JWT
+ *     description: Register new user using Google JWT
+ *     operationId: register google
+ *     requestBody:
+ *       description: Register new user using Google JWT
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserInput'
+ *       required: true
+ *     responses:
+ *       '200':
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       '400':
+ *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '500':
+ *         description: An unexpected error occurred
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UnexpectedError'
+ */
+
+router.post("/google", usersController.registerUserWithJwt);
+
+/**
+ * @swagger
+ * paths:
  *  /users/{userId}:
  *   get:
  *     tags:

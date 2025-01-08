@@ -7,6 +7,7 @@ import User, {
 } from "../models/users_model";
 import token from "../utilities/token";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const getAllUsers = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -186,6 +187,28 @@ const addRefreshTokenToUser = async (
   });
 };
 
+const registerUserWithJwt = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { jwtToken }: { jwtToken: string } = req.body;
+    const payload : any = jwt.decode(jwtToken);
+
+    if (!payload) {
+      return res.status(400).json({ error: "Invalid token" });
+    }
+
+    req.body = {
+      username: payload.email,
+      email: payload.email,
+      password: await hashPassword(payload.password),
+    };
+
+    return registerNewUser(req, res);
+  } catch (err: any) {
+    console.warn("Error registering user with JWT:", err);
+    return res.status(500).json({ error: "An error occurred while registering user with JWT.", err });
+  }
+};
+
 export default {
   getAllUsers,
   getUserById,
@@ -195,4 +218,5 @@ export default {
   login,
   logout,
   refresh,
+  registerUserWithJwt
 };
