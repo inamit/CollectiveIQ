@@ -1,9 +1,12 @@
 import axios, { AxiosResponse } from "axios"
 import { ILoginModel, ITokenData } from "../models/SignInModel";
+import config from '../../config.json';
 
-const api_url = "http://localhost:3000"
+const bufferTime = 5000;
+const millisecondsPerSecond = 1000;
+
 const login = (data: ILoginModel): Promise<AxiosResponse> => {
-    return axios.post(api_url + "/users/login", { username: data.username, password: data.password }, {
+    return axios.post(config.backendURL + config.signinUrl, { username: data.username, password: data.password }, {
         headers: {
             'Content-Type': 'application/json',
         },
@@ -38,10 +41,8 @@ const isValidToken = () => {
     if (tokenData == null) {
         return false;
     }
-    const expirationTime = tokenData.exp * 1000;
+    const expirationTime = tokenData.exp * millisecondsPerSecond;
     const currentTime = Date.now();
-
-    const bufferTime = 5000;
 
     return expirationTime > (currentTime + bufferTime);
 }
