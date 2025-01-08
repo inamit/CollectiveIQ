@@ -204,8 +204,8 @@ const registerUserWithGoogle = async (req: Request, res: Response): Promise<any>
 
     return registerNewUser(req, res);
   } catch (err: any) {
-    console.warn("Error registering user with JWT:", err);
-    return res.status(500).json({ error: "An error occurred while registering user with JWT.", err });
+    console.warn("Error registering user with Google:", err);
+    return res.status(500).json({ error: "An error occurred while registering user with Google.", err });
   }
 };
 
