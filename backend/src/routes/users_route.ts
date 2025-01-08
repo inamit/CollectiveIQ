@@ -360,6 +360,35 @@ router.post("/logout", usersController.logout);
  */
 router.post("/refresh", usersController.refresh);
 
-
+/**
+ * @swagger
+ * /posts/upload:
+ *   post:
+ *     summary: Upload a pic for user avatar
+ *     tags: Post
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *      content:
+ *        multipart/form-data:
+ *          schema:
+ *            allOf:
+ *              - $ref: '#/components/schemas/UserInput'
+ *              - required:
+ *                  - file
+ *              - properties:
+ *                  file:
+ *                    type: string
+ *                    format: binary
+ *     responses:
+ *       200:
+ *         description: Sight uploaded successfully
+ *       500:
+ *         description: failed to upload
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ */
 router.post('/avatarImage', userAvatarUpload.single("file"), usersController.saveAvatarImage);
 export default router;

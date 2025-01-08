@@ -200,5 +200,35 @@ router.get("/:post_id", authMiddleware, postsController.getPostById);
  */
 router.put("/:post_id", authMiddleware, userPostsUpload.single("file"), postsController.updatePostById);
 
+/**
+ * @swagger
+ * /posts/upload:
+ *   post:
+ *     summary: Upload a pic for post
+ *     tags: Post
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *      content:
+ *        multipart/form-data:
+ *          schema:
+ *            allOf:
+ *              - $ref: '#/components/schemas/PostInput'
+ *              - required:
+ *                  - file
+ *              - properties:
+ *                  file:
+ *                    type: string
+ *                    format: binary
+ *     responses:
+ *       200:
+ *         description: Sight uploaded successfully
+ *       500:
+ *         description: failed to upload
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ */
 router.post('/image', userPostsUpload.single("file"), postsController.saveImage);
 export default router;
