@@ -253,7 +253,7 @@ router.post('/image', authMiddleware, userPostsUpload.single("file"), postsContr
  *                    type: string
  *     responses:
  *       200:
- *         description: Post uploaded successfully
+ *         description: like to a post uploaded successfully
  *       500:
  *         description: failed to upload
  *         content:
@@ -284,7 +284,7 @@ router.post('/:postId/like', authMiddleware, postsController.likePost)
  *                    type: string
  *     responses:
  *       200:
- *         description: Post uploaded successfully
+ *         description: dislike to a post uploaded successfully
  *       500:
  *         description: failed to upload
  *         content:
