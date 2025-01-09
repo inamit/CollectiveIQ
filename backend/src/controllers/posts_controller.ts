@@ -92,20 +92,12 @@ const saveImage = (req: Request, res: Response): void => {
   saveFile(req, res);
 };
 
-function getReaction(reactionType: "likes" | "dislikes", post: IPost, userId: string) {
-    const currentReactionArray = reactionType === 'likes' ? post.likes : post.dislikes;
-    const oppositeReactionArray = reactionType === 'likes' ? post.dislikes : post.likes;
+const likePost = async (req: Request, res: Response): Promise<any> => {
+    return toggleReaction(req, res, 'likes');
+}
 
-    if (currentReactionArray) {
-        const alreadyReacted:boolean = currentReactionArray.some(id => String(id) === String(userId));
-        if (alreadyReacted) {
-            post[reactionType] = currentReactionArray.filter(id => !id.equals(userId));
-        } else {
-            const userObjectId = new mongoose.Types.ObjectId(userId);
-            currentReactionArray.push(userObjectId);
-            post[reactionType === 'likes' ? 'dislikes' : 'likes'] = oppositeReactionArray?.filter(id => !id.equals(userId));
-        }
-    }
+const dislikePost = async (req: Request, res: Response): Promise<any> => {
+    return toggleReaction(req, res, 'dislikes');
 }
 
 export const toggleReaction = async (req: Request, res: Response, reactionType: 'likes' | 'dislikes') => {
@@ -132,14 +124,21 @@ export const toggleReaction = async (req: Request, res: Response, reactionType: 
     }
 };
 
-const likePost = async (req: Request, res: Response): Promise<any> => {
-    return toggleReaction(req, res, 'likes');
-}
+function getReaction(reactionType: "likes" | "dislikes", post: IPost, userId: string) {
+    const currentReactionArray = reactionType === 'likes' ? post.likes : post.dislikes;
+    const oppositeReactionArray = reactionType === 'likes' ? post.dislikes : post.likes;
 
-const dislikePost = async (req: Request, res: Response): Promise<any> => {
-    return toggleReaction(req, res, 'dislikes');
+    if (currentReactionArray) {
+        const alreadyReacted:boolean = currentReactionArray.some(id => String(id) === String(userId));
+        if (alreadyReacted) {
+            post[reactionType] = currentReactionArray.filter(id => !id.equals(userId));
+        } else {
+            const userObjectId = new mongoose.Types.ObjectId(userId);
+            currentReactionArray.push(userObjectId);
+            post[reactionType === 'likes' ? 'dislikes' : 'likes'] = oppositeReactionArray?.filter(id => !id.equals(userId));
+        }
+    }
 }
-
 export default {
     getPosts,
     saveNewPost,
