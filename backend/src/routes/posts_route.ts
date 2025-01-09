@@ -222,7 +222,7 @@ router.put("/:post_id", authMiddleware, userPostsUpload.single("file"), postsCon
  *                    format: binary
  *     responses:
  *       200:
- *         description: Sight uploaded successfully
+ *         description: Post uploaded successfully
  *       500:
  *         description: failed to upload
  *         content:
