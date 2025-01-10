@@ -34,16 +34,7 @@ export class HttpClientFactory {
 
           if (decodedAccessToken.exp! < Date.now() / 1000) {
             if (decodedRefreshToken.exp! > Date.now() / 1000) {
-              const refreshResponse = await this.unauthorizedHttpClient().post(
-                "/users/refresh",
-                { refreshToken: this.user.refreshToken }
-              );
-              const newTokens = refreshResponse.data;
-
-              this.user.accessToken = newTokens.accessToken;
-              this.user.refreshToken = newTokens.refreshToken;
-
-              this.setUser!(this.user);
+              await this.refreshAccessToken(this.user);
             } else {
               this.setUser!(null);
             }
@@ -51,5 +42,18 @@ export class HttpClientFactory {
         }
       },
     });
+  }
+
+  private async refreshAccessToken(user: User) {
+    const refreshResponse = await this.unauthorizedHttpClient().post(
+      "/users/refresh",
+      { refreshToken: user.refreshToken }
+    );
+    const newTokens = refreshResponse.data;
+
+    user.accessToken = newTokens.accessToken;
+    user.refreshToken = newTokens.refreshToken;
+
+    this.setUser!(user);
   }
 }
