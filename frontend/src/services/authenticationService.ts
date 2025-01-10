@@ -1,7 +1,7 @@
 import config from "../config.json";
 import { HttpClientFactory } from "./httpClient";
 
-export class SignUpService {
+export class AuthenticationService {
   httpClientFactory: HttpClientFactory;
 
   constructor() {
@@ -18,11 +18,11 @@ export class SignUpService {
       });
   }
 
-  googleSignUp(credentials: string) {
+  google(credentials: string) {
     return this.httpClientFactory
       .unauthorizedHttpClient()
-      .post(config.signupGoogleUrl, {
-        credentials,
+      .post(config.googleAccountUrl, {
+        jwtToken: credentials,
       });
   }
 }

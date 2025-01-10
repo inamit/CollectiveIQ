@@ -3,7 +3,7 @@ import express from "express";
 const router = express.Router();
 import usersController from "../controllers/users_controller";
 import authMiddleware from "../middleware/auth/authMiddleware";
-import {userAvatarUpload} from "../middleware/file-storage/file-storage-middleware";
+import { userAvatarUpload } from "../middleware/file-storage/file-storage-middleware";
 
 /**
  * @swagger
@@ -98,7 +98,17 @@ router.get("/", authMiddleware, usersController.getAllUsers);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *              type: object
+ *              properties:
+ *                  accessToken:
+ *                      type: string
+ *                      example: "Bearer aaaaaaa"
+ *                  refreshToken:
+ *                      type: string
+ *                      example: "Bearer aaaaaaa"
+ *                  message:
+ *                      type: string
+ *                      example: "logged in successfully."
  *       '400':
  *         description: Invalid input
  *         content:
@@ -112,7 +122,11 @@ router.get("/", authMiddleware, usersController.getAllUsers);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.post("/", userAvatarUpload.single("file"), usersController.registerNewUser);
+router.post(
+  "/",
+  userAvatarUpload.single("file"),
+  usersController.registerNewUser
+);
 
 /**
  * @swagger
@@ -129,7 +143,10 @@ router.post("/", userAvatarUpload.single("file"), usersController.registerNewUse
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UserInput'
+ *              type: object
+ *              properties:
+ *                 jwtToken:
+ *                  type: string
  *       required: true
  *     responses:
  *       '200':
@@ -137,7 +154,17 @@ router.post("/", userAvatarUpload.single("file"), usersController.registerNewUse
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *              type: object
+ *              properties:
+ *                  accessToken:
+ *                      type: string
+ *                      example: "Bearer aaaaaaa"
+ *                  refreshToken:
+ *                      type: string
+ *                      example: "Bearer aaaaaaa"
+ *                  message:
+ *                      type: string
+ *                      example: "logged in successfully."
  *       '400':
  *         description: Invalid input
  *         content:
@@ -152,7 +179,7 @@ router.post("/", userAvatarUpload.single("file"), usersController.registerNewUse
  *               $ref: '#/components/schemas/UnexpectedError'
  */
 
-router.post("/google", usersController.registerUserWithGoogle);
+router.post("/google", usersController.googleAuthentication);
 
 /**
  * @swagger
@@ -191,7 +218,7 @@ router.post("/google", usersController.registerUserWithGoogle);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.get("/:user_id", authMiddleware, usersController.getUserById);
+router.get("/:user_id", usersController.getUserById);
 
 /**
  * @swagger
@@ -238,7 +265,12 @@ router.get("/:user_id", authMiddleware, usersController.getUserById);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.patch("/:user_id", authMiddleware, userAvatarUpload.single("file"), usersController.updateUserById);
+router.patch(
+  "/:user_id",
+  authMiddleware,
+  userAvatarUpload.single("file"),
+  usersController.updateUserById
+);
 
 /**
  * @swagger
@@ -362,12 +394,13 @@ router.post("/logout", usersController.logout);
 
 /**
  * @swagger
- * /auth/refresh:
+ * paths:
+ *  /auth/refresh:
  *   post:
  *     summary: Refresh tokens
  *     description: Refresh access and refresh tokens using the provided refresh token
  *     tags:
- *       - Auth
+ *       - User
  *     requestBody:
  *       required: true
  *       content:
@@ -401,10 +434,12 @@ router.post("/refresh", usersController.refresh);
 
 /**
  * @swagger
- * /posts/upload:
+ * paths:
+ *  /users/avatarImage:
  *   post:
  *     summary: Upload a pic for user avatar
- *     tags: Post
+ *     tags:
+ *      - User
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -429,5 +464,11 @@ router.post("/refresh", usersController.refresh);
  *            schema:
  *              $ref: '#/components/schemas/Error'
  */
-router.post('/avatarImage',authMiddleware, userAvatarUpload.single("file"), usersController.saveAvatarImage);
+router.post(
+  "/avatarImage",
+  authMiddleware,
+  userAvatarUpload.single("file"),
+  usersController.saveAvatarImage
+);
+
 export default router;

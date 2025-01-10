@@ -1,10 +1,9 @@
 import { HttpClientFactory } from "./httpClient";
 import config from "../config.json";
-import Post from "../models/post";
 import User from "../models/user";
 import { AxiosInstance } from "axios";
 
-export class PostsService {
+export class UsersService {
   httpClient: AxiosInstance;
 
   constructor(user?: User, setUser?: (user: User | null) => void) {
@@ -14,10 +13,11 @@ export class PostsService {
       : httpClientFactory.unauthorizedHttpClient();
   }
 
-  getPostsByUser(userId: string) {
+  getUserById(userId: string) {
     const controller = new AbortController();
-    const request = this.httpClient.get<Post[]>(
-      `${config.backendURL}/posts?userId=${userId}`,
+
+    const request = this.httpClient.get<User>(
+      `${config.backendURL}/users/${userId}`,
       {
         signal: controller.signal,
       }

@@ -4,9 +4,10 @@ import { LoadingState } from "../services/loadingState";
 import { PostsService } from "../services/postsService";
 import { AxiosResponse } from "axios";
 import { useUser } from "../context/userContext";
+import User from "../models/user";
 
-const usePosts = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+const usePosts = (selectedUser?: User) => {
+  const [posts, setPosts] = useState<Post[] | null>(null);
   const [postsLoadingState, setPostsLoadingState] = useState<LoadingState>(
     LoadingState.LOADING
   );
@@ -14,14 +15,16 @@ const usePosts = () => {
   const { user, setUser } = useUser();
 
   useEffect(() => {
-    if (!user) {
+    if (!selectedUser) {
       return;
     }
+
     setPostsLoadingState(LoadingState.LOADING);
 
-    const { request, cancel } = new PostsService(user!, setUser).getPostsByUser(
-      user!._id
-    );
+    const { request, cancel } = new PostsService(
+      user ?? undefined,
+      setUser
+    ).getPostsByUser(selectedUser!._id);
 
     request
       .then((response: AxiosResponse<Post[]>) => {
@@ -34,7 +37,7 @@ const usePosts = () => {
       });
 
     return () => cancel();
-  }, []);
+  }, [selectedUser]);
 
   return {
     posts,
