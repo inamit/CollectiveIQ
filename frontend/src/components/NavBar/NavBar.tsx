@@ -5,7 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import BellIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import AppTextField from "../TextField/TextField";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { SIGN_UP_ROUTE } from "../../pages/Signup/Signup";
+import { SIGN_UP_ROUTE } from "../../pages/SignUp/Signup";
 import User from "../../models/user";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import { useUser } from "../../context/userContext";

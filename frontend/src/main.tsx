@@ -8,7 +8,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import UserProfile, {
   USER_PROFILE_ROUTE,
 } from "./pages/UserProfile/UserProfile.tsx";
-import Signup, { SIGN_UP_ROUTE } from "./pages/Signup/Signup.tsx";
+import SignUp, { SIGN_UP_ROUTE } from "./pages/SignUp/Signup.tsx";
 import AuthRedirect from "./pages/AuthRedirect.tsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import config from "./config.json";
@@ -17,11 +17,7 @@ import { UserProvider, useUser } from "./context/userContext.tsx";
 const AppWrapper = () => {
   const { isUserLoaded } = useUser();
 
-  useEffect(() => {
-  }, [isUserLoaded]);
-
   if (!isUserLoaded) {
-
     return <div>Loading</div>;
   }
 
@@ -30,7 +26,7 @@ const AppWrapper = () => {
       <Routes>
         <Route path="/" element={<App />}>
           <Route path={USER_PROFILE_ROUTE} element={<UserProfile />} />
-          <Route path={SIGN_UP_ROUTE} element={<Signup />} />
+          <Route path={SIGN_UP_ROUTE} element={<SignUp />} />
           <Route path="*" element={<AuthRedirect />} />
         </Route>
       </Routes>

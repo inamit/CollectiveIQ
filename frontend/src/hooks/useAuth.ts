@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SIGN_UP_ROUTE } from "../pages/Signup/Signup";
+import { SIGN_UP_ROUTE } from "../pages/SignUp/Signup";
 import { useUser } from "../context/userContext";
 
 const useAuth = () => {

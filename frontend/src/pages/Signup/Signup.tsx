@@ -10,13 +10,13 @@ import { USER_PROFILE_ROUTE } from "../UserProfile/UserProfile.tsx";
 import { GoogleLogin } from "@react-oauth/google";
 import { useUser } from "../../context/userContext.tsx";
 
-interface SignupProps {
+interface SignUpProps {
   className?: string;
 }
 
 export const SIGN_UP_ROUTE = "/signup";
 
-export default function Signup({ className }: SignupProps) {
+export default function SignUp({ className }: SignUpProps) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");

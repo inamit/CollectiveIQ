@@ -24,9 +24,9 @@ export default function PostsList({
   const paginatedPosts = paginate(posts, maxPostsPerPage);
 
   if (loadingState === LoadingState.LOADING) {
-    const postsSekeletons: React.JSX.Element[] = [];
+    const postsSkeletons: React.JSX.Element[] = [];
     _.times(maxPostsPerPage, (i) =>
-      postsSekeletons.push(
+      postsSkeletons.push(
         <Skeleton
           key={i}
           variant="rectangular"
