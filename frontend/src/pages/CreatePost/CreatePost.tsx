@@ -1,8 +1,6 @@
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {USER_PROFILE_ROUTE} from "../UserProfile/UserProfile.tsx";
-
-export const ASK_QUESTION_ROUTE = "/create-post";
+import {routes} from "../../router/routes.ts";
 
 const AskQuestion = () => {
     const [title, setTitle] = useState("");
@@ -10,13 +8,6 @@ const AskQuestion = () => {
     const [image, setImage] = useState(null);
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Title:", title);
-        console.log("Question:", question);
-        console.log("Pic:", image);
-
-    };
     const handleImageUpload = (e) => {
         setImage(e.target.files[0]);
     };
@@ -25,16 +16,27 @@ const AskQuestion = () => {
         setTitle("");
         setQuestion("");
         setImage(null);
-        navigate(USER_PROFILE_ROUTE)
+        navigate(routes.USER_PROFILE);
     };
 
+    const handleAddPost = (e) => {
+        e.preventDefault();
+        console.log("Title:", title);
+        console.log("Question:", question);
+        console.log("Pic:", image);
+
+
+
+        navigate(routes.USER_PROFILE);
+
+    }
     return (
         <div style={{maxWidth: "600px", margin: "0 auto", color: "#fff"}}>
             <h2>Ask a question</h2>
             <p style={{marginBottom: "20px", color: "#bbb"}}>
                 Get answers from AI models, or share your knowledge with others
             </p>
-            <form onSubmit={handleSubmit}>
+            <form>
                 <div style={{marginBottom: "20px"}}>
                     <label
                         htmlFor="title"
@@ -119,8 +121,8 @@ const AskQuestion = () => {
                 >
                     <button
                         type="submit"
+                        onClick={handleAddPost}
                         style={{
-
                             padding: "10px 20px",
                             borderRadius: "12px",
                             backgroundColor: "#5B6DC9",
