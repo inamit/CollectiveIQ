@@ -1,36 +1,41 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {USER_PROFILE_ROUTE} from "../UserProfile/UserProfile.tsx";
+
 export const ASK_QUESTION_ROUTE = "/create-post";
 
 const AskQuestion = () => {
-  const [title, setTitle] = useState("");
-  const [question, setQuestion] = useState("");
+    const [title, setTitle] = useState("");
+    const [question, setQuestion] = useState("");
     const [image, setImage] = useState(null);
+    const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Title:", title);
-    console.log("Question:", question);
-    console.log("Pic:", image);
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log("Title:", title);
+        console.log("Question:", question);
+        console.log("Pic:", image);
 
-  };
+    };
     const handleImageUpload = (e) => {
         setImage(e.target.files[0]);
     };
 
-  const handleCancel = () => {
-    setTitle("");
-    setQuestion("");
-    setImage(null);
-  };
+    const handleCancel = () => {
+        setTitle("");
+        setQuestion("");
+        setImage(null);
+        navigate(USER_PROFILE_ROUTE)
+    };
 
     return (
-        <div style={{ maxWidth: "600px", margin: "0 auto", color: "#fff" }}>
+        <div style={{maxWidth: "600px", margin: "0 auto", color: "#fff"}}>
             <h2>Ask a question</h2>
-            <p style={{ marginBottom: "20px", color: "#bbb" }}>
+            <p style={{marginBottom: "20px", color: "#bbb"}}>
                 Get answers from AI models, or share your knowledge with others
             </p>
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: "20px" }}>
+                <div style={{marginBottom: "20px"}}>
                     <label
                         htmlFor="title"
                         style={{
@@ -60,7 +65,7 @@ const AskQuestion = () => {
                     />
                 </div>
 
-                <div style={{ marginBottom: "20px" }}>
+                <div style={{marginBottom: "20px"}}>
                     <label
                         htmlFor="question"
                         style={{
@@ -103,7 +108,7 @@ const AskQuestion = () => {
                     Upload Image (optional):
                 </label>
                 <div>
-                    <input type="file" onChange={handleImageUpload} />
+                    <input type="file" onChange={handleImageUpload}/>
                 </div>
                 <div
                     style={{

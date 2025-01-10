@@ -38,14 +38,14 @@ export default function NavBar() {
               },
             }}
           />
-          {user ? getUserActions(user) : getGuestActions(navigate)}
+          {user ? getUserActions(user,navigate) : getGuestActions(navigate)}
         </span>
       </nav>
     </div>
   );
 }
 
-function getUserActions(user: User) {
+function getUserActions(user: User, navigate: NavigateFunction) {
   return (
     <span className="userActions">
       <Button
