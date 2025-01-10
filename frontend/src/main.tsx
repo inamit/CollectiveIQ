@@ -13,6 +13,7 @@ import AuthRedirect from "./pages/AuthRedirect.tsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import config from "./config.json";
 import { UserProvider, useUser } from "./context/userContext.tsx";
+import CreatePost, {ASK_QUESTION_ROUTE} from "./pages/CreatePost/CreatePost.tsx";
 
 const AppWrapper = () => {
   const { isUserLoaded } = useUser();
@@ -31,6 +32,7 @@ const AppWrapper = () => {
         <Route path="/" element={<App />}>
           <Route path={USER_PROFILE_ROUTE} element={<UserProfile />} />
           <Route path={SIGN_UP_ROUTE} element={<Signup />} />
+          <Route path={ASK_QUESTION_ROUTE} element={<CreatePost />} />
           <Route path="*" element={<AuthRedirect />} />
         </Route>
       </Routes>
