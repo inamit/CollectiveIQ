@@ -222,7 +222,7 @@ router.put("/:post_id", authMiddleware, userPostsUpload.single("file"), postsCon
  *                    format: binary
  *     responses:
  *       200:
- *         description: Sight uploaded successfully
+ *         description: Post uploaded successfully
  *       500:
  *         description: failed to upload
  *         content:
@@ -232,7 +232,65 @@ router.put("/:post_id", authMiddleware, userPostsUpload.single("file"), postsCon
  */
 router.post('/image', authMiddleware, userPostsUpload.single("file"), postsController.saveImage);
 
+/**
+ * @swagger
+ * /posts/{postId}/like:
+ *   post:
+ *     summary: Like or unlike a post
+ *     tags: Post
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *      content:
+ *        multipart/form-data:
+ *          schema:
+ *            allOf:
+ *              - $ref: '#/components/schemas/PostInput'
+ *              - required:
+ *                  - postId
+ *              - properties:
+ *                  postId:
+ *                    type: string
+ *     responses:
+ *       200:
+ *         description: like to a post uploaded successfully
+ *       500:
+ *         description: failed to upload
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ */
 router.post('/:postId/like', authMiddleware, postsController.likePost)
 
+/**
+ * @swagger
+ * /posts/{postId}/dislike:
+ *   post:
+ *     summary: Dislike or un-dislike a post
+ *     tags: Post
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *      content:
+ *        multipart/form-data:
+ *          schema:
+ *            allOf:
+ *              - $ref: '#/components/schemas/PostInput'
+ *              - required:
+ *                  - postId
+ *              - properties:
+ *                  postId:
+ *                    type: string
+ *     responses:
+ *       200:
+ *         description: dislike to a post uploaded successfully
+ *       500:
+ *         description: failed to upload
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ */
 router.post('/:postId/dislike', authMiddleware, postsController.dislikePost);
 export default router;

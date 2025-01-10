@@ -6,6 +6,8 @@ import postsModel, { IPost } from "../models/posts_model";
 import usersModel, { IUser } from "../models/users_model";
 import authMiddleware from "../middleware/auth/authMiddleware";
 import path from "path";
+import User from "../models/users_model";
+import Post from "../models/posts_model";
 
 let app: Express;
 
@@ -197,8 +199,6 @@ describe("PUT /posts/:post_id", () => {
   });
 });
 
-
-
 describe("File Tests", () => {
   test("upload file", async () => {
     const filePath = path.resolve(__dirname,`amit.jpg`);
@@ -216,4 +216,106 @@ describe("File Tests", () => {
       expect(1).toEqual(2);
     }
   })
-})
+});
+
+
+describe("Post Reactions API - Like and Dislike", () => {
+    let savedPost: IPost;
+  beforeEach(async () => {
+
+    savedPost = await postsModel.create(testPosts[0]);
+  });
+
+  it("should allow a user to like a post", async () => {
+    const response = await request(app)
+        .post(`/posts/${savedPost._id}/like`)
+        .send();
+
+    expect(response.status).toBe(200);
+    expect(response.body.likesAmount).toBe(1);
+    expect(response.body.dislikesAmount).toBe(0);
+
+    const updatedPost :IPost  = await Post.findById(savedPost._id) as IPost;
+    expect(updatedPost?.likes).toContainEqual(testUser._id);
+  });
+
+  it("should allow a user to dislike a post", async () => {
+    const response = await request(app)
+        .post(`/posts/${savedPost._id}/dislike`)
+        .send();
+
+    expect(response.status).toBe(200);
+    expect(response.body.likesAmount).toBe(0);
+    expect(response.body.dislikesAmount).toBe(1);
+
+    const updatedPost: IPost = await Post.findById(savedPost._id) as IPost;
+    expect(updatedPost?.dislikes).toContainEqual(testUser._id);
+  });
+
+  it("should remove like if user likes a post again", async () => {
+    // Like the post initially
+    await request(app)
+        .post(`/posts/${savedPost._id}/like`)
+        .send();
+
+    // Like the post again
+    const response = await request(app)
+        .post(`/posts/${savedPost._id}/like`)
+        .send();
+
+    expect(response.status).toBe(200);
+    expect(response.body.likesAmount).toBe(0);
+
+    const updatedPost: IPost = await Post.findById(savedPost._id) as IPost;
+    expect(updatedPost?.likes).not.toContainEqual(testUser._id);
+  });
+
+  it("should remove dislike if user dislikes a post again", async () => {
+    // Dislike the post initially
+    await request(app)
+        .post(`/posts/${savedPost._id}/dislike`)
+        .send();
+
+    // Dislike the post again
+    const response = await request(app)
+        .post(`/posts/${savedPost._id}/dislike`)
+        .send();
+
+    expect(response.status).toBe(200);
+    expect(response.body.dislikesAmount).toBe(0);
+
+    const updatedPost: IPost = await Post.findById(savedPost._id) as IPost;
+    expect(updatedPost?.dislikes).not.toContainEqual(testUser._id);
+  });
+
+  it("should switch from like to dislike", async () => {
+    // Like the post initially
+    await request(app)
+        .post(`/posts/${savedPost._id}/like`)
+        .send();
+
+    // Dislike the post
+    const response = await request(app)
+        .post(`/posts/${savedPost._id}/dislike`)
+        .send();
+
+    expect(response.status).toBe(200);
+    expect(response.body.likesAmount).toBe(0);
+    expect(response.body.dislikesAmount).toBe(1);
+
+    const updatedPost: IPost = await Post.findById(savedPost._id) as IPost;
+    expect(updatedPost?.likes).not.toContainEqual(testUser._id);
+    expect(updatedPost?.dislikes).toContainEqual(testUser._id);
+  });
+
+  it("should return 404 if post is not found", async () => {
+    const notFound = new mongoose.Types.ObjectId();
+    const response = await request(app)
+        .post(`/posts/${notFound}/like`)
+        .send();
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe("Post not found");
+  });
+});
+
