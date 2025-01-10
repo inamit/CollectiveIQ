@@ -2,7 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { login, setToken } from "../../services/SignInService";
 import { toast } from "react-toastify";
 import { useLoginCredentials } from "../../hooks/loginCredentials";
-
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import config from '../../config.json';
 
 const Login = () => {
   const {data, setData} = useLoginCredentials();
@@ -36,6 +37,15 @@ const Login = () => {
       }
   }
 
+  const handleGoogleLoginSuccess = (response: any) => {
+    setToken(response.credential, "googleToken");
+    navigate("/");
+  };
+
+  const handleGoogleLoginError = () => {
+    console.log("error during google login");
+  };
+
   return (
     <div className={`signin-inputs-flexbox`}>
       <form onSubmit={handleFormSubmit}>
@@ -67,6 +77,15 @@ const Login = () => {
         </div>
         <div className="signin-buttons-row">
           <button type="submit" className="signin-button">Log In</button>
+          <GoogleOAuthProvider clientId={config.googleClientid}>
+            <div className="signup-buttons-row">
+              <GoogleLogin
+                onSuccess={handleGoogleLoginSuccess}
+                onError={handleGoogleLoginError}
+                useOneTap
+              />
+            </div>
+          </GoogleOAuthProvider>
         </div>
         <div className="social">
             <p className="social-text">Don't have an account? <Link to="/Signup" className="signin-button">Signup</Link></p>
