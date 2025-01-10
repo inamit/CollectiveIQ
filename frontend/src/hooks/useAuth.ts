@@ -1,22 +1,22 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SIGN_UP_ROUTE } from "../pages/SignUp/Signup";
 import { useUser } from "../context/userContext";
+import { routes } from "../router/routes";
 
 const useAuth = () => {
-  const { user, isUserLoaded } = useUser();
+  const { user, setUser, isUserLoaded } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isUserLoaded && !user) {
-      navigate(SIGN_UP_ROUTE);
+      navigate(routes.SIGN_UP);
       return;
     }
 
     return () => {};
   }, [user, isUserLoaded]);
 
-  return { user, isUserLoaded };
+  return { user, setUser, isUserLoaded };
 };
 
 export default useAuth;

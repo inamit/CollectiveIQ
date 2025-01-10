@@ -1,18 +1,19 @@
-import {Request, Response} from "express";
-import {handleMongoQueryError} from "../db/db";
+import { Request, Response } from "express";
+import { handleMongoQueryError } from "../db/db";
 import User, {
-    hashPassword,
-    IUser,
-    USER_RESOURCE_NAME,
+  hashPassword,
+  IUser,
+  USER_RESOURCE_NAME,
 } from "../models/users_model";
 import token from "../middleware/auth/token";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import path from "path";
 import * as fs from "fs";
-import {PathLike} from "fs";
+import { PathLike } from "fs";
 import config from "../config/fileUploadingConfig";
-import {saveFile} from "../middleware/file-storage/file-storage-middleware";
+import { saveFile } from "../middleware/file-storage/file-storage-middleware";
+import { v4 as uuidv4 } from "uuid";
 
 const getAllUsers = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -42,80 +43,92 @@ const getUserById = async (req: Request, res: Response): Promise<any> => {
 };
 
 const registerNewUser = async (req: Request, res: Response): Promise<any> => {
-    try {
-        const {
-            username,
-            email,
-            password,
-            avatarImage,
-        }: { username: string; email: string; password: string, avatarImage: string } = req.body;
-        const user = new User({
-            username,
-            email,
-            password,
-            avatarImage
-        });
+  try {
+    const {
+      username,
+      email,
+      password,
+      avatarImage,
+    }: {
+      username: string;
+      email: string;
+      password: string;
+      avatarImage: string;
+    } = req.body;
+    const user = new User({
+      username,
+      email,
+      password,
+      avatarImage,
+    });
 
-        const savedUser: IUser = await user.save();
-        return res.json(savedUser);
-    } catch (err: any) {
-        console.warn("Error registering user:", err);
-        return handleMongoQueryError(res, err, USER_RESOURCE_NAME);
-    }
+    const savedUser: IUser = await user.save();
+    return await token.returnTokens(savedUser, res, {
+      message: "User registered successfully",
+    });
+  } catch (err: any) {
+    console.warn("Error registering user:", err);
+    return handleMongoQueryError(res, err, USER_RESOURCE_NAME);
+  }
 };
 
 const updateUserById = async (req: Request, res: Response): Promise<any> => {
-    const {user_id}: { user_id?: string } = req.params;
-    const updates: Partial<IUser> = req.body;
+  const { user_id }: { user_id?: string } = req.params;
+  const updates: Partial<IUser> = req.body;
 
-    try {
-        if (updates.password) {
-            updates.password = await hashPassword(updates.password);
-        }
-
-        const updatedUser: IUser | null = await User.findByIdAndUpdate(
-            user_id,
-            updates,
-            {
-                new: true,
-                runValidators: true,
-            }
-        );
-
-        if (updatedUser?.avatarUrl) {
-            updatedUser.avatarUrl = req.file?.path ?? '';
-        }
-        if (!updatedUser) {
-            return res.status(404).json({error: "User not found"});
-        }
-
-        return res.json(updatedUser);
-    } catch (err: any) {
-        console.warn("Error updating user:", err);
-        return handleMongoQueryError(res, err, USER_RESOURCE_NAME);
+  try {
+    if (updates.password) {
+      updates.password = await hashPassword(updates.password);
     }
+
+    const updatedUser: Partial<IUser> | null = await User.findByIdAndUpdate(
+      user_id,
+      updates,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (updatedUser?.avatarUrl) {
+      updatedUser.avatarUrl = req.file?.path ?? "";
+    }
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    delete updatedUser.password;
+
+    return res.json(updatedUser);
+  } catch (err: any) {
+    console.warn("Error updating user:", err);
+    return handleMongoQueryError(res, err, USER_RESOURCE_NAME);
+  }
 };
 
 const deleteUserById = async (req: Request, res: Response): Promise<any> => {
-    const {user_id}: { user_id?: string } = req.params;
+  const { user_id }: { user_id?: string } = req.params;
 
-    try {
-        const deletedUser: IUser | null = await User.findByIdAndDelete(user_id);
-        // Delete the post image if it exists
-        if (deletedUser?.avatarUrl) {
-            const avatarFileName: string = deletedUser.avatarUrl.split('/').pop()!;
-            const filePath: string = path.join(config.uploadsAvatarsDirectory, avatarFileName);
-            deleteUserAvatarFromDirectory(filePath);
-        }
-        if (!deletedUser) {
-            return res.status(404).json({error: "User not found"});
-        }
-
-        return res.json(deletedUser);
-    } catch (err: any) {
-        console.warn("Error deleting user:", err);
-        return handleMongoQueryError(res, err);
+  try {
+    const deletedUser: IUser | null = await User.findByIdAndDelete(user_id);
+    // Delete the post image if it exists
+    if (deletedUser?.avatarUrl) {
+      const avatarFileName: string = deletedUser.avatarUrl.split("/").pop()!;
+      const filePath: string = path.join(
+        config.uploadsAvatarsDirectory,
+        avatarFileName
+      );
+      deleteUserAvatarFromDirectory(filePath);
     }
+    if (!deletedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.json(deletedUser);
+  } catch (err: any) {
+    console.warn("Error deleting user:", err);
+    return handleMongoQueryError(res, err);
+  }
 };
 
 const login = async (req: Request, res: Response): Promise<any> => {
@@ -138,14 +151,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
         .status(400)
         .json({ error: "wrong credentials. Please try again." });
     }
-    const {
-      accessToken,
-      refreshToken,
-    }: { accessToken: string; refreshToken: string } =
-      await token.generateTokens(existingUser);
-    await addRefreshTokenToUser(existingUser, refreshToken);
-
-    return token.setTokens(accessToken, refreshToken, res);
+    return await token.returnTokens(existingUser, res);
   } catch (err) {
     console.warn("Error while logging in:", err);
     return res
@@ -166,86 +172,83 @@ const logout = async (req: Request, res: Response): Promise<any> => {
 };
 
 const refresh = async (req: Request, res: Response): Promise<any> => {
-    try {
-        const user = await token.verifyRefreshToken(req.body.refreshToken);
-        if (!user) {
-            return res.status(400).send("fail");
-        }
-        const {refreshToken, accessToken} = await token.generateTokens(user);
-
-        if (!refreshToken || !accessToken) {
-            return res.status(500).send("Server Error");
-        }
-
-        await addRefreshTokenToUser(user, refreshToken);
-
-        return res.send({
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-            _id: user._id,
-        });
-    } catch (err) {
-        return res.status(400).send("fail");
+  try {
+    const user = await token.verifyRefreshToken(req.body.refreshToken);
+    if (!user) {
+      return res.status(400).send({ error: "Invalid refresh token" });
     }
+
+    return await token.returnTokens(user, res);
+  } catch (err: any) {
+    const typedError: { status: number; message: string; extraData?: string } =
+      err;
+    console.warn("Error while refreshing token:", typedError.extraData);
+    return res.status(typedError.status).send(typedError.message);
+  }
 };
 
-const addRefreshTokenToUser = async (
-    existingUser: IUser,
-    refreshToken: string
-) => {
-    if (!existingUser.refreshTokens) {
-        existingUser.refreshTokens = [];
-    }
-    existingUser.refreshTokens.push(refreshToken);
-    await User.findByIdAndUpdate(existingUser._id, {
-        refreshTokens: existingUser.refreshTokens,
-    });
-};
 const saveAvatarImage = (req: Request, res: Response): void => {
-    saveFile(req, res);
+  saveFile(req, res);
 };
 
 const deleteUserAvatarFromDirectory = (filePath: PathLike): void => {
-    fs.unlink(filePath, (err) => {
-        if (err) {
-            console.error('Error deleting file:', err.message);
-        } else {
-            console.log('File deleted successfully');
-        }
-    });
-}
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error("Error deleting file:", err.message);
+    } else {
+      console.log("File deleted successfully");
+    }
+  });
+};
 
-const registerUserWithGoogle = async (req: Request, res: Response): Promise<any> => {
+const googleAuthentication = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const { jwtToken }: { jwtToken: string } = req.body;
-    const payload : any = jwt.decode(jwtToken);
+    const payload: any = jwt.decode(jwtToken);
 
     if (!payload) {
       return res.status(400).json({ error: "Invalid input" });
     }
 
+    const existingUser: IUser | null = await User.findOne({
+      username: payload.email,
+    });
+
+    if (existingUser) {
+      return await token.returnTokens(existingUser, res, {
+        message: "logged in with google",
+      });
+    }
+
     req.body = {
       username: payload.email,
       email: payload.email,
-      password: await hashPassword(payload.password),
+      avatarImage: payload.picture,
+      password: await hashPassword(uuidv4()),
     };
 
     return registerNewUser(req, res);
   } catch (err: any) {
     console.warn("Error registering user with Google:", err);
-    return res.status(500).json({ error: "An error occurred while registering user with Google.", err });
+    return res.status(500).json({
+      error: "An error occurred while registering user with Google.",
+      err,
+    });
   }
 };
 
 export default {
-    getAllUsers,
-    getUserById,
-    registerNewUser,
-    updateUserById,
-    deleteUserById,
-    login,
-    logout,
-    refresh,
-    registerUserWithGoogle,
-    saveAvatarImage
+  getAllUsers,
+  getUserById,
+  registerNewUser,
+  updateUserById,
+  deleteUserById,
+  login,
+  logout,
+  refresh,
+  googleAuthentication,
+  saveAvatarImage,
 };

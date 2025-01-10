@@ -2,19 +2,20 @@ import "./signup.css";
 import { toast } from "react-toastify";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useState } from "react";
-import { SignUpService } from "../../services/signUpService.ts";
+import { AuthenticationService } from "../../services/authenticationService.ts";
 import { Button } from "@mui/material";
 import AppTextField from "../../components/TextField/TextField.tsx";
 import { useNavigate } from "react-router-dom";
-import { USER_PROFILE_ROUTE } from "../UserProfile/UserProfile.tsx";
 import { GoogleLogin } from "@react-oauth/google";
 import { useUser } from "../../context/userContext.tsx";
+import { routes } from "../../router/routes.ts";
+import { jwtDecode } from "jwt-decode";
+import User from "../../models/user.ts";
+import { AxiosResponse } from "axios";
 
 interface SignUpProps {
   className?: string;
 }
-
-export const SIGN_UP_ROUTE = "/signup";
 
 export default function SignUp({ className }: SignUpProps) {
   const [username, setUsername] = useState<string>("");
@@ -45,25 +46,32 @@ export default function SignUp({ className }: SignUpProps) {
     return valid;
   };
 
+  const userSignedUpSuccessfully = (
+    response: AxiosResponse<{ accessToken: string; refreshToken: string }>
+  ) => {
+    toast.success("Signed up successfully");
+
+    const responseJson = response.data;
+    const decodedAccessToken = jwtDecode<User>(responseJson.accessToken);
+    setUser({
+      username: decodedAccessToken.username,
+      email: decodedAccessToken.email,
+      refreshToken: responseJson.refreshToken,
+      accessToken: responseJson.accessToken,
+      _id: decodedAccessToken._id,
+    });
+    navigate(routes.USER_PROFILE);
+  };
+
   const onSignupButtonClicked = async () => {
     if (checkInput()) {
-      let signUpService = new SignUpService();
+      let authenticationService = new AuthenticationService();
 
-      signUpService
+      authenticationService
         .signUp(username, email, password)
         .then((response) => {
           if (response.status === 200) {
-            toast.success("Signed up successfully");
-
-            const responseJson = response.data;
-            setUser({
-              username: responseJson.username,
-              email: responseJson.email,
-              refreshToken: responseJson.refreshTokens[0],
-              accessToken: responseJson.accessToken,
-              _id: responseJson._id,
-            });
-            navigate(USER_PROFILE_ROUTE);
+            userSignedUpSuccessfully(response);
           } else {
             const errorMessage = response.data;
             toast.error(JSON.parse(errorMessage).error || "Error in sign in");
@@ -78,13 +86,13 @@ export default function SignUp({ className }: SignUpProps) {
 
   const onGoogleSignInSuccess = async (response: any) => {
     const credential = response.credential;
-    let signUpService = new SignUpService();
+    let authenticationService = new AuthenticationService();
 
-    signUpService
-      .googleSignUp(credential)
+    authenticationService
+      .google(credential)
       .then((res) => {
         if (res.status === 200) {
-          toast.success("Signed up successfully");
+          userSignedUpSuccessfully(res);
         } else {
           const errorMessage = res.data;
           toast.error(JSON.parse(errorMessage).error || "Error in sign in");
@@ -162,7 +170,6 @@ export default function SignUp({ className }: SignUpProps) {
           containerProps={{ className: "google-login-button" }}
           text="signup_with"
           shape="pill"
-          useOneTap
           context="signup"
         />
       </div>

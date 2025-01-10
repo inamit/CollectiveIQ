@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { USER_PROFILE_ROUTE } from "./UserProfile/UserProfile";
-import { SIGN_UP_ROUTE } from "./SignUp/Signup";
 import { useUser } from "../context/userContext";
+import { routes } from "../router/routes";
 
 export default function AuthRedirect() {
   const { user } = useUser();
@@ -10,9 +9,9 @@ export default function AuthRedirect() {
 
   useEffect(() => {
     if (user) {
-      navigate(USER_PROFILE_ROUTE);
+      navigate(routes.USER_PROFILE);
     } else {
-      navigate(SIGN_UP_ROUTE);
+      navigate(routes.SIGN_UP);
     }
   }, [user]);
 

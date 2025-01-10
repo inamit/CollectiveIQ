@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PostsList from "../../components/PostsList/PostsList";
 import "./UserProfile.css";
 import { Box, Button, Tab, Tabs } from "@mui/material";
 import UserAvatar from "../../components/UserAvatar/UserAvatar";
 import { LoadingState } from "../../services/loadingState";
 import usePosts from "../../hooks/usePosts";
-import useAuth from "../../hooks/useAuth";
-
-export const USER_PROFILE_ROUTE = "/profile";
+import { useParams } from "react-router-dom";
+import User from "../../models/user";
+import { UsersService } from "../../services/usersService";
+import { useUser } from "../../context/userContext";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -32,14 +33,51 @@ function CustomTabPanel(props: TabPanelProps) {
   );
 }
 
+const getUser = async (
+  user: User | null,
+  setUser: (user: User | null) => void,
+  userId: string
+) => {
+  const usersService = user
+    ? new UsersService(user, setUser)
+    : new UsersService();
+  const fetchedUser = await usersService.getUserById(userId!).request;
+
+  return { selectedUser: fetchedUser.data };
+};
+
+const getSelectedUser = async (
+  user: User | null,
+  setUser: (user: User | null) => void,
+  isUserLoaded: boolean,
+  userId: string | undefined
+) => {
+  if (userId) {
+    return await getUser(user, setUser, userId);
+  }
+
+  if (isUserLoaded && user) {
+    return { selectedUser: user, isUserLoaded: true };
+  } else {
+    return { selectedUser: undefined, isUserLoaded: false };
+  }
+};
+
 export default function UserProfile() {
   const [selectedTab, setSelectedTab] = useState(0);
-  const { user, isUserLoaded } = useAuth();
+  const { userId } = useParams();
+  const { user, setUser, isUserLoaded } = useUser();
+  const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
 
-  const { posts, postsLoadingState } =
-    isUserLoaded && user
-      ? usePosts()
-      : { posts: null, postsLoadingState: LoadingState.LOADING };
+  const { posts, postsLoadingState } = usePosts(selectedUser);
+
+  useEffect(() => {
+    getSelectedUser(user, setUser, isUserLoaded, userId).then(
+      ({ selectedUser }) => {
+        setSelectedUser(selectedUser);
+      }
+    );
+  }, [user, isUserLoaded]);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
@@ -52,21 +90,28 @@ export default function UserProfile() {
           <div className="userDetailsContainer">
             <div className="userDetails">
               <div className="user">
-                <UserAvatar className="userAvatar" user={user!} />
+                <UserAvatar className="userAvatar" user={selectedUser!} />
                 <div className="userDetailsText">
-                  <h1>@{user?.username}</h1>
+                  <h1>@{selectedUser?.username}</h1>
                   <span>
-                    {user?.posts ? `${user?.posts?.length} questions` : ""}
+                    {selectedUser?.posts
+                      ? `${selectedUser?.posts?.length} questions`
+                      : ""}
                   </span>
                 </div>
               </div>
-              <Button
-                variant="contained"
-                color="secondary"
-                style={{ width: "100%", maxWidth: "480px" }}
-              >
-                Edit Profile
-              </Button>
+
+              {userId ? (
+                <div></div>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  style={{ width: "100%", maxWidth: "480px" }}
+                >
+                  Edit Profile
+                </Button>
+              )}
             </div>
           </div>
 
@@ -91,11 +136,7 @@ export default function UserProfile() {
             />
           </CustomTabPanel>
           <CustomTabPanel value={selectedTab} index={1}>
-            <PostsList
-              posts={[]}
-              maxPostsPerPage={5}
-              loadingState={LoadingState.LOADING}
-            />
+            <div>Not implemented yet</div>
           </CustomTabPanel>
         </div>
       </div>

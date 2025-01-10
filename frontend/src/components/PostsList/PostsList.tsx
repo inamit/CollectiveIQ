@@ -36,13 +36,14 @@ export default function PostsList({
         />
       )
     );
-    return <>...postsSekeletons</>;
+    return <>{...postsSkeletons}</>;
   } else if (loadingState === LoadingState.ERROR) {
     return <div>Error loading posts</div>;
   }
 
   return (
     <>
+      {paginatedPosts.length === 0 && <div>No posts found</div>}
       <List className="postsList">
         {paginatedPosts[currentPage - 1]?.map((post) => (
           <div key={post.id}>

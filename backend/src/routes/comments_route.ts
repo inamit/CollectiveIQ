@@ -124,7 +124,7 @@ router.post("/", authMiddleware, commentsController.saveNewComment);
  *                schema:
  *                  $ref: '#/components/schemas/UnexpectedError'
  */
-router.get("/", authMiddleware, commentsController.getComments);
+router.get("/", commentsController.getComments);
 
 /**
  * @swagger
