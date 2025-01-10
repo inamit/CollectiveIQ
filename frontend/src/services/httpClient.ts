@@ -6,9 +6,9 @@ import User from "../models/user";
 export { CanceledError };
 
 export class HttpClientFactory {
-  user: User | null | undefined = null;
+  user: User | undefined = undefined;
   setUser: ((user: User | null) => void) | undefined;
-  constructor(user?: User | null, setUser?: (user: User | null) => void) {
+  constructor(user?: User, setUser?: (user: User | null) => void) {
     this.user = user;
     this.setUser = setUser;
   }
