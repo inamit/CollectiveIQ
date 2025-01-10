@@ -9,6 +9,7 @@ import { SIGN_UP_ROUTE } from "../../pages/Signup/Signup";
 import User from "../../models/user";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import { useUser } from "../../context/userContext";
+import {ASK_QUESTION_ROUTE} from "../../pages/CreatePost/CreatePost.tsx";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -51,6 +52,9 @@ function getUserActions(user: User, navigate: NavigateFunction) {
         variant="contained"
         color="primary"
         style={{ borderRadius: "12px" }}
+        onClick={() => {
+            navigate(ASK_QUESTION_ROUTE);
+        }}
       >
         Ask a Question
       </Button>
