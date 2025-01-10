@@ -421,7 +421,7 @@ router.post("/refresh", usersController.refresh);
  *                    format: binary
  *     responses:
  *       200:
- *         description: Sight uploaded successfully
+ *         description: User avatar uploaded successfully
  *       500:
  *         description: failed to upload
  *         content:
