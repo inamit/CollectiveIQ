@@ -24,7 +24,7 @@ import {userPostsUpload} from "../middleware/file-storage/file-storage-middlewar
  *                  maxLength: 24
  *              content:
  *                  type: string
- *              sender:
+ *              userId:
  *                  type: string
  *              __v:
  *                  type: integer
@@ -32,7 +32,7 @@ import {userPostsUpload} from "../middleware/file-storage/file-storage-middlewar
  *          type: object
  *          required:
  *              - content
- *              - sender
+ *              - userId
  *          properties:
  *              content:
  *                  type: string

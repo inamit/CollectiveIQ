@@ -10,11 +10,11 @@ export class PostsService {
     this.httpClientFactory = new HttpClientFactory(user, setUser);
   }
 
-  getPostsByUser(userID: string) {
+  getPostsByUser(userId: string) {
     const controller = new AbortController();
     const request = this.httpClientFactory
       .authorizedHttpClient()
-      .get<Post[]>(`${config.backendURL}/posts?sender=${userID}`, {
+      .get<Post[]>(`${config.backendURL}/posts?userId=${userId}`, {
         signal: controller.signal,
       });
 

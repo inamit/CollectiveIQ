@@ -31,8 +31,9 @@ beforeAll(async () => {
     next();
   });
   post = await postsModel.create({
+    title: "Test post",
     content: "Test post",
-    sender: testUser._id!,
+    userId: testUser._id!,
   });
 });
 
@@ -117,12 +118,12 @@ describe("GET /comments", () => {
       comments = comments.map((comment: Partial<IComment>) => ({
         ...comment,
         postID: post._id,
-        sender: testUser._id,
+        userId: testUser._id,
       }));
       comments.push({
         postID: new mongoose.Types.ObjectId("673b7bd1df3f05e1bdcf5321"),
         content: "Third comment",
-        sender: testUser._id,
+        userId: testUser._id,
       });
       await commentsModel.create(comments);
     });
@@ -189,7 +190,7 @@ describe("PUT /comments/:comment_id", () => {
       .put(`/comments/673b7bd1df3f05e1bdcf5320`)
       .send({
         content: "Updated comment",
-        sender: testUser._id,
+        userId: testUser._id,
       });
 
     expect(response.statusCode).toBe(404);

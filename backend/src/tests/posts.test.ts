@@ -1,12 +1,11 @@
 import request from "supertest";
 import initApp from "../server";
-import mongoose, { ObjectId, Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { Express } from "express";
 import postsModel, { IPost } from "../models/posts_model";
 import usersModel, { IUser } from "../models/users_model";
 import authMiddleware from "../middleware/auth/authMiddleware";
 import path from "path";
-import User from "../models/users_model";
 import Post from "../models/posts_model";
 
 let app: Express;
@@ -19,10 +18,10 @@ let testUser: IUser = {
   password: "password",
 };
 
-let testPosts: {content: string, sender?: Types.ObjectId}[] = [
-  { content: "First post" },
-  { content: "Second post" },
-  { content: "Third post" },
+let testPosts: { title: string; content: string; userId?: Types.ObjectId }[] = [
+  { title: "First post title", content: "First post" },
+  { title: "Second post title", content: "Second post" },
+  { title: "Third post title", content: "Third post" },
 ];
 
 beforeAll(async () => {
@@ -37,7 +36,7 @@ beforeAll(async () => {
 });
 beforeEach(async () => {
   await postsModel.deleteMany();
-  testPosts = testPosts.map(post => ({...post, sender: testUser._id!}));
+  testPosts = testPosts.map((post) => ({ ...post, userId: testUser._id! }));
 });
 
 afterAll(async () => {
@@ -46,25 +45,30 @@ afterAll(async () => {
 
 describe("POST /posts", () => {
   it("should create new post", async () => {
+    const title = "Title";
     const content = "This is my first post!";
-    const sender = testUser._id?.toString();
+    const userId = testUser._id?.toString();
     const response = await request(app).post("/posts").send({
+      title,
       content,
-      sender,
     });
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty("_id");
+    expect(response.body.title).toBe(title);
     expect(response.body.content).toBe(content);
-    expect(response.body.sender).toBe(sender);
+    expect(response.body.userId).toBe(userId);
   });
 
-  it("should return 400 when content is missing", async () => {
-    const response = await request(app).post("/posts").send({});
+  it.each([{ content: "" }, { title: "" }, {}])(
+    "should return 400 when parameter is missing (%o)",
+    async (body: { content?: string; title?: string }) => {
+      const response = await request(app).post("/posts").send(body);
 
-    expect(response.statusCode).toBe(400);
-    expect(response.body).toHaveProperty("error");
-  });
+      expect(response.statusCode).toBe(400);
+      expect(response.body).toHaveProperty("error");
+    }
+  );
 });
 
 describe("GET /posts", () => {
@@ -91,16 +95,18 @@ describe("GET /posts", () => {
       expect(response.body).toHaveLength(testPosts.length);
     });
 
-    it("should return posts by sender", async () => {
+    it("should return posts by userId", async () => {
       const expectedNumberOfPosts = testPosts.filter(
-        (post) => post.sender === testUser._id
+        (post) => post.userId === testUser._id
       ).length;
-      const response = await request(app).get(`/posts?sender=${testUser._id?.toString()}`);
+      const response = await request(app).get(
+        `/posts?userId=${testUser._id?.toString()}`
+      );
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
       response.body.forEach((post: IPost) => {
-        expect(post.sender).toBe(testUser._id?.toString());
+        expect(post.userId).toBe(testUser._id?.toString());
       });
       expect(response.body).toHaveLength(expectedNumberOfPosts);
     });
@@ -160,7 +166,7 @@ describe("PUT /posts/:post_id", () => {
       .put("/posts/673b7bd1df3f05e1bdcf5320")
       .send({
         content: "Updated post",
-        sender: testUser._id,
+        userId: testUser._id,
       });
 
     expect(response.statusCode).toBe(404);
@@ -170,7 +176,7 @@ describe("PUT /posts/:post_id", () => {
   it("should return 400 when post_id is invalid", async () => {
     const response = await request(app).put("/posts/invalid_id").send({
       content: "Updated post",
-      sender: testUser._id,
+      userId: testUser._id,
     });
 
     expect(response.statusCode).toBe(400);
@@ -188,134 +194,124 @@ describe("PUT /posts/:post_id", () => {
   it("should update post by id", async () => {
     const post = savedPosts[0];
     const updatedContent = "Updated content";
-    const updatedSender = testUser._id?.toString();
+    const updateduserId = testUser._id?.toString();
     const response = await request(app)
       .put(`/posts/${post._id}`)
       .send({ content: updatedContent });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.content).toBe(updatedContent);
-    expect(response.body.sender).toBe(updatedSender);
+    expect(response.body.userId).toBe(updateduserId);
   });
 });
 
 describe("File Tests", () => {
   test("upload file", async () => {
-    const filePath = path.resolve(__dirname,`amit.jpg`);
+    const filePath = path.resolve(__dirname, `amit.jpg`);
 
     try {
       const response = await request(app)
-          .post("/posts/image").attach('file', filePath)
+        .post("/posts/image")
+        .attach("file", filePath);
       expect(response.statusCode).toEqual(200);
       let url = response.body.url;
-      url = url.replace(/^.*\/\/[^/]+/, '')
-      const res = await request(app).get(url)
+      url = url.replace(/^.*\/\/[^/]+/, "");
+      const res = await request(app).get(url);
       expect(res.statusCode).toEqual(200);
     } catch (err) {
       console.log(err);
       expect(1).toEqual(2);
     }
-  })
+  });
 });
 
-
 describe("Post Reactions API - Like and Dislike", () => {
-    let savedPost: IPost;
+  let savedPost: IPost;
   beforeEach(async () => {
-
     savedPost = await postsModel.create(testPosts[0]);
   });
 
   it("should allow a user to like a post", async () => {
     const response = await request(app)
-        .post(`/posts/${savedPost._id}/like`)
-        .send();
+      .post(`/posts/${savedPost._id}/like`)
+      .send();
 
     expect(response.status).toBe(200);
     expect(response.body.likesAmount).toBe(1);
     expect(response.body.dislikesAmount).toBe(0);
 
-    const updatedPost :IPost  = await Post.findById(savedPost._id) as IPost;
+    const updatedPost: IPost = (await Post.findById(savedPost._id)) as IPost;
     expect(updatedPost?.likes).toContainEqual(testUser._id);
   });
 
   it("should allow a user to dislike a post", async () => {
     const response = await request(app)
-        .post(`/posts/${savedPost._id}/dislike`)
-        .send();
+      .post(`/posts/${savedPost._id}/dislike`)
+      .send();
 
     expect(response.status).toBe(200);
     expect(response.body.likesAmount).toBe(0);
     expect(response.body.dislikesAmount).toBe(1);
 
-    const updatedPost: IPost = await Post.findById(savedPost._id) as IPost;
+    const updatedPost: IPost = (await Post.findById(savedPost._id)) as IPost;
     expect(updatedPost?.dislikes).toContainEqual(testUser._id);
   });
 
   it("should remove like if user likes a post again", async () => {
     // Like the post initially
-    await request(app)
-        .post(`/posts/${savedPost._id}/like`)
-        .send();
+    await request(app).post(`/posts/${savedPost._id}/like`).send();
 
     // Like the post again
     const response = await request(app)
-        .post(`/posts/${savedPost._id}/like`)
-        .send();
+      .post(`/posts/${savedPost._id}/like`)
+      .send();
 
     expect(response.status).toBe(200);
     expect(response.body.likesAmount).toBe(0);
 
-    const updatedPost: IPost = await Post.findById(savedPost._id) as IPost;
+    const updatedPost: IPost = (await Post.findById(savedPost._id)) as IPost;
     expect(updatedPost?.likes).not.toContainEqual(testUser._id);
   });
 
   it("should remove dislike if user dislikes a post again", async () => {
     // Dislike the post initially
-    await request(app)
-        .post(`/posts/${savedPost._id}/dislike`)
-        .send();
+    await request(app).post(`/posts/${savedPost._id}/dislike`).send();
 
     // Dislike the post again
     const response = await request(app)
-        .post(`/posts/${savedPost._id}/dislike`)
-        .send();
+      .post(`/posts/${savedPost._id}/dislike`)
+      .send();
 
     expect(response.status).toBe(200);
     expect(response.body.dislikesAmount).toBe(0);
 
-    const updatedPost: IPost = await Post.findById(savedPost._id) as IPost;
+    const updatedPost: IPost = (await Post.findById(savedPost._id)) as IPost;
     expect(updatedPost?.dislikes).not.toContainEqual(testUser._id);
   });
 
   it("should switch from like to dislike", async () => {
     // Like the post initially
-    await request(app)
-        .post(`/posts/${savedPost._id}/like`)
-        .send();
+    await request(app).post(`/posts/${savedPost._id}/like`).send();
 
     // Dislike the post
     const response = await request(app)
-        .post(`/posts/${savedPost._id}/dislike`)
-        .send();
+      .post(`/posts/${savedPost._id}/dislike`)
+      .send();
 
     expect(response.status).toBe(200);
     expect(response.body.likesAmount).toBe(0);
     expect(response.body.dislikesAmount).toBe(1);
 
-    const updatedPost: IPost = await Post.findById(savedPost._id) as IPost;
+    const updatedPost: IPost = (await Post.findById(savedPost._id)) as IPost;
     expect(updatedPost?.likes).not.toContainEqual(testUser._id);
     expect(updatedPost?.dislikes).toContainEqual(testUser._id);
   });
 
   it("should return 404 if post is not found", async () => {
     const notFound = new mongoose.Types.ObjectId();
-    const response = await request(app)
-        .post(`/posts/${notFound}/like`)
-        .send();
+    const response = await request(app).post(`/posts/${notFound}/like`).send();
 
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Post not found");
   });
 });
-

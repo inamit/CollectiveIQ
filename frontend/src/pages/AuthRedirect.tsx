@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { USER_PROFILE_ROUTE } from "./UserProfile/UserProfile";
-import { SIGN_UP_ROUTE } from "./Signup/Signup";
+import { SIGN_UP_ROUTE } from "./SignUp/Signup";
 import { useUser } from "../context/userContext";
 
 export default function AuthRedirect() {

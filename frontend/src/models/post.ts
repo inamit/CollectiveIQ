@@ -5,6 +5,8 @@ export default interface Post {
   content: string;
   imageUrl?: string;
   _id: string;
-  sender: User;
+  userId: User;
   date: string;
+  likes: string[];
+  dislikes: string[];
 }
