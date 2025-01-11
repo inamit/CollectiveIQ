@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {routes} from "../../router/routes.ts";
-
 const AskQuestion = () => {
     const [title, setTitle] = useState("");
     const [question, setQuestion] = useState("");
@@ -19,15 +18,13 @@ const AskQuestion = () => {
         navigate(routes.USER_PROFILE);
     };
 
-    const handleAddPost = (e) => {
+    const handleAddPost = async (e) => {
         e.preventDefault();
         console.log("Title:", title);
         console.log("Question:", question);
         console.log("Pic:", image);
 
-
-
-        navigate(routes.USER_PROFILE);
+        navigate(routes.POST);
 
     }
     return (
@@ -125,7 +122,7 @@ const AskQuestion = () => {
                         style={{
                             padding: "10px 20px",
                             borderRadius: "12px",
-                            backgroundColor: "#5B6DC9",
+                            backgroundColor: "#617AFA",
                             color: "white",
                             border: "none",
                             cursor: "pointer",
@@ -139,7 +136,7 @@ const AskQuestion = () => {
                         style={{
                             padding: "10px 20px",
                             borderRadius: "12px",
-                            backgroundColor: "5B6DC9",
+                            backgroundColor: "#41424C",
                             color: "#fff",
                             border: "none",
                             cursor: "pointer",
