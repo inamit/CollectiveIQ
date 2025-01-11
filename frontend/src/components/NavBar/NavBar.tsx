@@ -19,7 +19,10 @@ export default function NavBar() {
       <nav className="navbar">
         <span className="navbarAppTitle">
           <img src={appIcon} alt="app icon" className="appIcon" />
-          <h1 className="appLabel">CollectiveIQ</h1>
+    <h1 className="appLabel"
+        onClick={() => {
+            navigate(routes.USER_PROFILE)
+        }}>CollectiveIQ</h1>
         </span>
         <span className="navbarActions">
           <AppTextField
