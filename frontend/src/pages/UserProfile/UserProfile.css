@@ -1,0 +1,56 @@
+.userProfile {
+  display: flex;
+  height: 827px;
+  padding: 20px 160px;
+  justify-content: center;
+  align-items: flex-start;
+  align-self: stretch;
+}
+
+.user {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-right: 16px;
+}
+
+.userAvatar {
+  width: 128px !important;
+  height: 128px !important;
+  min-height: 128px;
+}
+
+.userProfileContainer {
+  display: flex;
+  max-width: 960px;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1 0 0;
+}
+
+.userDetailsContainer {
+  display: flex;
+  padding: 16px;
+  align-items: flex-start;
+  align-self: stretch;
+}
+
+.userDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1 0 0;
+}
+
+.userDetailsText {
+  display: flex;
+  height: 128px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-overflow: ellipsis;
+}
+
+.MuiBox-root {
+  padding: 0 !important;
+}

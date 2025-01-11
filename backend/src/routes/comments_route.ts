@@ -27,7 +27,7 @@ import authMiddleware from "../middleware/auth/authMiddleware";
  *         maxLength: 24
  *       content:
  *         type: string
- *       sender:
+ *       userId:
  *         type: string
  *       __v:
  *         type: integer
@@ -35,7 +35,7 @@ import authMiddleware from "../middleware/auth/authMiddleware";
  *     type: object
  *     required:
  *       - content
- *       - sender
+ *       - userId
  *     properties:
  *       content:
  *         type: string
@@ -124,7 +124,7 @@ router.post("/", authMiddleware, commentsController.saveNewComment);
  *                schema:
  *                  $ref: '#/components/schemas/UnexpectedError'
  */
-router.get("/", authMiddleware, commentsController.getComments);
+router.get("/", commentsController.getComments);
 
 /**
  * @swagger

@@ -1,0 +1,8 @@
+.postsList {
+  width: 100%;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+}

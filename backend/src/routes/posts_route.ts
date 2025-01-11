@@ -1,8 +1,8 @@
-import {Router} from "express";
+import { Router } from "express";
 const router: Router = Router();
 import postsController from "../controllers/posts_controller";
 import authMiddleware from "../middleware/auth/authMiddleware";
-import {userPostsUpload} from "../middleware/file-storage/file-storage-middleware";
+import { userPostsUpload } from "../middleware/file-storage/file-storage-middleware";
 
 /**
  * @swagger
@@ -24,7 +24,7 @@ import {userPostsUpload} from "../middleware/file-storage/file-storage-middlewar
  *                  maxLength: 24
  *              content:
  *                  type: string
- *              sender:
+ *              userId:
  *                  type: string
  *              __v:
  *                  type: integer
@@ -32,7 +32,7 @@ import {userPostsUpload} from "../middleware/file-storage/file-storage-middlewar
  *          type: object
  *          required:
  *              - content
- *              - sender
+ *              - userId
  *          properties:
  *              content:
  *                  type: string
@@ -71,7 +71,7 @@ import {userPostsUpload} from "../middleware/file-storage/file-storage-middlewar
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.get("/", authMiddleware, postsController.getPosts);
+router.get("/", postsController.getPosts);
 
 /**
  * @swagger
@@ -112,7 +112,12 @@ router.get("/", authMiddleware, postsController.getPosts);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.post("/", authMiddleware, userPostsUpload.single("file"), postsController.saveNewPost);
+router.post(
+  "/",
+  authMiddleware,
+  userPostsUpload.single("file"),
+  postsController.saveNewPost
+);
 
 /**
  * @swagger
@@ -151,7 +156,7 @@ router.post("/", authMiddleware, userPostsUpload.single("file"), postsController
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.get("/:post_id", authMiddleware, postsController.getPostById);
+router.get("/:post_id", postsController.getPostById);
 
 /**
  * @swagger
@@ -198,14 +203,21 @@ router.get("/:post_id", authMiddleware, postsController.getPostById);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.put("/:post_id", authMiddleware, userPostsUpload.single("file"), postsController.updatePostById);
+router.put(
+  "/:post_id",
+  authMiddleware,
+  userPostsUpload.single("file"),
+  postsController.updatePostById
+);
 
 /**
  * @swagger
- * /posts/upload:
+ * paths:
+ *  /posts/image:
  *   post:
  *     summary: Upload a pic for post
- *     tags: Post
+ *     tags:
+ *      - Post
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -230,14 +242,21 @@ router.put("/:post_id", authMiddleware, userPostsUpload.single("file"), postsCon
  *            schema:
  *              $ref: '#/components/schemas/Error'
  */
-router.post('/image', authMiddleware, userPostsUpload.single("file"), postsController.saveImage);
+router.post(
+  "/image",
+  authMiddleware,
+  userPostsUpload.single("file"),
+  postsController.saveImage
+);
 
 /**
  * @swagger
- * /posts/{postId}/like:
+ * paths:
+ *  /posts/{postId}/like:
  *   post:
  *     summary: Like or unlike a post
- *     tags: Post
+ *     tags:
+ *      - Post
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -261,14 +280,16 @@ router.post('/image', authMiddleware, userPostsUpload.single("file"), postsContr
  *            schema:
  *              $ref: '#/components/schemas/Error'
  */
-router.post('/:postId/like', authMiddleware, postsController.likePost)
+router.post("/:postId/like", authMiddleware, postsController.likePost);
 
 /**
  * @swagger
- * /posts/{postId}/dislike:
+ * paths:
+ *  /posts/{postId}/dislike:
  *   post:
  *     summary: Dislike or un-dislike a post
- *     tags: Post
+ *     tags:
+ *      - Post
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -292,5 +313,5 @@ router.post('/:postId/like', authMiddleware, postsController.likePost)
  *            schema:
  *              $ref: '#/components/schemas/Error'
  */
-router.post('/:postId/dislike', authMiddleware, postsController.dislikePost);
+router.post("/:postId/dislike", authMiddleware, postsController.dislikePost);
 export default router;

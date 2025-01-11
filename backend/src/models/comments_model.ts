@@ -6,7 +6,7 @@ export interface IComment {
   _id: Types.ObjectId;
   postID: Types.ObjectId;
   content: string;
-  sender: Types.ObjectId;
+  userId: Types.ObjectId;
 }
 
 const commentSchema = new Schema<IComment>({
@@ -19,7 +19,7 @@ const commentSchema = new Schema<IComment>({
     type: String,
     required: true,
   },
-  sender: {
+  userId: {
     type: Schema.Types.ObjectId,
     ref: USER_RESOURCE_NAME,
     required: true,

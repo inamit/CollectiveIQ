@@ -8,16 +8,17 @@ POST http://localhost:3000/posts
 Content-Type: application/json
 
 {
+  "title": "New Title",
   "content": "New Post",
-  "sender": "amit"
+  "userId": "amit"
 }
 
 
 ### Get a post by id
 GET http://localhost:3000/posts/673b7bd1df3f05e1bdcf5320
 
-### Get all posts by sender
-GET http://localhost:3000/posts?sender=1234567
+### Get all posts by userId
+GET http://localhost:3000/posts?userId=1234567
 
 ### Update a post
 PUT http://localhost:3000/posts/673b7bd1df3f05e1bdcf5320 
@@ -25,7 +26,7 @@ Content-Type: application/json
 
 {
   "content": "Update Post",
-  "sender": "Benli"
+  "userId": "Benli"
 }
 
 ### Get all comments
@@ -39,7 +40,7 @@ Content-Type: application/json
 
 {
   "content": "New comment",
-  "sender": "amit"
+  "userId": "amit"
 }
 
 ### Get a comment by post id
@@ -52,7 +53,7 @@ Content-Type: application/json
 
 {
   "content": "Update comment",
-  "sender": "Benli"
+  "userId": "Benli"
 }
 
 ### Delete a comment

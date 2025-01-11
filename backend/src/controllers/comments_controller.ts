@@ -1,7 +1,10 @@
 import Post from "../models/posts_model";
 import { Request, Response } from "express";
 import { handleMongoQueryError } from "../db/db";
-import Comment, { COMMENT_RESOURCE_NAME, IComment } from "../models/comments_model";
+import Comment, {
+  COMMENT_RESOURCE_NAME,
+  IComment,
+} from "../models/comments_model";
 
 const getComments = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -34,7 +37,7 @@ const saveNewComment = async (req: Request, res: Response): Promise<any> => {
     const comment = new Comment({
       postID: post_id,
       content: req.body.content,
-      sender: req.params.userId,
+      userId: req.params.userId,
     });
     const savedComment: IComment = await comment.save();
     return res.json(savedComment);
@@ -46,18 +49,16 @@ const saveNewComment = async (req: Request, res: Response): Promise<any> => {
 
 const updateCommentById = async (req: Request, res: Response): Promise<any> => {
   const { comment_id }: { comment_id?: string } = req.params;
-  const { content }: { content: string; } = req.body;
+  const { content }: { content: string } = req.body;
 
   try {
     if (!content) {
-      return res
-        .status(400)
-        .json({ error: "Content is required." });
+      return res.status(400).json({ error: "Content is required." });
     }
 
     const updatedComment: IComment | null = await Comment.findByIdAndUpdate(
       comment_id,
-      { content, sender: req.params.userId },
+      { content, userId: req.params.userId },
       { new: true, runValidators: true }
     );
 
