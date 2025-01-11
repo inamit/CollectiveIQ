@@ -9,6 +9,7 @@ import User from "../../models/user";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import { useUser } from "../../context/userContext";
 import { routes } from "../../router/routes";
+import DropDown from "../DropDown/DropDown";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ function getUserActions(user: User) {
       >
         <BellIcon />
       </Button>
+      <DropDown></DropDown>
       <UserAvatar user={user} />
     </span>
   );
