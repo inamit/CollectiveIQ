@@ -7,6 +7,6 @@ export default interface Post {
   _id: string;
   userId: User;
   date: string;
-  likes: string[];
-  dislikes: string[];
+  likes: number;
+  dislikes: number;
 }
