@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import User from "../../models/user";
 import { UsersService } from "../../services/usersService";
 import { useUser } from "../../context/userContext";
+import EditProfile from "../../components/EditProfile/EditProfile";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -68,6 +69,7 @@ export default function UserProfile() {
   const { userId } = useParams();
   const { user, setUser, isUserLoaded } = useUser();
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
+  const [isEdit, setEdit] = useState(false);
 
   const { posts, postsLoadingState } = usePosts(selectedUser);
 
@@ -81,7 +83,13 @@ export default function UserProfile() {
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
+    setEdit(false);
   };
+
+  const handleEditbutton = () =>{
+    setEdit(true);
+    setSelectedTab(2)
+  }
 
   return (
     <>
@@ -108,6 +116,7 @@ export default function UserProfile() {
                   variant="contained"
                   color="secondary"
                   style={{ width: "100%", maxWidth: "480px" }}
+                  onClick={handleEditbutton}
                 >
                   Edit Profile
                 </Button>
@@ -126,6 +135,7 @@ export default function UserProfile() {
             <Tabs value={selectedTab} onChange={handleTabChange}>
               <Tab label="Questions" />
               <Tab label="Answers" />
+              {isEdit && <Tab label="Edit" />}
             </Tabs>
           </Box>
           <CustomTabPanel value={selectedTab} index={0}>
@@ -137,6 +147,9 @@ export default function UserProfile() {
           </CustomTabPanel>
           <CustomTabPanel value={selectedTab} index={1}>
             <div>Not implemented yet</div>
+          </CustomTabPanel>
+          <CustomTabPanel value={selectedTab} index={2}>
+            <EditProfile></EditProfile>
           </CustomTabPanel>
         </div>
       </div>

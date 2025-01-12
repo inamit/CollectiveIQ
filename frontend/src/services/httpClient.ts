@@ -40,6 +40,7 @@ export class HttpClientFactory {
             }
           }
         }
+        console.log(_)
       },
     });
   }
