@@ -37,3 +37,4 @@ const PrivateRoute = () => {
 }
 
 export default App
+

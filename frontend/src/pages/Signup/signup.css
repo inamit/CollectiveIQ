@@ -5,6 +5,7 @@ body {
 
 .signup-inputs-flexbox {
   width: 70%;
+  max-width: 500px;
   height: 80vh;
   border-radius: 10px;
   padding: 40px;
@@ -27,8 +28,12 @@ body {
 }
 
 @keyframes expand {
-  0% { top: -20%; }
-  100% { top: 0; }
+  0% {
+    top: -20%;
+  }
+  100% {
+    top: 0;
+  }
 }
 
 .signup-input {
@@ -36,17 +41,13 @@ body {
   padding: 8px;
   width: 100%;
   max-width: 500px;
-  border: 1px solid rgb(92, 92, 92);;
-  border-radius: 5px;
-  align-self: center;
-  color: white;
-  background-color: rgb(92, 92, 92);
 }
 
 .signup-buttons-row {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .signup-button {
@@ -73,11 +74,14 @@ body {
   color: white;
 }
 
-.google-icon { 
-  display: "flex";
-  align-items: center;
-}
-
 .google-text {
   margin-left: 8px;
+}
+
+.input-wrapper {
+  margin-bottom: 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
 }
