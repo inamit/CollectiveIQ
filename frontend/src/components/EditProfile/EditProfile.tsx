@@ -20,23 +20,12 @@ export default function EditProfile() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleNameSubmit = async (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if(user != null){
-        const res = (await usersService.updateUserById(user._id, formData.username)).request;
+        const res = (await usersService.updateUserById(user._id, formData.username, formData.email, formData.password));
+        console.log(res)
     }
-  };
-  const handleEmailSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Update user context with the new data
-
-    alert("Profile updated successfully!");
-  };
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Update user context with the new data
-
-    alert("Profile updated successfully!");
   };
 
     return (
@@ -73,9 +62,6 @@ export default function EditProfile() {
                     } 
                 }}
             />
-            <Button type="submit" variant="contained" color="primary" onClick={handleNameSubmit}>
-                Username Save
-            </Button>
             <TextField
                 label="Email"
                 name="email"
@@ -97,9 +83,6 @@ export default function EditProfile() {
                     } 
                 }}
             />
-            <Button type="submit" variant="contained" color="primary">
-                Email Save
-            </Button>
             <TextField
                 label="Password"
                 name="password"
@@ -142,8 +125,8 @@ export default function EditProfile() {
                     } 
                 }}
             />
-      <Button type="submit" variant="contained" color="primary">
-        Save Password Changes
+      <Button type="submit" variant="contained" color="primary" onClick={handleEditSubmit}>
+        Save Changes
       </Button>
     </Box>
     )

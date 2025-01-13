@@ -26,15 +26,15 @@ export class UsersService {
     return { request, cancel: () => controller.abort() };
   }
 
-  async updateUserById(userId: string, username: string) {
+  async updateUserById(userId: string, username: string, email: string, password: string) {
     const controller = new AbortController();
-
-    const data = {
-      signal: controller.signal,
-      username: username,
-    }
     const request = await this.httpClient.patch(
-      `${config.backendURL}/users/${userId}`, data);
+      `${config.backendURL}/users/${userId}`, {
+      signal: controller.signal,
+      username,
+      email,
+      password,
+    });
 
     return { request, cancel: () => controller.abort() };
   }

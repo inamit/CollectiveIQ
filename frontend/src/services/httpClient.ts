@@ -27,20 +27,20 @@ export class HttpClientFactory {
       headers: {
         Authorization: `Bearer ${this.user.accessToken}`,
       },
-      transformRequest: async (_) => {
+      transformRequest: (data) => {
         if (this.user && this.user.accessToken && this.user.refreshToken) {
           const decodedAccessToken = jwtDecode(this.user.accessToken);
           const decodedRefreshToken = jwtDecode(this.user.refreshToken);
 
           if (decodedAccessToken.exp! < Date.now() / 1000) {
             if (decodedRefreshToken.exp! > Date.now() / 1000) {
-              await this.refreshAccessToken(this.user);
+              this.refreshAccessToken(this.user);
             } else {
               this.setUser!(null);
             }
           }
         }
-        console.log(_)
+        return data
       },
     });
   }
