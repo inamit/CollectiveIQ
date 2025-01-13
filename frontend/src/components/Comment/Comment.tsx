@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
-import { FaRegComment } from 'react-icons/fa';
 import './Comment.css';
+import { Comment as CommentIcon } from '@mui/icons-material';
+import {Button, Typography} from "@mui/material";
+import Avatar from "@mui/material/Avatar";
 const Comment = ({ username, text, time }) => {
     return (
         <div className="comment-container">
-            <div className="comment-header">
-                <img
-                    className="comment-avatar"
-                    src="https://via.placeholder.com/40"
-                    alt="User Avatar"
-                />
+            <div className="comment-header" style={{ display: 'flex', alignItems: 'center' }}>
+                <Avatar src="https://via.placeholder.com/40" alt="User Avatar" style={{ marginRight: '8px' }} />
                 <div className="comment-details">
-                    <h4 className="comment-username">{username}</h4>
-                    <p className="comment-time">{time}</p>
+                    <Typography variant="body2" sx={{mb: 2}} className="comment-username" style={{ fontWeight: 'bold' }}>
+                        {username}
+                    </Typography>
+                    <Typography variant="body2" sx={{mb: 2}} className="comment-time" style={{ color: '#999' }}>
+                        {time}
+                    </Typography>
                 </div>
             </div>
-            <p className="comment-text">{text}</p>
+            <Typography variant="body2" sx={{mb: 2}} className="comment-text" style={{ marginTop: '10px' }}>
+                {text}
+            </Typography>
         </div>
     );
 };
@@ -34,15 +38,26 @@ const CommentSection = ({ comments, addComment }) => {
     return (
         <div className="comment-section">
             <div className="add-comment">
-        <textarea
+        < textarea
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             placeholder="Add a comment..."
         />
-                <button onClick={handleAddComment}>
-                    <FaRegComment /> Add Comment
-                </button>
+                <Button
+                    onClick={handleAddComment}
+                    variant="contained"
+                    size="small"
+                    startIcon={<CommentIcon />}
+                    style={{ marginTop: '8px' }}
+                >
+                    Add Comment
+                </Button>
             </div>
+
+
+
+
+
             <div className="comments-list">
                 {comments.length > 0 ? (
                     comments.map((comment, index) => (
