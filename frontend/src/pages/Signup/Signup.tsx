@@ -87,7 +87,7 @@ export default function SignUp({ className }: SignUpProps) {
   const onGoogleSignInSuccess = async (response: any) => {
     const credential = response.credential;
     let authenticationService = new AuthenticationService();
-
+    
     authenticationService
       .google(credential)
       .then((res) => {
@@ -120,7 +120,7 @@ export default function SignUp({ className }: SignUpProps) {
           type="text"
           value={username}
           placeholder="Enter Username"
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e: any) => setUsername(e.target.value)}
         />
       </div>
       <div className="input-wrapper">
@@ -131,7 +131,7 @@ export default function SignUp({ className }: SignUpProps) {
           type="email"
           value={email}
           placeholder="Enter Email"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e: any) => setEmail(e.target.value)}
         />
       </div>
       <div className="input-wrapper">
@@ -142,7 +142,7 @@ export default function SignUp({ className }: SignUpProps) {
           type="password"
           value={password}
           placeholder="Enter Password"
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e: any) => setPassword(e.target.value)}
         />
       </div>
       <div className="input-wrapper">
@@ -153,7 +153,7 @@ export default function SignUp({ className }: SignUpProps) {
           type="password"
           value={passwordVerification}
           placeholder="Verify Password"
-          onChange={(e) => setPasswordVerification(e.target.value)}
+          onChange={(e: any) => setPasswordVerification(e.target.value)}
         />
       </div>
       <div className="signup-buttons-row">
