@@ -4,11 +4,7 @@ import { routes } from "../../router/routes.ts";
 import { PostsService } from "../../services/postsService.ts";
 import { useUser } from "../../context/userContext.tsx";
 import AppTextField from "../../components/TextField/TextField.tsx";
-import Button from "@mui/material/Button";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DeleteIcon from "@mui/icons-material/Delete";
-import IconButton from "@mui/material/IconButton";
-import "./CreatePost.css";
+import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
 
 const AskQuestion = () => {
   const [title, setTitle] = useState("");
@@ -16,10 +12,6 @@ const AskQuestion = () => {
   const [image, setImage] = useState<File | null>(null);
   const navigate = useNavigate();
   const { user, setUser } = useUser();
-
-  const handleImageUpload = (e: any) => {
-    setImage(e.target.files[0]);
-  };
 
   const handleCancel = () => {
     setTitle("");
@@ -99,49 +91,7 @@ const AskQuestion = () => {
           />
         </div>
 
-        {image ? (
-          <div>
-            <label
-              htmlFor="imagePreview"
-              style={{
-                display: "block",
-                fontSize: "14px",
-                color: "#bbb",
-                marginBottom: "8px",
-                textAlign: "left",
-              }}
-            >
-              Upload Image:
-            </label>
-            <div className="imageContainer">
-              <img
-                id="imagePreview"
-                style={{ height: 400, width: 400 }}
-                src={URL.createObjectURL(image)}
-              />
-              <div className="imageOverlay">
-                <IconButton aria-label="delete" onClick={() => setImage(null)}>
-                  <DeleteIcon sx={{ color: "red" }} />
-                </IconButton>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <Button
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-            startIcon={<CloudUploadIcon />}
-          >
-            Upload Image (optional)
-            <input
-              type="file"
-              style={{ display: "none" }}
-              onChange={handleImageUpload}
-            />
-          </Button>
-        )}
+        <ImagePicker image={image} setImage={setImage} />
         <div
           style={{
             display: "flex",
