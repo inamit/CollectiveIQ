@@ -1,79 +1,105 @@
-import React, { useState } from 'react';
-import './Comment.css';
-import { Comment as CommentIcon } from '@mui/icons-material';
-import {Button, Typography} from "@mui/material";
-import Avatar from "@mui/material/Avatar";
-const Comment = ({ username, text, time }) => {
-    return (
-        <div className="comment-container">
-            <div className="comment-header" style={{ display: 'flex', alignItems: 'center' }}>
-                <Avatar src="https://via.placeholder.com/40" alt="User Avatar" style={{ marginRight: '8px' }} />
-                <div className="comment-details">
-                    <Typography variant="body2" sx={{mb: 2}} className="comment-username" style={{ fontWeight: 'bold' }}>
-                        {username}
-                    </Typography>
-                    <Typography variant="body2" sx={{mb: 2}} className="comment-time" style={{ color: '#999' }}>
-                        {time}
-                    </Typography>
-                </div>
-            </div>
-            <Typography variant="body2" sx={{mb: 2}} className="comment-text" style={{ marginTop: '10px' }}>
-                {text}
-            </Typography>
+import { useState } from "react";
+import "./Comment.css";
+import { Comment as CommentIcon } from "@mui/icons-material";
+import { Button, Typography } from "@mui/material";
+import User from "../../models/user";
+import CommentModel from "../../models/comment";
+import UserAvatar from "../UserAvatar/UserAvatar";
+
+interface CommentProps {
+  user: User;
+  content: string;
+  time: string;
+}
+const Comment = ({ user, content, time }: CommentProps) => {
+  return (
+    <div className="comment-container">
+      <div
+        className="comment-header"
+        style={{ display: "flex", alignItems: "center" }}
+      >
+        <UserAvatar user={user} className="user-avatar" />
+        <div className="comment-details">
+          <Typography
+            variant="body2"
+            sx={{ mb: 2 }}
+            className="comment-username"
+            style={{ fontWeight: "bold" }}
+          >
+            {user.username}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ mb: 2 }}
+            className="comment-time"
+            style={{ color: "#999" }}
+          >
+            {time}
+          </Typography>
         </div>
-    );
+      </div>
+      <Typography
+        variant="body2"
+        sx={{ mb: 2 }}
+        className="comment-text"
+        style={{ marginTop: "10px" }}
+      >
+        {content}
+      </Typography>
+    </div>
+  );
 };
 
-const CommentSection = ({ comments, addComment }) => {
-    const [commentText, setCommentText] = useState('');
+interface CommentSectionProps {
+  comments: CommentModel[];
+  addComment: (content: string) => void;
+}
 
-    const handleAddComment = () => {
-        if (commentText.trim()) {
-            const newComment = { username: 'John Doe', text: commentText, time: 'Just now' };
-            addComment(newComment);
-            setCommentText('');
-        }
-    };
+const CommentSection = ({ comments, addComment }: CommentSectionProps) => {
+  const [commentText, setCommentText] = useState("");
 
-    return (
-        <div className="comment-section">
-            <div className="add-comment">
-        < textarea
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            placeholder="Add a comment..."
+  const handleAddComment = () => {
+    if (commentText.trim()) {
+      addComment(commentText);
+      setCommentText("");
+    }
+  };
+
+  return (
+    <div className="comment-section">
+      <div className="add-comment">
+        <textarea
+          value={commentText}
+          onChange={(e) => setCommentText(e.target.value)}
+          placeholder="Add a comment..."
         />
-                <Button
-                    onClick={handleAddComment}
-                    variant="contained"
-                    size="small"
-                    startIcon={<CommentIcon />}
-                    style={{ marginTop: '8px' }}
-                >
-                    Add Comment
-                </Button>
-            </div>
+        <Button
+          onClick={handleAddComment}
+          variant="contained"
+          size="small"
+          startIcon={<CommentIcon />}
+          style={{ marginTop: "8px" }}
+        >
+          Add Comment
+        </Button>
+      </div>
 
-
-
-
-
-            <div className="comments-list">
-                {comments.length > 0 ? (
-                    comments.map((comment, index) => (
-                        <Comment
-                            key={index}
-                            username={comment.username}
-                            text={comment.text}
-                            time={comment.time}
-                        />
-                    ))
-                ) : (
-                    <p>No comments yet</p>
-                )}
-            </div>
-        </div>
-    );
+      <div className="comments-list">
+        {comments?.length > 0 ? (
+          comments?.map((comment: CommentModel) => (
+            <Comment
+              key={comment._id}
+              user={comment.userId}
+              content={comment.content}
+              time={comment.date?.toString()}
+            />
+          ))
+        ) : (
+          <p>No comments yet</p>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default CommentSection;
