@@ -214,13 +214,19 @@ const googleAuthentication = async (
     }
 
     const existingUser: IUser | null = await User.findOne({
-      username: payload.email,
+      email: payload.email,
     });
 
     if (existingUser) {
-      return await token.returnTokens(existingUser, res, {
-        message: "logged in with google",
-      });
+      if (existingUser.username === payload.email) {
+        return await token.returnTokens(existingUser, res, {
+          message: "logged in with google",
+        });
+      } else {
+        return res
+          .status(400)
+          .json({ message: "User already exists with this email" });
+      }
     }
 
     req.body = {
