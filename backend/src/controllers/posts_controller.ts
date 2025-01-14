@@ -9,8 +9,9 @@ const getPosts = async (req: Request, res: Response): Promise<any> => {
 
   try {
     let posts: IPost[] | null = await (userId
-      ? Post.find({ userId: userId })
-      : Post.find());
+      ? Post.find({ userId: userId }).populate("userId")
+      : Post.find()
+    ).populate("userId");
     return res.json(posts);
   } catch (err: any) {
     console.warn("Error fetching posts:", err);
@@ -30,7 +31,7 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
       userId: req.params.userId,
       imageUrl,
     });
-    const savedPost: IPost = await post.save();
+    const savedPost: IPost = await (await post.save()).populate("userId");
     return res.json(savedPost);
   } catch (err: any) {
     console.warn("Error saving post:", err);
