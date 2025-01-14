@@ -7,6 +7,8 @@ import React, { useState } from "react";
 import { paginate } from "../../utils/pagination";
 import { LoadingState } from "../../services/loadingState";
 import _ from "lodash";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../../router/routes";
 
 interface Props {
   posts: Post[];
@@ -20,8 +22,9 @@ export default function PostsList({
   loadingState,
 }: Props) {
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
-  const paginatedPosts = paginate(posts, maxPostsPerPage);
+  const paginatedPosts: Post[][] = paginate(posts, maxPostsPerPage);
 
   if (loadingState === LoadingState.LOADING) {
     const postsSkeletons: React.JSX.Element[] = [];
@@ -46,8 +49,11 @@ export default function PostsList({
       {paginatedPosts.length === 0 && <div>No posts found</div>}
       <List className="postsList">
         {paginatedPosts[currentPage - 1]?.map((post) => (
-          <div key={post.id}>
-            <ListItem>
+          <div key={post._id}>
+            <ListItem
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate(`${routes.POST}/${post._id}`)}
+            >
               <PostTile post={post} />
             </ListItem>
             <Divider />
