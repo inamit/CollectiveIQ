@@ -44,8 +44,12 @@ export default function SignIn(){
 
             navigate(routes.USER_PROFILE);
           } else {
-          toast.error("Status code error: " + response.status);
+          toast.error("Error during sign in, try again!");
         }})
+        .catch((error) => {
+          console.error('Error occurred:', error);
+          toast.error("Error during sign in, try again!");
+        })
       }
   }
 
@@ -83,7 +87,7 @@ export default function SignIn(){
   };
 
   return (
-    <div className={`signup-inputs-flexbox`}>
+    <div className={"signup-inputs-flexbox"}>
       <form onSubmit={handleFormSubmit}>
         <h1>Sign In</h1>
         <p>Sign In to start posting and viewing</p>
@@ -124,7 +128,7 @@ export default function SignIn(){
           />
       </div>
       <div className="social">
-              <p className="social-text">Don't have an account? <Link to="/Signup" className="signin-button">Signup</Link></p>
+              <p className="social-text">Don't have an account? <Link to={routes.SIGN_UP} className="signin-button">Signup</Link></p>
           </div>
       </form>
     </div>
