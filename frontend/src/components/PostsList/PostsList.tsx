@@ -46,7 +46,7 @@ export default function PostsList({
       {paginatedPosts.length === 0 && <div>No posts found</div>}
       <List className="postsList">
         {paginatedPosts[currentPage - 1]?.map((post) => (
-          <div key={post.id}>
+          <div key={post._id}>
             <ListItem>
               <PostTile post={post} />
             </ListItem>

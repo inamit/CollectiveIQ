@@ -16,7 +16,7 @@ export default function PostTile({ post }: Props) {
           <Typography variant="body1">{post.title}</Typography>
           <Typography variant="caption">
             Asked on {new Date(post.date).toDateString()} by{" "}
-            {post.userId.username}
+            {post.userId?.username}
           </Typography>
           <Typography variant="caption">{post.content}</Typography>
         </div>
