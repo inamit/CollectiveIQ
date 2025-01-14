@@ -19,7 +19,10 @@ export default function NavBar() {
       <nav className="navbar">
         <span className="navbarAppTitle">
           <img src={appIcon} alt="app icon" className="appIcon" />
-          <h1 className="appLabel">CollectiveIQ</h1>
+    <h1 className="appLabel"
+        onClick={() => {
+            navigate(routes.USER_PROFILE)
+        }}>CollectiveIQ</h1>
         </span>
         <span className="navbarActions">
           <AppTextField
@@ -37,20 +40,23 @@ export default function NavBar() {
               },
             }}
           />
-          {user ? getUserActions(user) : getGuestActions(navigate)}
+          {user ? getUserActions(user,navigate) : getGuestActions(navigate)}
         </span>
       </nav>
     </div>
   );
 }
 
-function getUserActions(user: User) {
+function getUserActions(user: User, navigate: NavigateFunction) {
   return (
     <span className="userActions">
       <Button
         variant="contained"
         color="primary"
         style={{ borderRadius: "12px" }}
+        onClick={() => {
+            navigate(routes.ASK_QUESTION);
+        }}
       >
         Ask a Question
       </Button>

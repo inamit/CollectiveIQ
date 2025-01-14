@@ -2,9 +2,10 @@ import { HttpClientFactory } from "./httpClient";
 import config from "../config.json";
 import Post from "../models/post";
 import User from "../models/user";
+import Comment from "../models/comment";
 import { AxiosInstance } from "axios";
 
-export class PostsService {
+export class CommentsService {
   httpClient: AxiosInstance;
 
   constructor(user?: User, setUser?: (user: User | null) => void) {
@@ -14,10 +15,10 @@ export class PostsService {
       : httpClientFactory.unauthorizedHttpClient();
   }
 
-  getPostsByUser(userId: string) {
+  getCommentsByPost(postId: string) {
     const controller = new AbortController();
-    const request = this.httpClient.get<Post[]>(
-      `${config.backendURL}/posts?userId=${userId}`,
+    const request = this.httpClient.get<Comment[]>(
+      `${config.backendURL}/comments?post_id=${postId}`,
       {
         signal: controller.signal,
       }
@@ -26,32 +27,12 @@ export class PostsService {
     return { request, cancel: () => controller.abort() };
   }
 
-  getPostById(postId: string) {
+  saveNewComment(content: string, postId: string) {
     const controller = new AbortController();
-    const request = this.httpClient.get<Post>(
-      `${config.backendURL}/posts/${postId}`,
-      {
-        signal: controller.signal,
-      }
-    );
-
-    return { request, cancel: () => controller.abort() };
-  }
-
-  saveNewPost(title: string, content: string, image: File | null) {
-    const controller = new AbortController();
-    const formData = new FormData();
-
-    if (image) {
-      formData.append("file", image);
-    }
-
-    formData.append("title", title);
-    formData.append("content", content);
 
     let request = this.httpClient.post<Post>(
-      `${config.backendURL}/posts`,
-      formData,
+      `${config.backendURL}/comments?post_id=${postId}`,
+      { content },
       {
         signal: controller.signal,
       }
