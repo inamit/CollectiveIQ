@@ -244,7 +244,7 @@ const PostComponent = () => {
           <UserAvatar user={post?.userId} className="user-avatar" />
           <Box display="flex" alignItems="start" flexDirection="column">
             <Typography variant="body1">{post?.userId?.username}</Typography>
-            <Typography variant="caption">2 hours ago</Typography>
+            <Typography variant="caption">{post?.date?.toString()}</Typography>
           </Box>
         </Box>
 
