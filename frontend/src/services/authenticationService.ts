@@ -8,6 +8,15 @@ export class AuthenticationService {
     this.httpClientFactory = new HttpClientFactory();
   }
 
+  signIn(username: string, password: string) {
+    return this.httpClientFactory
+      .unauthorizedHttpClient()
+      .post(config.signinUrl, {
+        username,
+        password,
+      })
+  }
+
   signUp(username: string, email: string, password: string) {
     return this.httpClientFactory
       .unauthorizedHttpClient()

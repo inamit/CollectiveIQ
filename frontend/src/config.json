@@ -1,6 +1,7 @@
 {
   "backendURL": "http://localhost:3000",
   "signupUrl": "/users",
+  "signinUrl": "/users/login",
   "googleAccountUrl": "/users/google",
   "googleClientid": "1071756969594-h4t1vafuh2jeqnphvvd0pfc8b9a7bfk8.apps.googleusercontent.com"
 }
