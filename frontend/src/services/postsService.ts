@@ -97,4 +97,30 @@ export class PostsService {
 
     return { request, cancel: () => controller.abort() };
   }
+
+  like(postId: string) {
+    const controller = new AbortController();
+    let request = this.httpClient.post<{likesAmount: number, dislikesAmount: number}>(
+      `${config.backendURL}/posts/${postId}/like`,
+      {},
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
+
+  dislike(postId: string) {
+    const controller = new AbortController();
+    let request = this.httpClient.post<{likesAmount: number, dislikesAmount: number}>(
+      `${config.backendURL}/posts/${postId}/dislike`,
+      {},
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
 }

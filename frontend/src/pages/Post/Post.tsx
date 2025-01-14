@@ -26,7 +26,7 @@ const PostComponent = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
   const { user, setUser } = useUser();
-  const { post, comments, setComments } = usePost(postId);
+  const { post, comments, setComments, refreshPost } = usePost(postId);
   const [editablePost, setEditablePost] = useState<Partial<Post> | null>(post);
   const [image, setImage] = useState<File | null>(null);
 
@@ -66,25 +66,31 @@ const PostComponent = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleLike = () => {
-    if (!liked) {
-      setLiked(true);
-      if (disliked) {
-        setDisliked(false);
-      }
-    } else {
-      setLiked(false);
-    }
+    const postService = new PostsService(user!, setUser);
+
+    postService
+      .like(postId!)
+      .request.then(() => {
+        refreshPost();
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Failed to like post");
+      });
   };
 
   const handleDislike = () => {
-    if (!disliked) {
-      setDisliked(true);
-      if (liked) {
-        setLiked(false);
-      }
-    } else {
-      setDisliked(false);
-    }
+    const postService = new PostsService(user!, setUser);
+
+    postService
+      .dislike(postId!)
+      .request.then(() => {
+        refreshPost();
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Failed to dislike post");
+      });
   };
 
   const toggleEditMode = () => {

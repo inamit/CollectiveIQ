@@ -18,17 +18,11 @@ const usePost = (postId: string | undefined) => {
   const [error, setError] = useState<string | null>(null);
   const { user, setUser } = useUser();
 
-  useEffect(() => {
-    if (!postId) {
-      return;
-    }
-
-    setPostLoadingState(LoadingState.LOADING);
-
+  const refreshPost = () => {
     const { request, cancel } = new PostsService(
       user ?? undefined,
       setUser
-    ).getPostById(postId);
+    ).getPostById(postId!);
 
     request
       .then((response: AxiosResponse<Post>) => {
@@ -39,6 +33,18 @@ const usePost = (postId: string | undefined) => {
         setError(err.message);
         setPostLoadingState(LoadingState.ERROR);
       });
+
+    return { cancel };
+  };
+
+  useEffect(() => {
+    if (!postId) {
+      return;
+    }
+
+    setPostLoadingState(LoadingState.LOADING);
+
+    const { cancel } = refreshPost();
 
     return () => cancel();
   }, [user, postId]);
@@ -76,6 +82,7 @@ const usePost = (postId: string | undefined) => {
     setCommentsLoadingState,
     error,
     setError,
+    refreshPost,
   };
 };
 

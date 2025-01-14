@@ -24,7 +24,7 @@ const CommentComponent = ({ comment }: CommentProps) => {
             className="comment-username"
             style={{ fontWeight: "bold" }}
           >
-            {comment.userId.username}
+            {comment.userId?.username}
           </Typography>
           <Typography
             variant="body2"
