@@ -15,16 +15,12 @@ const usePosts = (selectedUser?: User) => {
   const { user, setUser } = useUser();
 
   useEffect(() => {
-    if (!selectedUser) {
-      return;
-    }
-
     setPostsLoadingState(LoadingState.LOADING);
 
-    const { request, cancel } = new PostsService(
-      user ?? undefined,
-      setUser
-    ).getPostsByUser(selectedUser!._id);
+    const postsService = new PostsService(user ?? undefined, setUser);
+    const { request, cancel } = selectedUser
+      ? postsService.getPostsByUser(selectedUser._id)
+      : postsService.getPosts();
 
     request
       .then((response: AxiosResponse<Post[]>) => {

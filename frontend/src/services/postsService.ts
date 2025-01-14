@@ -25,4 +25,13 @@ export class PostsService {
 
     return { request, cancel: () => controller.abort() };
   }
+
+  getPosts() {
+    const controller = new AbortController();
+    const request = this.httpClient.get<Post[]>(`${config.backendURL}/posts`, {
+      signal: controller.signal,
+    });
+
+    return { request, cancel: () => controller.abort() };
+  }
 }
