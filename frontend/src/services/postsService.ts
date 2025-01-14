@@ -25,4 +25,26 @@ export class PostsService {
 
     return { request, cancel: () => controller.abort() };
   }
+
+  saveNewPost(title: string, content: string, image: File | null) {
+    const controller = new AbortController();
+    const formData = new FormData();
+
+    if (image) {
+      formData.append("file", image);
+    }
+
+    formData.append("title", title);
+    formData.append("content", content);
+
+    let request = this.httpClient.post<Post>(
+      `${config.backendURL}/posts`,
+      formData,
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
 }
