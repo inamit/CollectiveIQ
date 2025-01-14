@@ -2,6 +2,7 @@ import { HttpClientFactory } from "./httpClient";
 import config from "../config.json";
 import Post from "../models/post";
 import User from "../models/user";
+import Comment from "../models/comment";
 import { AxiosInstance } from "axios";
 
 export class CommentsService {

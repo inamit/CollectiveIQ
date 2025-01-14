@@ -1,4 +1,5 @@
 import User from "./user";
+import Comment from "./comment";
 
 export default interface Post {
   title: string;
@@ -7,7 +8,7 @@ export default interface Post {
   _id: string;
   userId: User;
   date: string;
-  likes: number;
-  dislikes: number;
+  likes: string[];
+  dislikes: string[];
   comments: Comment[];
 }

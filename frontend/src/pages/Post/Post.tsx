@@ -1,5 +1,12 @@
-import React, { useState } from "react";
-import { IconButton, Avatar, Box, Card, CardContent, Typography, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
+import {
+  IconButton,
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -8,174 +15,209 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import CommentSection from "../../components/Comment/Comment.tsx";
+import { useParams } from "react-router-dom";
+import { useUser } from "../../context/userContext.tsx";
+import usePost from "../../hooks/usePost.ts";
+import Post from "../../models/post.ts";
+import { CommentsService } from "../../services/commentsService.ts";
+import UserAvatar from "../../components/UserAvatar/UserAvatar.tsx";
 
-const PostComponent = ({ title, description, imageUrl }) => {
-    const [likes, setLikes] = useState(0);
-    const [dislikes, setDislikes] = useState(0);
-    const [liked, setLiked] = useState(false);
-    const [disliked, setDisliked] = useState(false);
-    const [comments, setComments] = useState([
-        { username: "Jane Doe", text: "Great post!", time: "1 hour ago" },
-    ]);
+const PostComponent = () => {
+  const { postId } = useParams();
+  const { user, setUser } = useUser();
+  const { post } = usePost(postId);
+  const [editablePost, setEditablePost] = useState<Partial<Post> | null>(post);
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [editableTitle, setEditableTitle] = useState(title ?? "I love Alik");
-    const [editableDescription, setEditableDescription] = useState(description ?? "I really love Alik");
+  useEffect(() => {
+    setEditablePost(post);
+  }, [post]);
 
-    const handleLike = () => {
-        if (!liked) {
-            setLikes(likes + 1);
-            setLiked(true);
-            if (disliked) {
-                setDislikes(dislikes - 1);
-                setDisliked(false);
-            }
-        } else {
-            setLikes(likes - 1);
-            setLiked(false);
-        }
-    };
+  const handleInputChange = (field: string, value: string) => {
+    setEditablePost({ ...editablePost, [field]: value });
+  };
 
-    const handleDislike = () => {
-        if (!disliked) {
-            setDislikes(dislikes + 1);
-            setDisliked(true);
-            if (liked) {
-                setLikes(likes - 1);
-                setLiked(false);
-            }
-        } else {
-            setDislikes(dislikes - 1);
-            setDisliked(false);
-        }
-    };
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
 
-    const toggleEditMode = () => {
-        setIsEditing(!isEditing);
-    };
+  useEffect(() => {
+    if (post && user) {
+      setLiked(post.likes.includes(user._id));
+      setDisliked(post.dislikes.includes(user._id));
+    }
+  }, [post?.likes, post?.dislikes]);
 
-    const addComment = (newComment) => {
-        setComments([...comments, newComment]);
-    };
+  const [isEditing, setIsEditing] = useState(false);
 
-    return (
-        <Box
+  const handleLike = () => {
+    if (!liked) {
+      setLiked(true);
+      if (disliked) {
+        setDisliked(false);
+      }
+    } else {
+      setLiked(false);
+    }
+  };
+
+  const handleDislike = () => {
+    if (!disliked) {
+      setDisliked(true);
+      if (liked) {
+        setLiked(false);
+      }
+    } else {
+      setDisliked(false);
+    }
+  };
+
+  const toggleEditMode = () => {
+    setIsEditing(!isEditing);
+  };
+
+  const addComment = (content: string) => {
+    const commentService = new CommentsService(user!, setUser);
+    commentService.saveNewComment(content, postId!);
+    // setComments([...comments, newComment]);
+  };
+
+  return (
+    <Box
+      sx={{
+        backgroundColor: "#121212", // Dark background for the page
+        minHeight: "100vh",
+        padding: "32px",
+        color: "#fff", // Light text
+      }}
+    >
+      <Card
+        sx={{
+          maxWidth: 800,
+          margin: "0 auto",
+          padding: 2,
+          backgroundColor: "#1e1e1e", // Dark background for the card
+          color: "#fff",
+          position: "relative",
+        }}
+      >
+        {post?.userId._id === user?._id ? (
+          <Box
             sx={{
-                backgroundColor: "#121212", // Dark background for the page
-                minHeight: "100vh",
-                padding: "32px",
-                color: "#fff", // Light text
+              position: "absolute",
+              top: 8,
+              right: 8,
+              display: "flex",
+              gap: 1,
             }}
-        >
-            <Card
-                sx={{
-                    maxWidth: 800,
-                    margin: "0 auto",
-                    padding: 2,
-                    backgroundColor: "#1e1e1e", // Dark background for the card
-                    color: "#fff",
-                    position: "relative",
-                }}
+          >
+            <IconButton
+              size="small"
+              onClick={toggleEditMode}
+              sx={{ "&:hover": { color: "#5B6DC9" }, color: "#fff" }}
             >
-                {/* Header with Edit/Delete */}
-                <Box sx={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 1 }}>
-                    <IconButton size="small" onClick={toggleEditMode} sx={{"&:hover": { color: "#5B6DC9" }, color: "#fff" }}>
-                            {isEditing ? <SaveIcon /> : <EditIcon />}
+              {isEditing ? <SaveIcon /> : <EditIcon />}
+            </IconButton>
+            <IconButton
+              size="small"
+              sx={{ "&:hover": { color: "#E57373" }, color: "#fff" }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        ) : (
+          <div></div>
+        )}
 
-                    </IconButton>
-                    <IconButton size="small" sx={{  "&:hover": { color: "#E57373" }, color: "#fff" }}>
-                        <DeleteIcon />
-                    </IconButton>
-                </Box>
+        <Typography
+          variant="h5"
+          sx={{
+            textAlign: "left",
+            mb: 2,
+          }}
+        >
+          {isEditing ? (
+            <TextField
+              value={editablePost?.title as string}
+              onChange={(e) => handleInputChange("title", e.target.value)}
+            />
+          ) : (
+            (editablePost?.title as string)
+          )}
+        </Typography>
 
-                <Typography
-                    variant="h5"
-                    sx={{
-                        textAlign: "left",
-                        mb: 2,
-                    }}
-                >
-                    {isEditing ? (
-                        <TextField
-                            value={editableTitle as string}
-                            onChange={(e) => setEditableTitle(e.target.value)}
-                        />
-                    ) : (
-                        editableTitle as string
-                    )}
-                </Typography>
-
-                {/* User Info */}
-                <Box display="flex" alignItems="center" mb={2}>
-                    <Avatar
-                        src="https://via.placeholder.com/40"
-                        alt="User Avatar"
-                        sx={{ width: 56, height: 56, marginRight: 2 }}
-                    />
-                    <Box>
-                        <Typography variant="body1">John Doe</Typography>
-                        <Typography variant="caption">
-                            2 hours ago
-                        </Typography>
-                    </Box>
-                </Box>
-
-                {/* Post Content */}
-                <CardContent sx={{ textAlign: "left" }}>
-                    {isEditing ? (
-                        <TextField
-                            fullWidth
-                            multiline
-                            minRows={4}
-                            variant="outlined"
-                            value={editableDescription}
-                            onChange={(e) => setEditableDescription(e.target.value)}
-                            sx={{
-                                backgroundColor: "#333",
-                                color: "#fff",
-                                "& .MuiInputBase-input": {
-                                    color: "#fff",
-                                },
-                            }}
-                        />
-                    ) : (
-                        <Typography variant="body2">{editableDescription as string}</Typography>
-                    )}
-                    {imageUrl && (
-                        <Box
-                            component="img"
-                            src={imageUrl}
-                            alt="Post"
-                            sx={{
-                                width: "100%",
-                                borderRadius: 1,
-                                marginTop: 2,
-                            }}
-                        />
-                    )}
-                </CardContent>
-
-                {/* Actions */}
-                <Box display="flex" alignItems="center" gap={2} px={2}>
-                    <IconButton onClick={handleLike} sx={{ color: liked ? "#5B6DC9" : "inherit" }}>
-                        {liked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
-                    </IconButton>
-                    <Typography>{likes}</Typography>
-                    <IconButton onClick={handleDislike} sx={{ color: disliked ? "#E57373" : "inherit" }}>
-                        {disliked ? <ThumbDownAltIcon /> : <ThumbDownAltOutlinedIcon />}
-                    </IconButton>
-                    <Typography>{dislikes}</Typography>
-                </Box>
-
-                <Box mt={2}>
-                    <Typography variant="body2" sx={{ textAlign: "left", mb: 1 }}>
-                        {comments.length} Comment{comments.length !== 1 ? "s" : ""}
-                    </Typography>
-                    <CommentSection comments={comments} addComment={addComment} />
-                </Box>
-            </Card>
+        {/* User Info */}
+        <Box display="flex" alignItems="center" mb={2}>
+          <UserAvatar user={post?.userId} className="user-avatar" />
+          <Box display="flex" alignItems="start" flexDirection="column">
+            <Typography variant="body1">{post?.userId?.username}</Typography>
+            <Typography variant="caption">2 hours ago</Typography>
+          </Box>
         </Box>
-    );
+
+        {/* Post Content */}
+        <CardContent sx={{ textAlign: "left" }}>
+          {isEditing ? (
+            <TextField
+              fullWidth
+              multiline
+              minRows={4}
+              variant="outlined"
+              value={editablePost?.content as string}
+              onChange={(e) => handleInputChange("content", e.target.value)}
+              sx={{
+                backgroundColor: "#333",
+                color: "#fff",
+                "& .MuiInputBase-input": {
+                  color: "#fff",
+                },
+              }}
+            />
+          ) : (
+            <Typography variant="body2">
+              {editablePost?.content as string}
+            </Typography>
+          )}
+          {post?.imageUrl && (
+            <Box
+              component="img"
+              src={post?.imageUrl}
+              alt="Post"
+              sx={{
+                width: "100%",
+                borderRadius: 1,
+                marginTop: 2,
+              }}
+            />
+          )}
+        </CardContent>
+
+        {/* Actions */}
+        <Box display="flex" alignItems="center" gap={2} px={2}>
+          <IconButton
+            onClick={handleLike}
+            sx={{ color: liked ? "#5B6DC9" : "inherit" }}
+          >
+            {liked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
+          </IconButton>
+          <Typography>{post?.likes.length}</Typography>
+          <IconButton
+            onClick={handleDislike}
+            sx={{ color: disliked ? "#E57373" : "inherit" }}
+          >
+            {disliked ? <ThumbDownAltIcon /> : <ThumbDownAltOutlinedIcon />}
+          </IconButton>
+          <Typography>{post?.dislikes.length}</Typography>
+        </Box>
+
+        <Box mt={2}>
+          <Typography variant="body2" sx={{ textAlign: "left", mb: 1 }}>
+            {post?.comments.length} Comment
+            {post?.comments.length !== 1 ? "s" : ""}
+          </Typography>
+          <CommentSection comments={post?.comments} addComment={addComment} />
+        </Box>
+      </Card>
+    </Box>
+  );
 };
 
 export default PostComponent;

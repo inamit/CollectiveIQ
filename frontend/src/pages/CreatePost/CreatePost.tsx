@@ -33,7 +33,7 @@ const AskQuestion = () => {
 
     request
       .then((response) => {
-        navigate(routes.POST + response.data._id);
+        navigate(`${routes.POST}/${response.data._id}`);
       })
       .catch((err) => {
         console.error(err);
