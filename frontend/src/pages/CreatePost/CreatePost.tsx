@@ -22,9 +22,6 @@ const AskQuestion = () => {
 
   const handleAddPost = async (e: any) => {
     e.preventDefault();
-    console.log("Title:", title);
-    console.log("Question:", question);
-    console.log("Pic:", image);
     const postService = new PostsService(user!, setUser);
 
     const { request } = postService.saveNewPost(title, question, image);
@@ -91,7 +88,7 @@ const AskQuestion = () => {
           />
         </div>
 
-        <ImagePicker image={image} setImage={setImage} />
+        <ImagePicker image={image} setImage={setImage} required={false} />
         <div
           style={{
             display: "flex",

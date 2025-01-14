@@ -60,6 +60,32 @@ export class PostsService {
     return { request, cancel: () => controller.abort() };
   }
 
+  updatePost(
+    postId: string,
+    title: string,
+    content: string,
+    image: File | null
+  ) {
+    const controller = new AbortController();
+    const formData = new FormData();
+
+    if (image) {
+      formData.append("file", image);
+    }
+    formData.append("title", title);
+    formData.append("content", content);
+
+    let request = this.httpClient.put<Post>(
+      `${config.backendURL}/posts/${postId}`,
+      formData,
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
+
   deletePost(postId: string) {
     const controller = new AbortController();
     let request = this.httpClient.delete<Post>(

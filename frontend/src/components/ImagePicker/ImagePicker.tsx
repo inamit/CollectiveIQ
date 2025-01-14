@@ -7,9 +7,14 @@ import IconButton from "@mui/material/IconButton";
 interface ImagePickerProps {
   image: File | null;
   setImage: (image: File | null) => void;
+  required: boolean;
 }
 
-export const ImagePicker = ({ image, setImage }: ImagePickerProps) => {
+export const ImagePicker = ({
+  image,
+  setImage,
+  required,
+}: ImagePickerProps) => {
   const handleImageUpload = (e: any) => {
     setImage(e.target.files[0]);
   };
@@ -49,8 +54,9 @@ export const ImagePicker = ({ image, setImage }: ImagePickerProps) => {
       tabIndex={-1}
       startIcon={<CloudUploadIcon />}
     >
-      Upload Image (optional)
+      Upload Image {!required && "(optional)"}
       <input
+        required={required}
         type="file"
         style={{ display: "none" }}
         onChange={handleImageUpload}

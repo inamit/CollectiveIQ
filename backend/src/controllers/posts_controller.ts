@@ -66,13 +66,10 @@ const updatePostById = async (req: Request, res: Response): Promise<any> => {
 
     const updatedPost: IPost | null = await Post.findByIdAndUpdate(
       post_id,
-      { title, content, userId: req.params.userId },
+      { title, content, userId: req.params.userId, imageUrl: req.file?.path },
       { new: true, runValidators: true }
     );
 
-    if (updatedPost?.imageUrl) {
-      updatedPost.imageUrl = req.file?.path ?? "";
-    }
     if (!updatedPost) {
       return res.status(404).json({ error: "Post not found." });
     }

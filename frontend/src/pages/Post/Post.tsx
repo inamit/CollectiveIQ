@@ -20,6 +20,7 @@ import { PostsService } from "../../services/postsService.ts";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { routes } from "../../router/routes.ts";
+import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
 
 const PostComponent = () => {
   const { postId } = useParams();
@@ -27,12 +28,26 @@ const PostComponent = () => {
   const { user, setUser } = useUser();
   const { post, comments, setComments } = usePost(postId);
   const [editablePost, setEditablePost] = useState<Partial<Post> | null>(post);
+  const [image, setImage] = useState<File | null>(null);
 
   const MySwal = withReactContent(Swal);
 
   useEffect(() => {
     setEditablePost(post);
+    if (post?.imageUrl) {
+      createFile(post.imageUrl);
+    }
   }, [post]);
+
+  const createFile = async (imageUrl: string) => {
+    let response = await fetch(imageUrl);
+    let data = await response.blob();
+    let metadata = {
+      type: "image/jpeg",
+    };
+    let file = new File([data], "test.jpg", metadata);
+    setImage(file);
+  };
 
   const handleInputChange = (field: string, value: string) => {
     setEditablePost({ ...editablePost, [field]: value });
@@ -73,7 +88,17 @@ const PostComponent = () => {
   };
 
   const toggleEditMode = () => {
-    setIsEditing(!isEditing);
+    if (isEditing) {
+      updatePost()
+        .then(() => {
+          setIsEditing(!isEditing);
+        })
+        .catch((err) => {
+          toast.error(err);
+        });
+    } else {
+      setIsEditing(!isEditing);
+    }
   };
 
   const addComment = (content: string) => {
@@ -107,6 +132,38 @@ const PostComponent = () => {
         navigate(routes.USER_PROFILE);
       });
     }
+  };
+
+  const updatePost = () => {
+    return new Promise((resolve, reject) => {
+      if (!(editablePost?.title && editablePost?.content)) {
+        reject("Title and content are required");
+        return;
+      }
+
+      if (editablePost.imageUrl && !image) {
+        reject("Image is required");
+        return;
+      }
+
+      const { request } = new PostsService(user!, setUser).updatePost(
+        postId!,
+        editablePost?.title,
+        editablePost?.content,
+        image
+      );
+
+      request
+        .then((response) => {
+          setEditablePost(response.data);
+          setIsEditing(false);
+          resolve("");
+        })
+        .catch((err) => {
+          console.error(err);
+          reject("Failed to update post");
+        });
+    });
   };
 
   const getEditButtons = () => {
@@ -207,7 +264,7 @@ const PostComponent = () => {
               {editablePost?.content as string}
             </Typography>
           )}
-          {post?.imageUrl && (
+          {post?.imageUrl && !isEditing && (
             <Box
               component="img"
               src={post?.imageUrl}
@@ -217,6 +274,14 @@ const PostComponent = () => {
                 borderRadius: 1,
                 marginTop: 2,
               }}
+            />
+          )}
+
+          {isEditing && (
+            <ImagePicker
+              image={image}
+              setImage={setImage}
+              required={editablePost?.imageUrl ? true : false}
             />
           )}
         </CardContent>
