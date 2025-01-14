@@ -10,8 +10,7 @@ const getPosts = async (req: Request, res: Response): Promise<any> => {
   try {
     let posts: IPost[] | null = await (userId
       ? Post.find({ userId: userId }).populate("userId")
-      : Post.find()
-    ).populate("userId");
+      : Post.find().populate("userId"));
     return res.json(posts);
   } catch (err: any) {
     console.warn("Error fetching posts:", err);
