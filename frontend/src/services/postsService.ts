@@ -26,6 +26,18 @@ export class PostsService {
     return { request, cancel: () => controller.abort() };
   }
 
+  getPostById(postId: string) {
+    const controller = new AbortController();
+    const request = this.httpClient.get<Post>(
+      `${config.backendURL}/posts/${postId}`,
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
+
   saveNewPost(title: string, content: string, image: File | null) {
     const controller = new AbortController();
     const formData = new FormData();
