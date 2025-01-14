@@ -12,6 +12,7 @@ import { routes } from "../../router/routes.ts";
 import { jwtDecode } from "jwt-decode";
 import User from "../../models/user.ts";
 import { AxiosResponse } from "axios";
+import GoogleAuth from "../../components/GoogleAuth/GoogleAuth.tsx";
 
 interface SignUpProps {
   className?: string;
@@ -84,30 +85,6 @@ export default function SignUp({ className }: SignUpProps) {
     }
   };
 
-  const onGoogleSignInSuccess = async (response: any) => {
-    const credential = response.credential;
-    let authenticationService = new AuthenticationService();
-    
-    authenticationService
-      .google(credential)
-      .then((res) => {
-        if (res.status === 200) {
-          userSignedUpSuccessfully(res);
-        } else {
-          const errorMessage = res.data;
-          toast.error(JSON.parse(errorMessage).error || "Error in sign in");
-        }
-      })
-      .catch((error) => {
-        console.log("Error in google sign up: ", error);
-        toast.error("An error occurred. Please try again.");
-      });
-  };
-
-  const onGoogleSignInFailure = () => {
-    toast.error("Google Sign-In failed. Please try again.");
-  };
-
   return (
     <div className={`signup-inputs-flexbox ${className}`}>
       <h1>Sign Up</h1>
@@ -164,14 +141,7 @@ export default function SignUp({ className }: SignUpProps) {
         >
           Sign Up <ArrowForwardIcon />
         </Button>
-        <GoogleLogin
-          onSuccess={onGoogleSignInSuccess}
-          onError={onGoogleSignInFailure}
-          containerProps={{ className: "google-login-button" }}
-          text="signup_with"
-          shape="pill"
-          context="signup"
-        />
+        <GoogleAuth/>
       </div>
     </div>
   );

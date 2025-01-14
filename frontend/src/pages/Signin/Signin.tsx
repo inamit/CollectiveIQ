@@ -1,7 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useLoginCredentials } from "../../hooks/loginCredentials";
-import { GoogleLogin } from "@react-oauth/google";
 import { AuthenticationService } from "../../services/authenticationService";
 import AppTextField from "../../components/TextField/TextField";
 import { Button } from "@mui/material";
@@ -9,9 +7,11 @@ import { useUser } from "../../context/userContext";
 import { routes } from "../../router/routes";
 import { jwtDecode } from "jwt-decode";
 import User from "../../models/user";
+import GoogleAuth from "../../components/GoogleAuth/GoogleAuth";
+import { useState } from "react";
 
 export default function SignIn(){
-  const {data, setData} = useLoginCredentials();
+  const [data, setData] = useState({ username: "", password: "" });
   const { setUser } = useUser();
   
   const navigate = useNavigate();
@@ -53,39 +53,6 @@ export default function SignIn(){
       }
   }
 
-  const handleGoogleLoginSuccess = async (response: any) => {
-    const credential = response.credential;
-    let authenticationService = new AuthenticationService();
-    
-    authenticationService
-      .google(credential)
-      .then((res) => {
-        if (res.status === 200) {
-          const decodedAccessToken = jwtDecode<User>(res.data.accessToken);
-              setUser({
-                username: decodedAccessToken.username,
-                email: decodedAccessToken.email,
-                refreshToken: res.data.refreshToken,
-                accessToken: res.data.accessToken,
-                _id: decodedAccessToken._id,
-              });
-
-          navigate(routes.USER_PROFILE);
-        } else {
-          const errorMessage = res.data;
-          toast.error(JSON.parse(errorMessage).error || "Error in sign in");
-        }
-      })
-      .catch((error) => {
-        console.log("Error in google sign in: ", error);
-        toast.error("An error occurred. Please try again.");
-      });
-  };
-
-  const handleGoogleLoginError = () => {
-    toast.error("Google Sign-In failed. Please try again.");
-  };
-
   return (
     <div className={"signup-inputs-flexbox"}>
       <form onSubmit={handleFormSubmit}>
@@ -117,15 +84,7 @@ export default function SignIn(){
       </div>
       <div className="signup-buttons-row">
           <Button type="submit" className="signin-button" variant="contained">Log In</Button>
-          <GoogleLogin
-            onSuccess={handleGoogleLoginSuccess}
-            onError={handleGoogleLoginError}
-            containerProps={{ className: "google-login-button" }}
-            text="signin_with"
-            shape="pill"
-            context="signup"
-            useOneTap
-          />
+          <GoogleAuth/>
       </div>
       <div className="social">
               <p className="social-text">Don't have an account? <Link to={routes.SIGN_UP} className="signin-button">Signup</Link></p>
