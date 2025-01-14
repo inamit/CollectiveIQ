@@ -5,6 +5,7 @@ const AppTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     background: theme.palette.secondary.main,
     borderRadius: "12px",
+    color: "#fff",
   },
 });
 

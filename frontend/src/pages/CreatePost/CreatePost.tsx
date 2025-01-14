@@ -3,6 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { routes } from "../../router/routes.ts";
 import { PostsService } from "../../services/postsService.ts";
 import { useUser } from "../../context/userContext.tsx";
+import AppTextField from "../../components/TextField/TextField.tsx";
+import Button from "@mui/material/Button";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
+import "./CreatePost.css";
 
 const AskQuestion = () => {
   const [title, setTitle] = useState("");
@@ -59,19 +65,12 @@ const AskQuestion = () => {
           >
             Title
           </label>
-          <input
+          <AppTextField
             id="title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "4px",
-              border: "1px solid #444",
-              backgroundColor: "#222",
-              color: "#fff",
-            }}
+            fullWidth
             placeholder="Enter a title"
           />
         </div>
@@ -89,38 +88,60 @@ const AskQuestion = () => {
           >
             What's your question?
           </label>
-          <textarea
+          <AppTextField
+            multiline
             id="question"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "4px",
-              border: "1px solid #444",
-              backgroundColor: "#222",
-              color: "#fff",
-              minHeight: "150px",
-            }}
+            fullWidth
+            rows={10}
             placeholder="Type your question here"
           />
         </div>
 
-        <label
-          htmlFor="title"
-          style={{
-            display: "block",
-            fontSize: "14px",
-            color: "#bbb",
-            marginBottom: "8px",
-            textAlign: "left",
-          }}
-        >
-          Upload Image (optional):
-        </label>
-        <div>
-          <input type="file" onChange={handleImageUpload} />
-        </div>
+        {image ? (
+          <div>
+            <label
+              htmlFor="imagePreview"
+              style={{
+                display: "block",
+                fontSize: "14px",
+                color: "#bbb",
+                marginBottom: "8px",
+                textAlign: "left",
+              }}
+            >
+              Upload Image:
+            </label>
+            <div className="imageContainer">
+              <img
+                id="imagePreview"
+                style={{ height: 400, width: 400 }}
+                src={URL.createObjectURL(image)}
+              />
+              <div className="imageOverlay">
+                <IconButton aria-label="delete" onClick={() => setImage(null)}>
+                  <DeleteIcon sx={{ color: "red" }} />
+                </IconButton>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <Button
+            component="label"
+            role={undefined}
+            variant="contained"
+            tabIndex={-1}
+            startIcon={<CloudUploadIcon />}
+          >
+            Upload Image (optional)
+            <input
+              type="file"
+              style={{ display: "none" }}
+              onChange={handleImageUpload}
+            />
+          </Button>
+        )}
         <div
           style={{
             display: "flex",

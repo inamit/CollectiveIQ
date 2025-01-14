@@ -1,93 +1,93 @@
 .user-avatar {
-    margin-right: 8px;
+  margin-right: 8px;
 }
 
 .comment-section {
-    margin-top: 20px;
-    padding: 10px;
-    border-top: 1px solid #ccc;
+  margin-top: 20px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
 }
 
 .add-comment {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-textarea {
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    width: 100%;
-    min-height: 60px;
-    resize: none;
-    background: #2c2c2c;
-    color: #fff;
+.comment-input {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  min-height: 60px;
+  resize: none;
+  background: #2c2c2c;
+  color: #fff;
 }
 
 button {
-    background-color: #5B6DC9;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 14px;
-    width: fit-content;
-    margin-top: 8px;
+  background-color: #5b6dc9;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  width: fit-content;
+  margin-top: 8px;
 }
 
 button:hover {
-    background-color: #4a5bb0;
+  background-color: #4a5bb0;
 }
 
 .comments-list {
-    margin-top: 16px;
+  margin-top: 16px;
 }
 
 .comment-container {
-    padding: 10px;
-    background: #333;
-    border-radius: 8px;
-    margin-bottom: 12px;
+  padding: 10px;
+  background: #333;
+  border-radius: 8px;
+  margin-bottom: 12px;
 }
 
 .comment-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .comment-avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    margin-right: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 8px;
 }
 
 .comment-details {
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Space between username and timestamp */
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between username and timestamp */
 }
 
 .comment-username {
-    font-weight: bold;
-    font-size: 14px;
-    margin: 0;
-    color: #fff; /* Ensure the username is visible */
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0;
+  color: #fff; /* Ensure the username is visible */
 }
 
 .comment-time {
-    font-size: 12px;
-    color: #999;
+  font-size: 12px;
+  color: #999;
 }
 
 .comment-text {
-    font-size: 14px;
-    color: #ccc;
-    margin-top: 4px;
-    white-space: pre-line; /* Ensures line breaks are respected */
-    text-align: left; /* Aligns the comment text to the left */
+  font-size: 14px;
+  color: #ccc;
+  margin-top: 4px;
+  white-space: pre-line; /* Ensures line breaks are respected */
+  text-align: left; /* Aligns the comment text to the left */
 }

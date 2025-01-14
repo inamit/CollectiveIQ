@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  IconButton,
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  TextField,
-} from "@mui/material";
+import { IconButton, Box, Card, CardContent, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -22,6 +15,7 @@ import Post from "../../models/post.ts";
 import { CommentsService } from "../../services/commentsService.ts";
 import UserAvatar from "../../components/UserAvatar/UserAvatar.tsx";
 import { toast } from "react-toastify";
+import AppTextField from "../../components/TextField/TextField.tsx";
 
 const PostComponent = () => {
   const { postId } = useParams();
@@ -89,6 +83,33 @@ const PostComponent = () => {
       });
   };
 
+  const getEditButtons = () => {
+    if (user?._id === post?.userId._id) {
+      return (
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+          }}
+        >
+          <IconButton
+            size="small"
+            onClick={toggleEditMode}
+            sx={{ "&:hover": { color: "#5B6DC9" }, color: "#fff" }}
+          >
+            {isEditing ? <SaveIcon /> : <EditIcon />}
+          </IconButton>
+          <IconButton
+            size="small"
+            sx={{ "&:hover": { color: "#E57373" }, color: "#fff" }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      );
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -105,53 +126,34 @@ const PostComponent = () => {
           padding: 2,
           backgroundColor: "#1e1e1e", // Dark background for the card
           color: "#fff",
-          position: "relative",
         }}
       >
-        {post?.userId._id === user?._id ? (
-          <Box
-            sx={{
-              position: "absolute",
-              top: 8,
-              right: 8,
-              display: "flex",
-              gap: 1,
-            }}
-          >
-            <IconButton
-              size="small"
-              onClick={toggleEditMode}
-              sx={{ "&:hover": { color: "#5B6DC9" }, color: "#fff" }}
-            >
-              {isEditing ? <SaveIcon /> : <EditIcon />}
-            </IconButton>
-            <IconButton
-              size="small"
-              sx={{ "&:hover": { color: "#E57373" }, color: "#fff" }}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        ) : (
-          <div></div>
-        )}
-
-        <Typography
-          variant="h5"
-          sx={{
-            textAlign: "left",
-            mb: 2,
+        <div
+          style={{
+            marginBottom: 20,
+            display: "flex",
+            justifyContent: "space-between",
           }}
         >
           {isEditing ? (
-            <TextField
+            <AppTextField
+              fullWidth
               value={editablePost?.title as string}
               onChange={(e) => handleInputChange("title", e.target.value)}
             />
           ) : (
-            (editablePost?.title as string)
+            <Typography
+              variant="h5"
+              sx={{
+                textAlign: "left",
+              }}
+            >
+              {editablePost?.title as string}
+            </Typography>
           )}
-        </Typography>
+
+          {getEditButtons()}
+        </div>
 
         {/* User Info */}
         <Box display="flex" alignItems="center" mb={2}>
@@ -165,20 +167,13 @@ const PostComponent = () => {
         {/* Post Content */}
         <CardContent sx={{ textAlign: "left" }}>
           {isEditing ? (
-            <TextField
+            <AppTextField
               fullWidth
               multiline
               minRows={4}
               variant="outlined"
               value={editablePost?.content as string}
               onChange={(e) => handleInputChange("content", e.target.value)}
-              sx={{
-                backgroundColor: "#333",
-                color: "#fff",
-                "& .MuiInputBase-input": {
-                  color: "#fff",
-                },
-              }}
             />
           ) : (
             <Typography variant="body2">

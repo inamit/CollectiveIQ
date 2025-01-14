@@ -4,6 +4,7 @@ import { Comment as CommentIcon } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
 import Comment from "../../models/comment";
 import UserAvatar from "../UserAvatar/UserAvatar";
+import AppTextField from "../TextField/TextField";
 
 interface CommentProps {
   comment: Comment;
@@ -65,10 +66,14 @@ const CommentSection = ({ comments, addComment }: CommentSectionProps) => {
   return (
     <div className="comment-section">
       <div className="add-comment">
-        <textarea
+        <AppTextField
+          multiline
+          maxRows={5}
+          label="Add a comment..."
+          slotProps={{ inputLabel: { style: { color: "#fff" } } }}
+          sx={{ "& fieldset": { borderColor: "#ccc" } }}
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
-          placeholder="Add a comment..."
         />
         <Button
           onClick={handleAddComment}
