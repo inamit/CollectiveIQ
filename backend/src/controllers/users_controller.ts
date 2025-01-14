@@ -99,7 +99,9 @@ const updateUserById = async (req: Request, res: Response): Promise<any> => {
 
     delete updatedUser.password;
 
-    return res.json(updatedUser);
+    return await token.returnTokens(<IUser>updatedUser, res, {
+      message: "User updated successfully",
+    });
   } catch (err: any) {
     console.warn("Error updating user:", err);
     return handleMongoQueryError(res, err, USER_RESOURCE_NAME);

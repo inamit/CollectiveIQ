@@ -2,12 +2,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "../App";
 import { useUser } from "../context/userContext";
 import AuthRedirect from "../pages/AuthRedirect";
-import SignUp from "../pages/SignUp/SignUp";
 import UserProfile from "../pages/UserProfile/UserProfile";
 import { routes } from "./routes";
 import AuthRequired from "../pages/AuthRequired";
 import CreatePost from "../pages/CreatePost/CreatePost.tsx";
 import PostComponent from "../pages/Post/Post.tsx";
+import SignUp from "../pages/Signup/Signup.tsx";
 
 export default function AppWrapper() {
   const { isUserLoaded } = useUser();
