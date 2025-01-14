@@ -1,20 +1,19 @@
-import { DropdownItem } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
-import { LogOutService } from "../../services/logoutService";
 import { routes } from "../../router/routes";
 import { useUser } from "../../context/userContext";
+import { AuthenticationService } from "../../services/authenticationService";
+import { MenuItem } from "@mui/material";
 
 export default function Logout(){
-    const { user, setUser } = useUser();
+    const { setUser } = useUser();
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        let logoutService = new LogOutService();
-        logoutService.logout()
-        localStorage.clear();
+        let authenticationService = new AuthenticationService();
+        authenticationService.signOut()
         sessionStorage.clear();
         setUser(null);
         navigate(routes.SIGN_UP);
     }
-    return <DropdownItem onClick={handleLogout}>Sign out</DropdownItem> 
+    return <MenuItem onClick={handleLogout}>Sign out</MenuItem> 
 }

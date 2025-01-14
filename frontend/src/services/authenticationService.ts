@@ -25,4 +25,10 @@ export class AuthenticationService {
         jwtToken: credentials,
       });
   }
+
+  signOut() {
+    return this.httpClientFactory
+        .unauthorizedHttpClient()
+        .post(config.signupUrl, {});
+  }
 }
