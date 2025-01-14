@@ -8,7 +8,7 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import CommentSection from "../../components/Comment/Comment.tsx";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../context/userContext.tsx";
 import usePost from "../../hooks/usePost.ts";
 import Post from "../../models/post.ts";
@@ -16,12 +16,19 @@ import { CommentsService } from "../../services/commentsService.ts";
 import UserAvatar from "../../components/UserAvatar/UserAvatar.tsx";
 import { toast } from "react-toastify";
 import AppTextField from "../../components/TextField/TextField.tsx";
+import { PostsService } from "../../services/postsService.ts";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import { routes } from "../../router/routes.ts";
 
 const PostComponent = () => {
   const { postId } = useParams();
+  const navigate = useNavigate();
   const { user, setUser } = useUser();
   const { post, comments, setComments } = usePost(postId);
   const [editablePost, setEditablePost] = useState<Partial<Post> | null>(post);
+
+  const MySwal = withReactContent(Swal);
 
   useEffect(() => {
     setEditablePost(post);
@@ -83,6 +90,25 @@ const PostComponent = () => {
       });
   };
 
+  const deletePost = async () => {
+    const result = await MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      const { request } = new PostsService(user!, setUser).deletePost(postId!);
+      request.then(() => {
+        navigate(routes.USER_PROFILE);
+      });
+    }
+  };
+
   const getEditButtons = () => {
     if (user?._id === post?.userId._id) {
       return (
@@ -102,6 +128,7 @@ const PostComponent = () => {
           <IconButton
             size="small"
             sx={{ "&:hover": { color: "#E57373" }, color: "#fff" }}
+            onClick={deletePost}
           >
             <DeleteIcon />
           </IconButton>

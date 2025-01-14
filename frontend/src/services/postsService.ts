@@ -59,4 +59,16 @@ export class PostsService {
 
     return { request, cancel: () => controller.abort() };
   }
+
+  deletePost(postId: string) {
+    const controller = new AbortController();
+    let request = this.httpClient.delete<Post>(
+      `${config.backendURL}/posts/${postId}`,
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
 }

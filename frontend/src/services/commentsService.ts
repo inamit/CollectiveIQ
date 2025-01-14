@@ -39,4 +39,16 @@ export class CommentsService {
 
     return { request, cancel: () => controller.abort() };
   }
+
+  deleteComment(commentId: string) {
+    const controller = new AbortController();
+    let request = this.httpClient.delete<Comment>(
+      `${config.backendURL}/comments/${commentId}`,
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
 }
