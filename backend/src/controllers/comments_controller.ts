@@ -10,8 +10,8 @@ const getComments = async (req: Request, res: Response): Promise<any> => {
   try {
     const { post_id }: { post_id?: string } = req.query;
     const comments: IComment[] = await (post_id
-      ? Comment.find({ postID: post_id })
-      : Comment.find());
+      ? Comment.find({ postID: post_id }).populate("userId")
+      : Comment.find().populate("userId"));
 
     return res.json(comments);
   } catch (err: any) {

@@ -20,11 +20,15 @@ const getPosts = async (req: Request, res: Response): Promise<any> => {
 
 const saveNewPost = async (req: Request, res: Response): Promise<any> => {
   try {
+    let imageUrl;
+    if (process.env.BASE_URL && req.file?.path) {
+      imageUrl = process.env.BASE_URL + req.file.path;
+    }
     const post = new Post({
       title: req.body.title,
       content: req.body.content,
       userId: req.params.userId,
-      imageUrl: req.file?.path ?? "",
+      imageUrl,
     });
     const savedPost: IPost = await post.save();
     return res.json(savedPost);
@@ -38,7 +42,7 @@ const getPostById = async (req: Request, res: Response): Promise<any> => {
   const { post_id }: { post_id?: string } = req.params;
 
   try {
-    const post: IPost | null = await Post.findById(post_id);
+    const post: IPost | null = await Post.findById(post_id).populate("userId");
 
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
@@ -53,7 +57,7 @@ const getPostById = async (req: Request, res: Response): Promise<any> => {
 
 const updatePostById = async (req: Request, res: Response): Promise<any> => {
   const { post_id }: { post_id?: string } = req.params;
-  const { content, title }: { content?: string, title?: string } = req.body;
+  const { content, title }: { content?: string; title?: string } = req.body;
 
   try {
     if (!content && !title) {
