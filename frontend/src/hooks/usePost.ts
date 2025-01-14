@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Post from "../models/post";
+import Comment from "../models/comment";
 import { LoadingState } from "../services/loadingState";
 import { PostsService } from "../services/postsService";
 import { AxiosResponse } from "axios";
@@ -8,6 +9,9 @@ import { CommentsService } from "../services/commentsService";
 
 const usePost = (postId: string | undefined) => {
   const [post, setPost] = useState<Post | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentsLoadingState, setCommentsLoadingState] =
+    useState<LoadingState>(LoadingState.LOADING);
   const [postLoadingState, setPostLoadingState] = useState<LoadingState>(
     LoadingState.LOADING
   );
@@ -21,37 +25,44 @@ const usePost = (postId: string | undefined) => {
 
     setPostLoadingState(LoadingState.LOADING);
 
-    const { request: postRequest, cancel: postCancel } = new PostsService(
+    const { request, cancel } = new PostsService(
       user ?? undefined,
       setUser
     ).getPostById(postId);
 
-    postRequest
+    request
       .then((response: AxiosResponse<Post>) => {
-        const fetchedPost = response.data;
-
-        const { request: commentsRequest } = new CommentsService(
-          user ?? undefined,
-          setUser
-        ).getCommentsByPost(postId);
-
-        commentsRequest
-          .then((commentsResponse) => {
-            fetchedPost.comments = commentsResponse.data;
-            setPost(response.data);
-            setPostLoadingState(LoadingState.LOADED);
-          })
-          .catch((err) => {
-            setError(err.message);
-            setPostLoadingState(LoadingState.ERROR);
-          });
+        setPost(response.data);
+        setPostLoadingState(LoadingState.LOADED);
       })
       .catch((err: any) => {
         setError(err.message);
         setPostLoadingState(LoadingState.ERROR);
       });
 
-    return () => postCancel();
+    return () => cancel();
+  }, [user, postId]);
+
+  useEffect(() => {
+    if (!postId) return;
+
+    setCommentsLoadingState(LoadingState.LOADING);
+    const { request, cancel } = new CommentsService(
+      user ?? undefined,
+      setUser
+    ).getCommentsByPost(postId);
+
+    request
+      .then((commentsResponse) => {
+        setComments(commentsResponse.data);
+        setCommentsLoadingState(LoadingState.LOADED);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setCommentsLoadingState(LoadingState.ERROR);
+      });
+
+    return () => cancel();
   }, [user, postId]);
 
   return {
@@ -59,6 +70,10 @@ const usePost = (postId: string | undefined) => {
     setPost,
     postLoadingState,
     setPostLoadingState,
+    comments,
+    setComments,
+    commentsLoadingState,
+    setCommentsLoadingState,
     error,
     setError,
   };

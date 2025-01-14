@@ -1,6 +1,5 @@
 import { HttpClientFactory } from "./httpClient";
 import config from "../config.json";
-import Post from "../models/post";
 import User from "../models/user";
 import Comment from "../models/comment";
 import { AxiosInstance } from "axios";
@@ -30,7 +29,7 @@ export class CommentsService {
   saveNewComment(content: string, postId: string) {
     const controller = new AbortController();
 
-    let request = this.httpClient.post<Post>(
+    let request = this.httpClient.post<Comment>(
       `${config.backendURL}/comments?post_id=${postId}`,
       { content },
       {

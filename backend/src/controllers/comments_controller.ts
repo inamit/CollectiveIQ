@@ -39,7 +39,7 @@ const saveNewComment = async (req: Request, res: Response): Promise<any> => {
       content: req.body.content,
       userId: req.params.userId,
     });
-    const savedComment: IComment = await comment.save();
+    const savedComment: IComment = await (await comment.save()).populate("userId");
     return res.json(savedComment);
   } catch (err: any) {
     console.warn("Error saving comment:", err);
@@ -60,7 +60,7 @@ const updateCommentById = async (req: Request, res: Response): Promise<any> => {
       comment_id,
       { content, userId: req.params.userId },
       { new: true, runValidators: true }
-    );
+    ).populate("userId");
 
     if (!updatedComment) {
       return res.status(404).json({ error: "Comment not found." });

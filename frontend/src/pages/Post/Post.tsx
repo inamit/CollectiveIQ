@@ -21,11 +21,12 @@ import usePost from "../../hooks/usePost.ts";
 import Post from "../../models/post.ts";
 import { CommentsService } from "../../services/commentsService.ts";
 import UserAvatar from "../../components/UserAvatar/UserAvatar.tsx";
+import { toast } from "react-toastify";
 
 const PostComponent = () => {
   const { postId } = useParams();
   const { user, setUser } = useUser();
-  const { post } = usePost(postId);
+  const { post, comments, setComments } = usePost(postId);
   const [editablePost, setEditablePost] = useState<Partial<Post> | null>(post);
 
   useEffect(() => {
@@ -76,8 +77,16 @@ const PostComponent = () => {
 
   const addComment = (content: string) => {
     const commentService = new CommentsService(user!, setUser);
-    commentService.saveNewComment(content, postId!);
-    // setComments([...comments, newComment]);
+    const { request } = commentService.saveNewComment(content, postId!);
+
+    request
+      .then((response) => {
+        setComments([...comments, response.data]);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Failed to add comment");
+      });
   };
 
   return (
@@ -210,10 +219,10 @@ const PostComponent = () => {
 
         <Box mt={2}>
           <Typography variant="body2" sx={{ textAlign: "left", mb: 1 }}>
-            {post?.comments.length} Comment
-            {post?.comments.length !== 1 ? "s" : ""}
+            {comments.length} Comment
+            {comments.length !== 1 ? "s" : ""}
           </Typography>
-          <CommentSection comments={post?.comments} addComment={addComment} />
+          <CommentSection comments={comments} addComment={addComment} />
         </Box>
       </Card>
     </Box>
