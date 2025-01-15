@@ -2,29 +2,38 @@ import { Box, Button, TextField } from "@mui/material"
 import { useUser } from "../../context/userContext";
 import { useState } from "react";
 import { UsersService } from "../../services/usersService";
+import UserAvatar from "../UserAvatar/UserAvatar";
+import User from "../../models/user";
+import { jwtDecode } from "jwt-decode";
 
 export default function EditProfile() {
   const { user, setUser } = useUser();
   const usersService = user
       ? new UsersService(user, setUser)
       : new UsersService();
-  const [formData, setFormData] = useState({
-    username: user?.username || "",
-    email: user?.email || "",
-    password: "*******",
-    verifyPassword: "*******"
-  });
+  const [username, setUserName] = useState(user?.username || "");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { value } = e.target;
+    setUserName(value);
   };
 
-  const handleEditSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if(user != null){
-        const res = (await usersService.updateUserById(user._id, formData.username, formData.email, formData.password));
+        const res = (await usersService.updateUserById(user._id, username)).request;
         console.log(res)
+        if(res.status === 200){
+            const responseJson = res.data;
+            const decodedAccessToken = jwtDecode<User>(responseJson.accessToken);
+            setUser({
+                username: decodedAccessToken.username,
+                email: decodedAccessToken.email,
+                refreshToken: responseJson.refreshToken,
+                accessToken: responseJson.accessToken,
+                _id: decodedAccessToken._id,
+            });
+        }
     }
   };
 
@@ -36,16 +45,20 @@ export default function EditProfile() {
             flexDirection: "column",
             gap: 4,
             maxWidth: 500,
-            margin: "50px auto",
+            margin: "20px auto",
             padding: 2,
             boxShadow: 3,
             borderRadius: 2,
+            justifyContent: "center",
+            alignItems: "center"
+
         }}
-        >
+        >   
+            <UserAvatar className="userAvatar" user={user || undefined} />
             <TextField
-                label="Name"
+                label="UserName"
                 name="username"
-                value={formData.username}
+                value={username}
                 onChange={handleChange}
                 variant="outlined"
                 fullWidth
@@ -62,70 +75,7 @@ export default function EditProfile() {
                     } 
                 }}
             />
-            <TextField
-                label="Email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                variant="outlined"
-                type="email"
-                fullWidth
-                InputProps={{
-                    style: { backgroundColor: '#e0e0e0',
-                        borderRadius: "10px"
-                    }
-                }}
-                InputLabelProps={{
-                    style: { color: 'white',
-                    position: 'absolute', // Move label higher
-                    top: '-15px',
-                    fontSize: '1.4rem'
-                    } 
-                }}
-            />
-            <TextField
-                label="Password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                variant="outlined"
-                type="password"
-                fullWidth
-                InputProps={{
-                    style: { backgroundColor: '#e0e0e0',
-                        borderRadius: "10px"
-                    }
-                }}
-                InputLabelProps={{
-                    style: { color: 'white',
-                    position: 'absolute', // Move label higher
-                    top: '-15px',
-                    fontSize: '1.4rem'
-                    } 
-                }}
-            />
-            <TextField
-                label="Verify Password"
-                name="Verify Password"
-                value={formData.verifyPassword}
-                onChange={handleChange}
-                variant="outlined"
-                type="password"
-                fullWidth
-                InputProps={{
-                    style: { backgroundColor: '#e0e0e0',
-                        borderRadius: "10px"
-                    }
-                }}
-                InputLabelProps={{
-                    style: { color: 'white',
-                    position: 'absolute', // Move label higher
-                    top: '-15px',
-                    fontSize: '1.4rem'
-                    } 
-                }}
-            />
-      <Button type="submit" variant="contained" color="primary" onClick={handleEditSubmit}>
+      <Button type="submit" variant="contained" color="primary" onClick={handleSubmit}>
         Save Changes
       </Button>
     </Box>

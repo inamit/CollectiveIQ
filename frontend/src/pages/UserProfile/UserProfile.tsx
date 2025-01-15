@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import PostsList from "../../components/PostsList/PostsList";
 import "./UserProfile.css";
-import { Box, Button, Tab, Tabs } from "@mui/material";
+import { Box, Button, Tab, Tabs, TextField, Typography } from "@mui/material";
 import UserAvatar from "../../components/UserAvatar/UserAvatar";
-import { LoadingState } from "../../services/loadingState";
 import usePosts from "../../hooks/usePosts";
 import { useParams } from "react-router-dom";
 import User from "../../models/user";
 import { UsersService } from "../../services/usersService";
 import { useUser } from "../../context/userContext";
 import EditProfile from "../../components/EditProfile/EditProfile";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -70,6 +71,10 @@ export default function UserProfile() {
   const { user, setUser, isUserLoaded } = useUser();
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
   const [isEdit, setEdit] = useState(false);
+  const [username, setUsername] = useState(user?.username || "");
+  const usersService = user
+      ? new UsersService(user, setUser)
+      : new UsersService();
 
   const { posts, postsLoadingState } = usePosts(selectedUser);
 
@@ -86,10 +91,34 @@ export default function UserProfile() {
     setEdit(false);
   };
 
-  const handleEditbutton = () =>{
-    setEdit(true);
-    setSelectedTab(2)
+  const handleEditbutton = async () =>{
+    if (isEdit) {
+      if(user != null){
+        const res = (await usersService.updateUserById(user._id, username)).request;
+        console.log(res)
+        if(res.status === 200){
+            const responseJson = res.data;
+            const decodedAccessToken = jwtDecode<User>(responseJson.accessToken);
+            setUser({
+                username: decodedAccessToken.username,
+                email: decodedAccessToken.email,
+                refreshToken: responseJson.refreshToken,
+                accessToken: responseJson.accessToken,
+                _id: decodedAccessToken._id,
+            });
+        } else {
+          toast.error(
+            "Error while update user, try again later..."
+          );
+        }
+      }
+    }
+    setEdit((prev) => !prev);
   }
+  
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(event.target.value);
+  };
 
   return (
     <>
@@ -100,7 +129,24 @@ export default function UserProfile() {
               <div className="user">
                 <UserAvatar className="userAvatar" user={selectedUser!} />
                 <div className="userDetailsText">
-                  <h1>@{selectedUser?.username}</h1>
+                  {isEdit ? (
+                    <TextField
+                      value={username}
+                      onChange={handleInputChange}
+                      variant="outlined"
+                      size="medium"
+                      inputProps={{ style: { color: "white" } }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": { borderColor: "#4a4a4a" },
+                        },
+                      }}
+                    />
+                  ) : (
+                    <Typography variant="h6" color="white">
+                      @{username}
+                    </Typography>
+                  )}
                   <span>
                     {selectedUser?.posts
                       ? `${selectedUser?.posts?.length} questions`
@@ -118,7 +164,7 @@ export default function UserProfile() {
                   style={{ width: "100%", maxWidth: "480px" }}
                   onClick={handleEditbutton}
                 >
-                  Edit Profile
+                   {isEdit ? "Save" : "Edit Profile"}
                 </Button>
               )}
             </div>
@@ -135,7 +181,6 @@ export default function UserProfile() {
             <Tabs value={selectedTab} onChange={handleTabChange}>
               <Tab label="Questions" />
               <Tab label="Answers" />
-              {isEdit && <Tab label="Edit" />}
             </Tabs>
           </Box>
           <CustomTabPanel value={selectedTab} index={0}>
@@ -147,9 +192,6 @@ export default function UserProfile() {
           </CustomTabPanel>
           <CustomTabPanel value={selectedTab} index={1}>
             <div>Not implemented yet</div>
-          </CustomTabPanel>
-          <CustomTabPanel value={selectedTab} index={2}>
-            <EditProfile></EditProfile>
           </CustomTabPanel>
         </div>
       </div>

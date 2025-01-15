@@ -1,9 +1,11 @@
 import { HttpClientFactory } from "./httpClient";
 import config from "../config.json";
+import Post from "../models/post";
 import User from "../models/user";
+import Comment from "../models/comment";
 import { AxiosInstance } from "axios";
 
-export class UsersService {
+export class CommentsService {
   httpClient: AxiosInstance;
 
   constructor(user?: User, setUser?: (user: User | null) => void) {
@@ -13,11 +15,10 @@ export class UsersService {
       : httpClientFactory.unauthorizedHttpClient();
   }
 
-  getUserById(userId: string) {
+  getCommentsByPost(postId: string) {
     const controller = new AbortController();
-
-    const request = this.httpClient.get<User>(
-      `${config.backendURL}/users/${userId}`,
+    const request = this.httpClient.get<Comment[]>(
+      `${config.backendURL}/comments?post_id=${postId}`,
       {
         signal: controller.signal,
       }
@@ -26,13 +27,16 @@ export class UsersService {
     return { request, cancel: () => controller.abort() };
   }
 
-  async updateUserById(userId: string, username: string, email: string, password: string) {
+  saveNewComment(content: string, postId: string) {
     const controller = new AbortController();
-    const request = await this.httpClient.patch(
-      `${config.backendURL}/users/${userId}`, {
-      signal: controller.signal,
-      username: username,
-    });
+
+    let request = this.httpClient.post<Post>(
+      `${config.backendURL}/comments?post_id=${postId}`,
+      { content },
+      {
+        signal: controller.signal,
+      }
+    );
 
     return { request, cancel: () => controller.abort() };
   }
