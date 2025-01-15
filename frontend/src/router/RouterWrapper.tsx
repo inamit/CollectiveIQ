@@ -5,9 +5,8 @@ import AuthRedirect from "../pages/AuthRedirect";
 import UserProfile from "../pages/UserProfile/UserProfile";
 import { routes } from "./routes";
 import AuthRequired from "../pages/AuthRequired";
-import CreatePost from "../pages/CreatePost/CreatePost.tsx";
-import PostComponent from "../pages/Post/Post.tsx";
-import SignUp from "../pages/Signup/Signup.tsx";
+import SignUp from "../pages/Signup/Signup";
+import SignIn from "../pages/Signin/Signin";
 
 export default function AppWrapper() {
   const { isUserLoaded } = useUser();
@@ -33,8 +32,7 @@ export default function AppWrapper() {
             element={<UserProfile />}
           />
           <Route path={routes.SIGN_UP} element={<SignUp />} />
-          <Route path={routes.ASK_QUESTION} element={<CreatePost />} />
-          <Route path={routes.POST + "/:postId"} element={<PostComponent />} />
+          <Route path={routes.SIGN_IN} element={<SignIn />} />
           <Route path="*" element={<AuthRedirect />} />
         </Route>
       </Routes>
