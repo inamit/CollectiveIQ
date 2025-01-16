@@ -43,7 +43,7 @@ export default function MarkdownEditor({
     <div className="markdown-editor">
       <ToggleButtonGroup
         color="primary"
-        sx={{ backgroundColor: "#3D404A" }}
+        className="editor-mode-buttons"
         value={mode}
         exclusive
         onChange={(_, value) => setMode(value)}
