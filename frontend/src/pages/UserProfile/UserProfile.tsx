@@ -3,7 +3,6 @@ import PostsList from "../../components/PostsList/PostsList";
 import "./UserProfile.css";
 import { Box, Button, Tab, Tabs } from "@mui/material";
 import UserAvatar from "../../components/UserAvatar/UserAvatar";
-import { LoadingState } from "../../services/loadingState";
 import usePosts from "../../hooks/usePosts";
 import { useParams } from "react-router-dom";
 import User from "../../models/user";
