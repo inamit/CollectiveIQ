@@ -123,6 +123,41 @@ router.post(
  * @swagger
  * paths:
  *  /posts/{postId}:
+ *   delete:
+ *     tags:
+ *       - Post
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Delete a post
+ *     description: Deletes a post by ID
+ *     operationId: deletePost
+ *     parameters:
+ *       - name: postId
+ *         in: path
+ *         description: ID of post to delete
+ *         required: true
+ *         schema:
+ *           type: string
+ *           minLength: 24
+ *           maxLength: 24
+ *     responses:
+ *       '200':
+ *         description: Post deleted successfully
+ *       '404':
+ *         description: Post not found
+ *       '500':
+ *         description: An unexpected error occurred
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UnexpectedError'
+ */
+router.delete("/:post_id", authMiddleware, postsController.deletePostById);
+
+/**
+ * @swagger
+ * paths:
+ *  /posts/{postId}:
  *   get:
  *     tags:
  *       - Post
