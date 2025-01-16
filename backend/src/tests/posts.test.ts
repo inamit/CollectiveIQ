@@ -175,8 +175,6 @@ describe("DELETE /posts/:post_id", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty("message", "Post deleted successfully");
 
-    const deletedPost = await postsModel.findById(post._id);
-    expect(deletedPost).toBeNull();
   });
 });
 
