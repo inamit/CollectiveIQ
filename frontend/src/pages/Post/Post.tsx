@@ -21,6 +21,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { routes } from "../../router/routes.ts";
 import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
+import Markdown from "../../components/Markdown/Markdown.tsx";
 
 const PostComponent = () => {
   const { postId } = useParams();
@@ -256,20 +257,12 @@ const PostComponent = () => {
 
         {/* Post Content */}
         <CardContent sx={{ textAlign: "left" }}>
-          {isEditing ? (
-            <AppTextField
-              fullWidth
-              multiline
-              minRows={4}
-              variant="outlined"
-              value={editablePost?.content as string}
-              onChange={(e) => handleInputChange("content", e.target.value)}
-            />
-          ) : (
-            <Typography variant="body2">
-              {editablePost?.content as string}
-            </Typography>
-          )}
+          <Markdown
+            editablePost={editablePost as Post}
+            post={post as Post}
+            handleInputChange={handleInputChange}
+            isEditing={isEditing}
+          />
           {post?.imageUrl && !isEditing && (
             <Box
               component="img"

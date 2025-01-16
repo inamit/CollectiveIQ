@@ -5,6 +5,8 @@ import { PostsService } from "../../services/postsService.ts";
 import { useUser } from "../../context/userContext.tsx";
 import AppTextField from "../../components/TextField/TextField.tsx";
 import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
+import Markdown from "../../components/Markdown/Markdown.tsx";
+import MarkdownEditor from "../../components/Markdown/MarkdownEditor/MarkdownEditor.tsx";
 
 const CreatePost = () => {
   const [title, setTitle] = useState("");
@@ -77,14 +79,10 @@ const CreatePost = () => {
           >
             What's your question?
           </label>
-          <AppTextField
-            multiline
-            id="question"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            fullWidth
-            rows={10}
-            placeholder="Type your question here"
+
+          <MarkdownEditor
+            content={question}
+            handleInputChange={(_, content) => setQuestion(content)}
           />
         </div>
 
