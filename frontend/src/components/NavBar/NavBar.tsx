@@ -55,7 +55,7 @@ function getUserActions(user: User, navigate: NavigateFunction) {
         color="primary"
         style={{ borderRadius: "12px" }}
         onClick={() => {
-            navigate(routes.ASK_QUESTION);
+            navigate(routes.CREATE_POST);
         }}
       >
         Ask a Question
