@@ -13,6 +13,8 @@ Content-Type: application/json
   "userId": "amit"
 }
 
+### Delete a post
+DELETE http://localhost:3000/posts/677c05e29504293a5451781c
 
 ### Get a post by id
 GET http://localhost:3000/posts/673b7bd1df3f05e1bdcf5320

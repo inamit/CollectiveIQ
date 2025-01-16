@@ -34,6 +34,23 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
+const deletePostById = async (req: Request, res: Response): Promise<any> => {
+  const { post_id }: { post_id?: string } = req.params;
+
+  try {
+    const deletedPost: IPost | null = await Post.findByIdAndDelete(post_id);
+
+    if (!deletedPost) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    return res.json({ message: "Post deleted successfully" });
+  } catch (err: any) {
+    console.warn("Error deleting post:", err);
+    return handleMongoQueryError(res, err, POST_RESOURCE_NAME);
+  }
+};
+
 const getPostById = async (req: Request, res: Response): Promise<any> => {
   const { post_id }: { post_id?: string } = req.params;
 
@@ -149,6 +166,7 @@ function getReaction(
 export default {
   getPosts,
   saveNewPost,
+  deletePostById,
   getPostById,
   updatePostById,
   saveImage,
