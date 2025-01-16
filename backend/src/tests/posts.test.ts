@@ -155,6 +155,31 @@ describe("GET /posts/:post_id", () => {
   });
 });
 
+describe("DELETE /posts/:post_id", () => {
+  let savedPosts: IPost[] = [];
+  beforeEach(async () => {
+    savedPosts = await postsModel.create(testPosts);
+  });
+
+  it("should return 404 when post is not found", async () => {
+    const response = await request(app).delete("/posts/673b7bd1df3f05e1bdcf0000");
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body).toHaveProperty("error");
+  });
+
+  it("should delete post by id", async () => {
+    const post = savedPosts[0];
+    const response = await request(app).delete(`/posts/${post._id}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("message", "Post deleted successfully");
+
+    const deletedPost = await postsModel.findById(post._id);
+    expect(deletedPost).toBeNull();
+  });
+});
+
 describe("PUT /posts/:post_id", () => {
   let savedPosts: IPost[] = [];
   beforeEach(async () => {
@@ -204,6 +229,8 @@ describe("PUT /posts/:post_id", () => {
     expect(response.body.userId).toBe(updateduserId);
   });
 });
+
+
 
 describe("File Tests", () => {
   test("upload file", async () => {
