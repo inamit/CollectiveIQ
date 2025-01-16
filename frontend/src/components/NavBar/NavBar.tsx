@@ -19,10 +19,14 @@ export default function NavBar() {
       <nav className="navbar">
         <span className="navbarAppTitle">
           <img src={appIcon} alt="app icon" className="appIcon" />
-    <h1 className="appLabel"
-        onClick={() => {
-            navigate(routes.USER_PROFILE)
-        }}>CollectiveIQ</h1>
+          <h1
+            className="appLabel"
+            onClick={() => {
+              navigate(routes.USER_PROFILE);
+            }}
+          >
+            CollectiveIQ
+          </h1>
         </span>
         <span className="navbarActions">
           <AppTextField
@@ -40,7 +44,7 @@ export default function NavBar() {
               },
             }}
           />
-          {user ? getUserActions(user,navigate) : getGuestActions(navigate)}
+          {user ? getUserActions(user, navigate) : getGuestActions(navigate)}
         </span>
       </nav>
     </div>
@@ -55,7 +59,7 @@ function getUserActions(user: User, navigate: NavigateFunction) {
         color="primary"
         style={{ borderRadius: "12px" }}
         onClick={() => {
-            navigate(routes.CREATE_POST);
+          navigate(routes.CREATE_POST);
         }}
       >
         Ask a Question
@@ -75,12 +79,13 @@ function getUserActions(user: User, navigate: NavigateFunction) {
 function getGuestActions(navigate: NavigateFunction) {
   return (
     <span className="guestActions">
-      <Button 
-        variant="contained" 
-        color="primary" 
+      <Button
+        variant="contained"
+        color="primary"
         onClick={() => {
           navigate(routes.SIGN_IN);
-        }}>
+        }}
+      >
         Sign In
       </Button>
       <Button
