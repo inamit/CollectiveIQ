@@ -1,7 +1,9 @@
 {
   "backendURL": "http://localhost:3000",
   "signupUrl": "/users",
+  "signinUrl": "/users/login",
   "googleAccountUrl": "/users/google",
-  "signoutUrl": "/users/logout",
-  "googleClientid": "1071756969594-h4t1vafuh2jeqnphvvd0pfc8b9a7bfk8.apps.googleusercontent.com"
+  "googleClientid": "1071756969594-h4t1vafuh2jeqnphvvd0pfc8b9a7bfk8.apps.googleusercontent.com",
+  "AIapiKey": "AIzaSyBCEHp-I_N_BcXVxenFA8rLV-UC2Pmd22A",
+  "AImodel": "gemini-1.5-flash"
 }
