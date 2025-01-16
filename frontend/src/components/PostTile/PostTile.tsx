@@ -19,8 +19,7 @@ export default function PostTile({post}: Props) {
                 <div className="postTileContent">
                     <Typography variant="body1">{post.title}</Typography>
                     <Typography variant="caption">
-                        {formatDate(post.date)} ago by:
-                        {post.userId.username}
+                       asked {formatDate(post.date)}
                     </Typography>
                     <Typography variant="caption">{post.content}</Typography>
                     <Box className="commentsCount">
