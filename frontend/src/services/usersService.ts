@@ -26,13 +26,28 @@ export class UsersService {
     return { request, cancel: () => controller.abort() };
   }
 
-  async updateUserById(userId: string, username: string, email: string, password: string) {
+  async updateUserById(userId: string, username: String) {
     const controller = new AbortController();
     const request = await this.httpClient.patch(
       `${config.backendURL}/users/${userId}`, {
       signal: controller.signal,
       username: username,
     });
+
+    return { request, cancel: () => controller.abort() };
+  }
+
+  async updateUserProfileImage(image: File) {
+    const controller = new AbortController();
+    const formData = new FormData();
+    formData.append('file', image);
+
+    const request = await this.httpClient.post(
+      `${config.backendURL}${config.avatarUpload}`, formData, {
+      headers: {
+        'Content-Type': 'image/jpeg'
+      }
+    })
 
     return { request, cancel: () => controller.abort() };
   }

@@ -8,9 +8,9 @@ import { useParams } from "react-router-dom";
 import User from "../../models/user";
 import { UsersService } from "../../services/usersService";
 import { useUser } from "../../context/userContext";
-import EditProfile from "../../components/EditProfile/EditProfile";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import { ImagePicker } from "../../components/ImagePicker/ImagePicker";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -75,7 +75,7 @@ export default function UserProfile() {
   const usersService = user
       ? new UsersService(user, setUser)
       : new UsersService();
-
+  const [image, setImage] = useState<File | null>(null);
   const { posts, postsLoadingState } = usePosts(selectedUser);
 
   useEffect(() => {
@@ -92,8 +92,13 @@ export default function UserProfile() {
   };
 
   const handleEditbutton = async () =>{
-    if (isEdit) {
-      if(user != null){
+    if (isEdit && user != null) {
+      if(image != null){
+        console.log(image)
+        const res = ((await usersService.updateUserProfileImage(image)).request);
+        console.log(res)
+      }
+      if(user.username != username){
         const res = (await usersService.updateUserById(user._id, username)).request;
         console.log(res)
         if(res.status === 200){
@@ -127,7 +132,7 @@ export default function UserProfile() {
           <div className="userDetailsContainer">
             <div className="userDetails">
               <div className="user">
-                <UserAvatar className="userAvatar" user={selectedUser!} />
+                {isEdit ? <ImagePicker image={image} setImage={setImage} required={false}/> : <UserAvatar className="userAvatar" user={selectedUser!}/>}
                 <div className="userDetailsText">
                   {isEdit ? (
                     <TextField

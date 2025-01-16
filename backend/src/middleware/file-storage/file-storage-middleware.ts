@@ -1,6 +1,6 @@
-import multer, {FileFilterCallback, StorageEngine} from "multer";
-import {Request, Response} from "express";
-import {fileStorageErrorHandler} from "./file-storage-error-handler";
+import multer, { FileFilterCallback, StorageEngine } from "multer";
+import { Request, Response } from "express";
+import { fileStorageErrorHandler } from "./file-storage-error-handler";
 
 const destinationDir: string = "uploads";
 const createStorage = (uploadDir: string): StorageEngine => multer.diskStorage({
@@ -31,9 +31,9 @@ export const userAvatarUpload = uploadWithConfig("avatars");
 
 export const saveFile = (req: Request, res: Response): void => {
     try {
-        res.status(200).send({url: process.env.BASE_URL! + req.file?.path});
+        res.status(200).send({ url: process.env.BASE_URL! + req.file?.path });
     } catch (err: any) {
         console.warn(`Error saving file: `, err);
-        fileStorageErrorHandler(err, req, res, () => {});
+        fileStorageErrorHandler(err, req, res, () => { });
     }
 };
