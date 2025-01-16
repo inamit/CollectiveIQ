@@ -35,7 +35,7 @@ export default function AppWrapper() {
           />
           <Route path={routes.SIGN_UP} element={<SignUp />} />
           <Route path={routes.SIGN_IN} element={<SignIn />} />
-          <Route path={routes.ASK_QUESTION} element={<CreatePost />} />
+          <Route path={routes.CREATE_POST} element={<CreatePost />} />
           <Route path={routes.POST + "/:postId"} element={<PostComponent />} />
           <Route path="*" element={<AuthRedirect />} />
         </Route>

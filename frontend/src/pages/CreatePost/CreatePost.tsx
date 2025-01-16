@@ -6,7 +6,7 @@ import { useUser } from "../../context/userContext.tsx";
 import AppTextField from "../../components/TextField/TextField.tsx";
 import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
 
-const AskQuestion = () => {
+const CreatePost = () => {
   const [title, setTitle] = useState("");
   const [question, setQuestion] = useState("");
   const [image, setImage] = useState<File | null>(null);
@@ -130,4 +130,4 @@ const AskQuestion = () => {
   );
 };
 
-export default AskQuestion;
+export default CreatePost;
