@@ -35,9 +35,9 @@ export class AuthenticationService {
       });
   }
 
-  signOut() {
+  signOut(refreshToken: string) {
     return this.httpClientFactory
-        .unauthorizedHttpClient()
-        .post(config.signupUrl, {});
+      .unauthorizedHttpClient()
+      .post(config.signoutUrl, { refreshToken });
   }
 }
