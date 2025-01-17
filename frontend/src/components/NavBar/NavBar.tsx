@@ -55,7 +55,14 @@ export default function NavBar() {
             "aria-labelledby": "basic-button",
           }}
         >
-          <MenuItem onClick={handleClose}>Profile</MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              navigate(routes.USER_PROFILE);
+            }}
+          >
+            Profile
+          </MenuItem>
           <MenuItem onClick={handleClose}>Settings</MenuItem>
           <Logout></Logout>
         </Menu>
