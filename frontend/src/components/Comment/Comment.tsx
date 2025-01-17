@@ -66,7 +66,7 @@ const CommentSection = ({ comments, addComment }: CommentSectionProps) => {
           variant="contained"
           size="small"
           startIcon={<CommentIcon />}
-          style={{ marginTop: "8px" }}
+          className="add-comment-button"
         >
           Add Comment
         </Button>
