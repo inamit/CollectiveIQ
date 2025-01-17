@@ -5,10 +5,12 @@ export const chatSocket = (io: Server) => {
     io.on("connection", (socket: Socket) => {
         console.log("User connected:", socket.id);
 
-        socket.on("sendMessage", async ({ sender, receiver, message }) => {
-            const chat = new Chat({ sender, receiver, message });
+        socket.on("sendMessage", async ({ senderId, receiverId, message }) => {
+            console.log("User sent a message: to:", senderId,receiverId);
+            const chat = new Chat({ senderId, receiverId, message });
             await chat.save();
-            io.to(receiver).emit("receiveMessage", { sender, message });
+            console.log("saved sent a message:", message);
+            io.to(receiverId).emit("receiveMessage", { senderId, message });
         });
 
         socket.on("joinRoom", (roomId: string) => {
