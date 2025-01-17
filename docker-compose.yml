@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      target: production
+    ports:
+      - 3000:3000
+    environment:
+      - DB_URL=mongodb://host.docker.internal:27017/test
+      - ACCESS_TOKEN_EXPIRATION='1d'
+      - REFRESH_TOKEN_EXPIRATION='2d'
+      - TOKEN_SECRET=mysecret
+      - FILE_SIZE_LIMIT=5242880
+      - BASE_URL=http://localhost:3000/
+    networks:
+      - my-network
+
+  frontend:
+    build: ./frontend
+
+    ports:
+      - 443:3000
+
+networks:
+  my-network:
+    driver: bridge
