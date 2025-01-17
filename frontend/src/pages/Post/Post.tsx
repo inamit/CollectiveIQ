@@ -46,13 +46,17 @@ const PostComponent = () => {
   } = usePost(postId);
   const [editablePost, setEditablePost] = useState<Partial<Post> | null>(post);
   const [image, setImage] = useState<File | null>(null);
+  const [originalImage, setOriginalImage] = useState<File | null>(null);
 
   const MySwal = withReactContent(Swal);
 
   useEffect(() => {
     setEditablePost(post);
     if (post?.imageUrl) {
-      createFile(post.imageUrl);
+      createFile(post.imageUrl).then((file) => {
+        setImage(file);
+        setOriginalImage(file);
+      });
     }
   }, [post]);
 
@@ -63,8 +67,7 @@ const PostComponent = () => {
     let metadata = {
       type: data.type,
     };
-    let file = new File([data], urlArray[urlArray.length - 1], metadata);
-    setImage(file);
+    return new File([data], urlArray[urlArray.length - 1], metadata);
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -175,7 +178,7 @@ const PostComponent = () => {
         postId!,
         editablePost?.title,
         editablePost?.content,
-        image
+        image !== originalImage ? image : null
       );
 
       request
