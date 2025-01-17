@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { IconButton, Box, Card, CardContent, Typography } from "@mui/material";
+import {
+  IconButton,
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Skeleton,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -21,14 +28,22 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { routes } from "../../router/routes.ts";
 import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
-import {formatDate} from "../../utils/formatDate.ts";
+import { formatDate } from "../../utils/formatDate.ts";
 import Markdown from "../../components/Markdown/Markdown.tsx";
+import { LoadingState } from "../../services/loadingState.ts";
 
 const PostComponent = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
   const { user, setUser } = useUser();
-  const { post, comments, setComments, refreshPost } = usePost(postId);
+  const {
+    post,
+    postLoadingState,
+    commentsLoadingState,
+    comments,
+    setComments,
+    refreshPost,
+  } = usePost(postId);
   const [editablePost, setEditablePost] = useState<Partial<Post> | null>(post);
   const [image, setImage] = useState<File | null>(null);
 
@@ -202,6 +217,162 @@ const PostComponent = () => {
     }
   };
 
+  const getCommentsComponents = () => {
+    switch (commentsLoadingState) {
+      case LoadingState.ERROR:
+        return <Typography>Error loading comments</Typography>;
+      case LoadingState.LOADED:
+        return (
+          <Box mt={2}>
+            <Typography variant="body2" sx={{ textAlign: "left", mb: 1 }}>
+              {comments.length} Comment
+              {comments.length !== 1 ? "s" : ""}
+            </Typography>
+            <CommentSection comments={comments} addComment={addComment} />
+          </Box>
+        );
+      default:
+        return (
+          <Skeleton
+            variant="rectangular"
+            height={100}
+            sx={{ marginTop: "15px" }}
+          />
+        );
+    }
+  };
+
+  const getHeader = () => {
+    switch (postLoadingState) {
+      case LoadingState.ERROR:
+        return <></>;
+      case LoadingState.LOADED:
+        return (
+          <div
+            style={{
+              marginBottom: 20,
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            {isEditing ? (
+              <AppTextField
+                fullWidth
+                value={editablePost?.title as string}
+                onChange={(e) => handleInputChange("title", e.target.value)}
+              />
+            ) : (
+              <Typography
+                variant="h5"
+                sx={{
+                  textAlign: "left",
+                }}
+              >
+                {editablePost?.title as string}
+              </Typography>
+            )}
+
+            {getEditButtons()}
+          </div>
+        );
+      default:
+        return <Skeleton variant="text" height={100} />;
+    }
+  };
+
+  const getUserDetails = () => {
+    switch (postLoadingState) {
+      case LoadingState.ERROR:
+        return <></>;
+      case LoadingState.LOADED:
+        return (
+          <Box display="flex" alignItems="center" mb={2}>
+            <UserAvatar user={post?.userId} className="user-avatar" />
+            <Box display="flex" alignItems="start" flexDirection="column">
+              <Typography variant="body1">{post?.userId?.username}</Typography>
+              <Typography variant="caption">
+                {formatDate(post?.date)}
+              </Typography>
+            </Box>
+          </Box>
+        );
+      default:
+        return (
+          <Box display="flex" alignItems="center" mb={2}>
+            <Skeleton variant="circular" width={40} height={40} />
+            <Box
+              display="flex"
+              alignItems="start"
+              ml={2}
+              flexDirection="column"
+            >
+              <Skeleton variant="text" width={100} />
+              <Skeleton variant="text" width={70} />
+            </Box>
+          </Box>
+        );
+    }
+  };
+
+  const getPostContent = () => {
+    switch (postLoadingState) {
+      case LoadingState.LOADED:
+        return (
+          <>
+            <CardContent sx={{ textAlign: "left" }}>
+              <Markdown
+                editablePost={editablePost as Post}
+                post={post as Post}
+                handleInputChange={handleInputChange}
+                isEditing={isEditing}
+              />
+              {post?.imageUrl && !isEditing && (
+                <Box
+                  component="img"
+                  src={post?.imageUrl}
+                  alt="Post"
+                  sx={{
+                    width: "100%",
+                    borderRadius: 1,
+                    marginTop: 2,
+                  }}
+                />
+              )}
+
+              {isEditing && (
+                <ImagePicker
+                  image={image}
+                  setImage={setImage}
+                  required={editablePost?.imageUrl ? true : false}
+                />
+              )}
+            </CardContent>
+
+            <Box display="flex" alignItems="center" gap={2} px={2}>
+              <IconButton
+                onClick={handleLike}
+                sx={{ color: liked ? "#5B6DC9" : "inherit" }}
+              >
+                {liked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
+              </IconButton>
+              <Typography>{post?.likes.length}</Typography>
+              <IconButton
+                onClick={handleDislike}
+                sx={{ color: disliked ? "#E57373" : "inherit" }}
+              >
+                {disliked ? <ThumbDownAltIcon /> : <ThumbDownAltOutlinedIcon />}
+              </IconButton>
+              <Typography>{post?.dislikes.length}</Typography>
+            </Box>
+          </>
+        );
+      case LoadingState.ERROR:
+        return <Typography>Error loading post</Typography>;
+      default:
+        return <Skeleton variant="text" height={400} />;
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -220,97 +391,11 @@ const PostComponent = () => {
           color: "#fff",
         }}
       >
-        <div
-          style={{
-            marginBottom: 20,
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          {isEditing ? (
-            <AppTextField
-              fullWidth
-              value={editablePost?.title as string}
-              onChange={(e) => handleInputChange("title", e.target.value)}
-            />
-          ) : (
-            <Typography
-              variant="h5"
-              sx={{
-                textAlign: "left",
-              }}
-            >
-              {editablePost?.title as string}
-            </Typography>
-          )}
+        {getHeader()}
+        {getUserDetails()}
+        {getPostContent()}
 
-          {getEditButtons()}
-        </div>
-
-        {/* User Info */}
-        <Box display="flex" alignItems="center" mb={2}>
-          <UserAvatar user={post?.userId} className="user-avatar" />
-          <Box display="flex" alignItems="start" flexDirection="column">
-            <Typography variant="body1">{post?.userId?.username}</Typography>
-            <Typography variant="caption">{formatDate(post?.date)}</Typography>
-          </Box>
-        </Box>
-
-        {/* Post Content */}
-        <CardContent sx={{ textAlign: "left" }}>
-          <Markdown
-            editablePost={editablePost as Post}
-            post={post as Post}
-            handleInputChange={handleInputChange}
-            isEditing={isEditing}
-          />
-          {post?.imageUrl && !isEditing && (
-            <Box
-              component="img"
-              src={post?.imageUrl}
-              alt="Post"
-              sx={{
-                width: "100%",
-                borderRadius: 1,
-                marginTop: 2,
-              }}
-            />
-          )}
-
-          {isEditing && (
-            <ImagePicker
-              image={image}
-              setImage={setImage}
-              required={editablePost?.imageUrl ? true : false}
-            />
-          )}
-        </CardContent>
-
-        {/* Actions */}
-        <Box display="flex" alignItems="center" gap={2} px={2}>
-          <IconButton
-            onClick={handleLike}
-            sx={{ color: liked ? "#5B6DC9" : "inherit" }}
-          >
-            {liked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
-          </IconButton>
-          <Typography>{post?.likes.length}</Typography>
-          <IconButton
-            onClick={handleDislike}
-            sx={{ color: disliked ? "#E57373" : "inherit" }}
-          >
-            {disliked ? <ThumbDownAltIcon /> : <ThumbDownAltOutlinedIcon />}
-          </IconButton>
-          <Typography>{post?.dislikes.length}</Typography>
-        </Box>
-
-        <Box mt={2}>
-          <Typography variant="body2" sx={{ textAlign: "left", mb: 1 }}>
-            {comments.length} Comment
-            {comments.length !== 1 ? "s" : ""}
-          </Typography>
-          <CommentSection comments={comments} addComment={addComment} />
-        </Box>
+        {getCommentsComponents()}
       </Card>
     </Box>
   );

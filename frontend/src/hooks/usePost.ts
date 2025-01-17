@@ -7,6 +7,8 @@ import { AxiosResponse } from "axios";
 import { useUser } from "../context/userContext";
 import { CommentsService } from "../services/commentsService";
 
+const CANCEL_ERROR_CODE = "ERR_CANCELED";
+
 const usePost = (postId: string | undefined) => {
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -30,8 +32,10 @@ const usePost = (postId: string | undefined) => {
         setPostLoadingState(LoadingState.LOADED);
       })
       .catch((err: any) => {
-        setError(err.message);
-        setPostLoadingState(LoadingState.ERROR);
+        if (err.code !== CANCEL_ERROR_CODE) {
+          setError(err.message);
+          setPostLoadingState(LoadingState.ERROR);
+        }
       });
 
     return { cancel };
@@ -64,8 +68,10 @@ const usePost = (postId: string | undefined) => {
         setCommentsLoadingState(LoadingState.LOADED);
       })
       .catch((err) => {
-        setError(err.message);
-        setCommentsLoadingState(LoadingState.ERROR);
+        if (err.code !== CANCEL_ERROR_CODE) {
+          setError(err.message);
+          setCommentsLoadingState(LoadingState.ERROR);
+        }
       });
 
     return () => cancel();

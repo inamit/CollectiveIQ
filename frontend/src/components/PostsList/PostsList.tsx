@@ -33,9 +33,8 @@ export default function PostsList({
         <Skeleton
           key={i}
           variant="rectangular"
-          animation="wave"
           height={100}
-          sx={{ marginTop: "15px", bgcolor: "grey.800" }}
+          sx={{ marginTop: "15px" }}
         />
       )
     );

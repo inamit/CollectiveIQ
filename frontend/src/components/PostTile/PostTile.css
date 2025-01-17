@@ -4,20 +4,23 @@
   align-items: flex-start;
   gap: 16px;
   align-self: stretch;
+  overflow: hidden;
 }
 
 .postTileContent {
   display: flex;
-  height: 70px;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   flex: 1 0 0;
+  overflow: hidden;
 }
 
-.commentsCount {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
+.postTileMetadata {
+  display: flex;
+  gap: 16px;
+}
+
+.count {
   color: grey;
 }
