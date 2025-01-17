@@ -12,36 +12,22 @@ interface CommentProps {
 const CommentComponent = ({ comment }: CommentProps) => {
   return (
     <div className="comment-container">
-      <div
-        className="comment-header"
-        style={{ display: "flex", alignItems: "center" }}
-      >
+      <div className="comment-header">
         <UserAvatar user={comment.userId} className="user-avatar" />
         <div className="comment-details">
           <Typography
             variant="body2"
             sx={{ mb: 2 }}
             className="comment-username"
-            style={{ fontWeight: "bold" }}
           >
             {comment.userId?.username}
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ mb: 2 }}
-            className="comment-time"
-            style={{ color: "#999" }}
-          >
+          <Typography variant="body2" sx={{ mb: 2 }} className="comment-time">
             {comment.date?.toString()}
           </Typography>
         </div>
       </div>
-      <Typography
-        variant="body2"
-        sx={{ mb: 2 }}
-        className="comment-text"
-        style={{ marginTop: "10px" }}
-      >
+      <Typography variant="body2" sx={{ mb: 2 }} className="comment-text">
         {comment.content}
       </Typography>
     </div>

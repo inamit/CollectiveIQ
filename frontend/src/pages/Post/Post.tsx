@@ -1,3 +1,4 @@
+import "./Post.css";
 import { useEffect, useState } from "react";
 import {
   IconButton,
@@ -197,23 +198,18 @@ const PostComponent = () => {
   const getEditButtons = () => {
     if (user?._id === post?.userId._id) {
       return (
-        <Box
-          sx={{
-            display: "flex",
-            gap: 1,
-          }}
-        >
+        <Box className="post-actions">
           <IconButton
             size="small"
             onClick={toggleEditMode}
-            sx={{ "&:hover": { color: "#5B6DC9" }, color: "#fff" }}
+            className="edit-button"
           >
             {isEditing ? <SaveIcon /> : <EditIcon />}
           </IconButton>
           <IconButton
             size="small"
-            sx={{ "&:hover": { color: "#E57373" }, color: "#fff" }}
             onClick={deletePost}
+            className="delete-button"
           >
             <DeleteIcon />
           </IconButton>
@@ -228,8 +224,8 @@ const PostComponent = () => {
         return <Typography>Error loading comments</Typography>;
       case LoadingState.LOADED:
         return (
-          <Box mt={2}>
-            <Typography variant="body2" sx={{ textAlign: "left", mb: 1 }}>
+          <Box className="comments-container">
+            <Typography variant="body2" className="comments-count">
               {comments.length} Comment
               {comments.length !== 1 ? "s" : ""}
             </Typography>
@@ -241,7 +237,7 @@ const PostComponent = () => {
           <Skeleton
             variant="rectangular"
             height={100}
-            sx={{ marginTop: "15px" }}
+            className="comments-container"
           />
         );
     }
@@ -253,13 +249,7 @@ const PostComponent = () => {
         return <></>;
       case LoadingState.LOADED:
         return (
-          <div
-            style={{
-              marginBottom: 20,
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
+          <div className="post-header">
             {isEditing ? (
               <AppTextField
                 fullWidth
@@ -267,12 +257,7 @@ const PostComponent = () => {
                 onChange={(e) => handleInputChange("title", e.target.value)}
               />
             ) : (
-              <Typography
-                variant="h5"
-                sx={{
-                  textAlign: "left",
-                }}
-              >
+              <Typography variant="h5" className="post-title">
                 {editablePost?.title as string}
               </Typography>
             )}
@@ -336,11 +321,7 @@ const PostComponent = () => {
                   component="img"
                   src={post?.imageUrl}
                   alt="Post"
-                  sx={{
-                    width: "100%",
-                    borderRadius: 1,
-                    marginTop: 2,
-                  }}
+                  className="post-image"
                 />
               )}
 
@@ -379,23 +360,8 @@ const PostComponent = () => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "#121212", // Dark background for the page
-        minHeight: "100vh",
-        padding: "32px",
-        color: "#fff", // Light text
-      }}
-    >
-      <Card
-        sx={{
-          maxWidth: 800,
-          margin: "0 auto",
-          padding: 2,
-          backgroundColor: "#1e1e1e", // Dark background for the card
-          color: "#fff",
-        }}
-      >
+    <Box className="post-container">
+      <Card className="post-card">
         {getHeader()}
         {getUserDetails()}
         {getPostContent()}

@@ -87,7 +87,7 @@ button:hover {
 .comment-text {
   font-size: 14px;
   color: #ccc;
-  margin-top: 4px;
+  margin-top: 10px;
   white-space: pre-line; /* Ensures line breaks are respected */
   text-align: left; /* Aligns the comment text to the left */
 }

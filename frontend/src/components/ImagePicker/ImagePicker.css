@@ -2,6 +2,7 @@
   position: relative;
   display: inline-block;
 }
+
 .imageOverlay {
   position: absolute;
   top: 0;
@@ -15,6 +16,24 @@
   transition: opacity 0.3s ease;
   background-color: rgba(0, 0, 0, 0.5);
 }
+
 .imageContainer:hover .imageOverlay {
   opacity: 1;
+}
+
+.imagePreviewLabel {
+  display: block;
+  font-size: 14px;
+  color: #bbb;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+#imagePreview {
+  height: 400px;
+  width: 400px;
+}
+
+.imageInput {
+  display: none;
 }
