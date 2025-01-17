@@ -77,7 +77,7 @@ const Chat: React.FC<ChatBoxProps> = ({
                 sx={{
                     position: "fixed",
                     bottom: "20px",
-                    left: "150px",
+                    left: "230px",
                     width: "300px",
                     height: "400px",
                     backgroundColor: "white",
