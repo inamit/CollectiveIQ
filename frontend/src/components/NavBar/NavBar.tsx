@@ -17,16 +17,14 @@ export default function NavBar() {
   return (
     <div className="navbarContainer">
       <nav className="navbar">
-        <span className="navbarAppTitle">
+        <span
+          className="navbarAppTitle"
+          onClick={() => {
+            navigate(routes.USER_PROFILE);
+          }}
+        >
           <img src={appIcon} alt="app icon" className="appIcon" />
-          <h1
-            className="appLabel"
-            onClick={() => {
-              navigate(routes.USER_PROFILE);
-            }}
-          >
-            CollectiveIQ
-          </h1>
+          <h1 className="appLabel">CollectiveIQ</h1>
         </span>
         <span className="navbarActions">
           <AppTextField
