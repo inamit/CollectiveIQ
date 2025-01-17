@@ -9,7 +9,7 @@ interface IMessage {
     senderId: string;
     message: string;
 }
-const ChatPage = () => {
+const ChatComponent = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [users, setUsers] = useState<User[]>([]);
@@ -49,4 +49,4 @@ const ChatPage = () => {
     );
 };
 
-export default ChatPage;
+export default ChatComponent;
