@@ -162,6 +162,22 @@ const login = async (req: Request, res: Response): Promise<any> => {
 
 const logout = async (req: Request, res: Response): Promise<any> => {
   try {
+    const refreshToken = req.body.refreshToken
+
+    if (!refreshToken) {
+      return res.status(400).json({ error: "Refresh token is required." });
+    }
+
+    const result = await User.updateOne(
+      { refreshTokens: refreshToken },
+      { $pull: { refreshTokens: refreshToken } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(400).json({ error: "No matching refresh token found." });
+    } else {
+      console.log("Refresh token successfully removed.");
+    }
     return token.clearTokens(res);
   } catch (err) {
     console.warn("Error while logging out:", err);
