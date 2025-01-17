@@ -4,7 +4,7 @@ export interface IChat {
     _id?: string;
     senderId: Types.ObjectId;
     receiverId: Types.ObjectId;
-    content: string;
+    message: string;
     timestamp: Date;
 }
 
@@ -18,13 +18,13 @@ const chatSchema = new Schema<IChat>({
         type: Schema.Types.ObjectId,
         required: true,
     },
-    content: {
+    message: {
         type: String,
         required: true,
     },
     timestamp: {
         type: Date,
-        required: true,
+        default: new Date()
     },
 });
 
