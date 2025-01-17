@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { Express } from "express";
 import usersModel, { IUser } from "../models/users_model";
 import path from "path";
-
+import jwt from "jsonwebtoken";
 let app: Express;
 
 jest.mock("../middleware/auth/authMiddleware", () => ({
@@ -254,10 +254,30 @@ describe("POST /users/login", () => {
 
 describe("POST /users/logout", () => {
   it("should return a response indicating tokens are cleared after user is logged out", async () => {
-    const response = await request(app).post("/users/logout").send({});
+    const createUser = await request(app).post("/users").send({
+      username: "test",
+      email: "test@gmail.com",
+      password: "test",
+    });
+    const user = await request(app).post("/users/login").send({ username: "test", password: "test" })
+    const response = await request(app).post("/users/logout").send({ refreshToken: user.body.refreshToken });
     expect(response.statusCode).toBe(200);
-    expect(response.body).not.toHaveProperty("accessToken");
-    expect(response.body).not.toHaveProperty("refreshToken");
+  });
+  it("should return a response that refresh token is required", async () => {
+    const response = await request(app).post("/users/logout").send({});
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty(
+      "error",
+      "Refresh token is required."
+    );
+  });
+  it("should return a response that no matching refresh token found.", async () => {
+    const response = await request(app).post("/users/logout").send({ refreshToken: "test" });
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty(
+      "error",
+      "No matching refresh token found."
+    );
   });
 });
 

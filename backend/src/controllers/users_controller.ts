@@ -174,7 +174,7 @@ const logout = async (req: Request, res: Response): Promise<any> => {
     );
 
     if (result.modifiedCount === 0) {
-      console.warn("No matching refresh token found.");
+      return res.status(400).json({ error: "No matching refresh token found." });
     } else {
       console.log("Refresh token successfully removed.");
     }
