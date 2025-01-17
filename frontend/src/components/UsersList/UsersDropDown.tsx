@@ -3,14 +3,15 @@ import {
     Box,
     Menu,
     MenuItem,
-    Button,
+    Button, ListItemText, ListItemIcon,
 } from "@mui/material";
 import User from "../../models/user.ts";
+import Avatar from "@mui/material/Avatar";
+import UserAvatar from "../UserAvatar/UserAvatar.tsx";
 
 const UserDropdown = ({users, onSelectUser}: { users: User[]; onSelectUser: (user: User) => void }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
-
 
     const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -53,8 +54,18 @@ const UserDropdown = ({users, onSelectUser}: { users: User[]; onSelectUser: (use
                   anchorEl={anchorEl}
                   open={Boolean(anchorEl)}
                   onClose={handleCloseMenu}
+                  anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "left",
+                  }}
+                  transformOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left",
+                  }}
                   PaperProps={{
                       sx: {
+                          maxHeight: 400, // Set max height for the menu
+                          overflowY: "auto", // Enable vertical scrolling
                           backgroundColor: "#1e1e1e",
                           color: "white",
                           borderRadius: 1,
@@ -72,7 +83,10 @@ const UserDropdown = ({users, onSelectUser}: { users: User[]; onSelectUser: (use
                             },
                         }}
                     >
-                        {user.username}
+                        <ListItemIcon sx={{marginRight:"10px"}}>
+                            <UserAvatar user={user} />
+                        </ListItemIcon>
+                        <ListItemText primary={user.username} />
                     </MenuItem>
                 ))}
             </Menu>
