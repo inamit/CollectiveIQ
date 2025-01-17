@@ -14,3 +14,10 @@
   align-items: flex-start;
   flex: 1 0 0;
 }
+
+.commentsCount {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  color: grey;
+}

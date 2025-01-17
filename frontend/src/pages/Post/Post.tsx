@@ -21,6 +21,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { routes } from "../../router/routes.ts";
 import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
+import {formatDate} from "../../utils/formatDate.ts";
 import Markdown from "../../components/Markdown/Markdown.tsx";
 
 const PostComponent = () => {
@@ -251,7 +252,7 @@ const PostComponent = () => {
           <UserAvatar user={post?.userId} className="user-avatar" />
           <Box display="flex" alignItems="start" flexDirection="column">
             <Typography variant="body1">{post?.userId?.username}</Typography>
-            <Typography variant="caption">{post?.date?.toString()}</Typography>
+            <Typography variant="caption">{formatDate(post?.date)}</Typography>
           </Box>
         </Box>
 
