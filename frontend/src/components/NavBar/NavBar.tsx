@@ -66,7 +66,13 @@ export default function NavBar() {
   function getGuestActions(navigate: NavigateFunction) {
     return (
       <span className="guestActions">
-        <Button variant="contained" color="primary">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            navigate(routes.SIGN_IN);
+          }}
+        >
           Sign In
         </Button>
         <Button

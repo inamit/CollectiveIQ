@@ -57,12 +57,13 @@ const PostComponent = () => {
   }, [post]);
 
   const createFile = async (imageUrl: string) => {
+    const urlArray = imageUrl.split("/");
     let response = await fetch(imageUrl);
     let data = await response.blob();
     let metadata = {
-      type: "image/jpeg",
+      type: data.type,
     };
-    let file = new File([data], "test.jpg", metadata);
+    let file = new File([data], urlArray[urlArray.length - 1], metadata);
     setImage(file);
   };
 
@@ -115,6 +116,7 @@ const PostComponent = () => {
       updatePost()
         .then(() => {
           setIsEditing(!isEditing);
+          refreshPost();
         })
         .catch((err) => {
           toast.error(err);
