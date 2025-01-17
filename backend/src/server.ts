@@ -8,7 +8,6 @@ import commentsRoute from "./routes/comments_route";
 import usersRoute from "./routes/users_route";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
-import authMiddleware from "./middleware/auth/authMiddleware";
 
 dotenv.config();
 
