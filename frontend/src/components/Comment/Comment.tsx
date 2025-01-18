@@ -5,6 +5,7 @@ import { Button, Typography } from "@mui/material";
 import Comment from "../../models/comment";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import AppTextField from "../TextField/TextField";
+import { formatDate } from "../../utils/formatDate.ts";
 
 interface CommentProps {
   comment: Comment;
@@ -23,7 +24,7 @@ const CommentComponent = ({ comment }: CommentProps) => {
             {comment.userId?.username}
           </Typography>
           <Typography variant="body2" sx={{ mb: 2 }} className="comment-time">
-            {comment.date?.toString()}
+            {formatDate(comment?.date)}
           </Typography>
         </div>
       </div>
