@@ -1,11 +1,11 @@
 
 import { Request, Response } from "express";
-import Chat_model from "../models/chat_model";
+import Chat from "../models/chat_model";
 
 export const getMessages = async (req: Request, res: Response) => {
     const { senderId, receiverId } = req.params;
     try {
-        const messages = await Chat_model.find({
+        const messages = await Chat.find({
             $or: [
                 { senderId, receiverId },
                 { senderId: receiverId, receiverId: senderId },
@@ -19,7 +19,7 @@ export const getMessages = async (req: Request, res: Response) => {
 
 export const saveMessage = async (senderId: string, receiverId: string, message: string) => {
     try {
-        const newMessage = new Chat_model({ senderId, receiverId, message });
+        const newMessage = new Chat({ senderId, receiverId, message });
         await newMessage.save();
     } catch (error) {
         console.error("Error saving message:", error);
