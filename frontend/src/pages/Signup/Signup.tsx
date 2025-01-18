@@ -60,7 +60,7 @@ export default function SignUp({ className }: SignUpProps) {
       accessToken: responseJson.accessToken,
       _id: decodedAccessToken._id,
     });
-    navigate(routes.USER_PROFILE);
+    navigate(routes.HOME);
   };
 
   const onSignupButtonClicked = async () => {

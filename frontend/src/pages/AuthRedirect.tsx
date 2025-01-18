@@ -9,7 +9,7 @@ export default function AuthRedirect() {
 
   useEffect(() => {
     if (user) {
-      navigate(routes.USER_PROFILE);
+      navigate(routes.HOME);
     } else {
       navigate(routes.SIGN_UP);
     }

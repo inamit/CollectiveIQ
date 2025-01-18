@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import express, { Express } from "express";
 import bodyParser from "body-parser";
 import { connectDB } from "./db/db";
@@ -14,7 +13,9 @@ import { Server as HttpServer } from "http";
 import { Server } from "socket.io";
 import path from "path";
 
-dotenv.config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 const app = express();
 const httpServer = new HttpServer(app);
@@ -41,14 +42,14 @@ app.use(bodyParser.json());
 app.use(cors());
 
 /**
-* @swagger
-* components:
-*   securitySchemes:
-*     bearerAuth:
-*       type: http
-*       scheme: bearer
-*       bearerFormat: JWT
-*/
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
 
 app.use("/uploads", express.static("uploads"));
 app.use("/posts", postsRoute);
