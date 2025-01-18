@@ -8,6 +8,7 @@ export interface IPost extends Likeable {
   content: string;
   userId: Types.ObjectId;
   imageUrl?: string;
+  date?: Date;
 }
 
 const postSchema = new Schema<IPost>({
@@ -37,6 +38,10 @@ const postSchema = new Schema<IPost>({
     type: [Schema.Types.ObjectId],
     default: [],
     ref: USER_RESOURCE_NAME,
+  },
+  date: {
+    type: Date ,
+    default: new Date(),
   },
 });
 
