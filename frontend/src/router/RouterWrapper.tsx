@@ -5,6 +5,8 @@ import AuthRedirect from "../pages/AuthRedirect";
 import UserProfile from "../pages/UserProfile/UserProfile";
 import { routes } from "./routes";
 import AuthRequired from "../pages/AuthRequired";
+import CreatePost from "../pages/CreatePost/CreatePost.tsx";
+import PostComponent from "../pages/Post/Post.tsx";
 import SignUp from "../pages/Signup/Signup";
 import SignIn from "../pages/Signin/Signin";
 import HomePage from "../pages/HomePage/HomePage";
@@ -35,6 +37,15 @@ export default function AppWrapper() {
           />
           <Route path={routes.SIGN_UP} element={<SignUp />} />
           <Route path={routes.SIGN_IN} element={<SignIn />} />
+          <Route
+            path={routes.CREATE_POST}
+            element={
+              <AuthRequired>
+                <CreatePost />
+              </AuthRequired>
+            }
+          />
+          <Route path={routes.POST + "/:postId"} element={<PostComponent />} />
           <Route path="*" element={<AuthRedirect />} />
         </Route>
       </Routes>

@@ -22,38 +22,48 @@ export class HttpClientFactory {
       throw new Error("User is not authenticated");
     }
 
-    return axios.create({
+    const axiosInstance = axios.create({
       baseURL: config.backendURL,
       headers: {
         Authorization: `Bearer ${this.user.accessToken}`,
       },
-      transformRequest: async (_) => {
-        if (this.user && this.user.accessToken && this.user.refreshToken) {
-          const decodedAccessToken = jwtDecode(this.user.accessToken);
-          const decodedRefreshToken = jwtDecode(this.user.refreshToken);
+    });
 
-          if (decodedAccessToken.exp! < Date.now() / 1000) {
-            if (decodedRefreshToken.exp! > Date.now() / 1000) {
-              await this.refreshAccessToken(this.user);
-            } else {
-              this.setUser!(null);
-            }
+    axiosInstance.interceptors.request.use(async (options) => {
+      if (this.user && this.user.accessToken && this.user.refreshToken) {
+        const decodedAccessToken = jwtDecode(this.user.accessToken);
+        const decodedRefreshToken = jwtDecode(this.user.refreshToken);
+
+        if (decodedAccessToken.exp! < Date.now() / 1000) {
+          if (decodedRefreshToken.exp! > Date.now() / 1000) {
+            await this.refreshAccessToken(this.user);
+          } else {
+            this.setUser!(null);
           }
         }
-      },
+      }
+
+      return options;
     });
+
+    return axiosInstance;
   }
 
   private async refreshAccessToken(user: User) {
-    const refreshResponse = await this.unauthorizedHttpClient().post(
-      "/users/refresh",
-      { refreshToken: user.refreshToken }
-    );
-    const newTokens = refreshResponse.data;
+    try {
+      const refreshResponse = await this.unauthorizedHttpClient().post(
+        "/users/refresh",
+        { refreshToken: user.refreshToken }
+      );
+      const newTokens = refreshResponse.data;
 
-    user.accessToken = newTokens.accessToken;
-    user.refreshToken = newTokens.refreshToken;
+      user.accessToken = newTokens.accessToken;
+      user.refreshToken = newTokens.refreshToken;
 
-    this.setUser!(user);
+      this.setUser!(user);
+    } catch (error) {
+      console.error("Failed to refresh access token", error);
+      this.setUser!(null);
+    }
   }
 }

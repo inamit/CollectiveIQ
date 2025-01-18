@@ -14,6 +14,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  cursor: pointer;
 }
 
 .appLabel {
@@ -37,4 +38,18 @@
 .guestActions {
   display: flex;
   gap: 16px;
+}
+.MuiMenu-paper {
+  background-color: #3D404A !important;
+  color: #FFFFFF !important;
+}
+
+/* Target the background color of each menu item */
+.MuiMenuItem-root {
+  background-color: #3D404A !important;
+}
+
+/* Change the hover color for menu items */
+.MuiMenuItem-root:hover {
+  background-color: #242222 !important;
 }
