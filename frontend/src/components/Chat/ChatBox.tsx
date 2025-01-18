@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
+import SmartToyIcon from "@mui/icons-material/SmartToy";
 import Draggable from "react-draggable";
 import User from "../../models/user.ts";
 import { ChatService } from "../../services/chatService.ts";
@@ -36,7 +37,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [newMessage, setNewMessage] = useState("");
     const { setUser } = useUser();
-    const messagesEndRef = useRef<HTMLDivElement>(null); // Ref for scrolling to the latest message
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         socket.emit("joinRoom", senderId);
@@ -165,43 +166,59 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                         backgroundColor: "#F8F9FB",
                     }}
                 >
-                    {messages.map((msg, index) => (
-                        <Box
-                            key={index}
-                            sx={{
-                                display: "flex",
-                                justifyContent:
-                                    msg.senderId === senderId ? "flex-end" : "flex-start",
-                            }}
-                        >
-                            <Typography
+                    {messages.map((msg, index) => {
+                        const isSender = msg.senderId === senderId;
+                        const isAIResponse = msg.senderId === receiverId;
+                        return (
+                            <Box
+                                key={index}
                                 sx={{
-                                    backgroundColor:
-                                        msg.senderId === senderId
-                                            ? "#5B6DC9"
-                                            : "#e0e0e0",
-                                    color:
-                                        msg.senderId === senderId
-                                            ? "#fff"
-                                            : "#000",
-                                    borderRadius: "16px",
-                                    padding: "10px 14px",
-                                    boxShadow:
-                                        "0px 2px 6px rgba(0, 0, 0, 0.1)",
-                                    marginLeft: msg.senderId === senderId ? "auto" : "16px",
-                                    marginRight: msg.senderId === senderId ? "16px" : "auto",
-                                    marginTop: "4px",
-                                    maxWidth: "70%",
-                                    wordBreak: "break-word",
-                                    fontSize: "0.9rem",
+                                    display: "flex",
+                                    justifyContent: isSender ? "flex-end" : "flex-start",
                                 }}
                             >
-                                {msg.message}
-                            </Typography>
-                        </Box>
-                    ))}
-                    <div ref={messagesEndRef}></div>
+                                <Typography
+                                    sx={{
+                                        backgroundColor: isSender
+                                            ? "#5B6DC9"
+                                            : isAIResponse
+                                                ? "#F1F8FF"
+                                                : "#e0e0e0",
+                                        color: isSender
+                                            ? "#fff"
+                                            : isAIResponse
+                                                ? "#0073e6"
+                                                : "#000",
+                                        border: isAIResponse ? "1px solid #0073e6" : "none",
+                                        borderRadius: "16px",
+                                        padding: "10px 14px",
+                                        boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
+                                        marginLeft: isSender ? "auto" : "16px",
+                                        marginRight: isSender ? "16px" : "auto",
+                                        marginTop: "4px",
+                                        maxWidth: "70%",
+                                        wordBreak: "break-word",
+                                        fontSize: "0.9rem",
+                                        fontStyle: isAIResponse ? "italic" : "normal",
+                                        userSelect: "text",
+                                    }}
+                                >
+                                    {isAIResponse && (
+                                        <SmartToyIcon
+                                            sx={{
+                                                marginRight: "8px",
+                                                color: "#0073e6",
+                                            }}
+                                        />
+                                    )}
+                                    {msg.message}
+                                </Typography>
+                            </Box>
+                        );
+                    })}
+                    <div ref={messagesEndRef} />
                 </Box>
+
 
                 {/* Input */}
                 <Box
