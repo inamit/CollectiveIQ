@@ -171,9 +171,6 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                 >
                     {messages.map((msg, index) => {
                         const isSender = msg.senderId === senderId;
-                        console.log(isSender);
-                        console.log(msg.senderId);
-                        console.log(senderId);
                         const isAIResponse = msg.isAi;
                         return (
                             <Box
