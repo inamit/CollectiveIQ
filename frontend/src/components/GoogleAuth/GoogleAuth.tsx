@@ -26,7 +26,7 @@ export default function GoogleAuth() {
           accessToken: responseJson.accessToken,
           _id: decodedAccessToken._id,
         });
-        navigate(routes.USER_PROFILE);
+        navigate(routes.HOME);
       };
     
     

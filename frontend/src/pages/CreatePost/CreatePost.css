@@ -1,0 +1,32 @@
+.question-container {
+  max-width: 600px;
+  margin: 0 auto;
+  color: #fff;
+}
+
+.description {
+  margin-bottom: 20px;
+  color: #bbb;
+}
+
+.field-container {
+  margin-bottom: 20px;
+}
+
+.field-label {
+  display: block;
+  font-size: 14px;
+  color: #bbb;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.submit-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.submit-button {
+  margin: 10px 20px !important;
+}
