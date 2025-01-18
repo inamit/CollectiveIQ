@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import socket from "../../sockets/socket.ts";
 import {
     Box,
@@ -13,7 +13,7 @@ import Draggable from "react-draggable";
 import User from "../../models/user.ts";
 import { ChatService } from "../../services/chatService.ts";
 import { useUser } from "../../context/userContext.tsx";
-import {getAIResponse} from "../../services/aiService.ts";
+import { getAIResponse } from "../../services/aiService.ts";
 
 interface IMessage {
     senderId: string;
@@ -27,15 +27,16 @@ interface ChatBoxProps {
     receiverId: string;
 }
 
-const Chat: React.FC<ChatBoxProps> = ({
-                                          user,
-                                          onClose,
-                                          senderId,
-                                          receiverId,
-                                      }) => {
+const ChatBox: React.FC<ChatBoxProps> = ({
+                                             user,
+                                             onClose,
+                                             senderId,
+                                             receiverId,
+                                         }) => {
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [newMessage, setNewMessage] = useState("");
     const { setUser } = useUser();
+    const messagesEndRef = useRef<HTMLDivElement>(null); // Ref for scrolling to the latest message
 
     useEffect(() => {
         socket.emit("joinRoom", senderId);
@@ -58,6 +59,10 @@ const Chat: React.FC<ChatBoxProps> = ({
             socket.off("receiveMessage");
         };
     }, [senderId, receiverId]);
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
     const sendMessage = () => {
         if (newMessage.trim()) {
@@ -83,7 +88,9 @@ const Chat: React.FC<ChatBoxProps> = ({
 
     const onAiResponseClicked = async () => {
         if (receiverId && messages.length) {
-            const chatMessages = messages.map(msg => `${msg.senderId}: ${msg.message}`).join("\n");
+            const chatMessages = messages
+                .map((msg) => `${msg.senderId}: ${msg.message}`)
+                .join("\n");
             const response = await getAIResponse(chatMessages);
             if (response) {
                 setMessages((prev) => [
@@ -92,7 +99,7 @@ const Chat: React.FC<ChatBoxProps> = ({
                 ]);
             }
         }
-    }
+    };
 
     return (
         <Draggable>
@@ -127,10 +134,10 @@ const Chat: React.FC<ChatBoxProps> = ({
                         variant="body1"
                         sx={{
                             fontWeight: "bold",
-                            marginLeft:"10px",
+                            marginLeft: "10px",
                         }}
                     >
-                         {user.username}
+                        {user.username}
                     </Typography>
                     <IconButton
                         size="small"
@@ -164,9 +171,7 @@ const Chat: React.FC<ChatBoxProps> = ({
                             sx={{
                                 display: "flex",
                                 justifyContent:
-                                    msg.senderId === senderId
-                                        ? "flex-end"
-                                        : "flex-start",
+                                    msg.senderId === senderId ? "flex-end" : "flex-start",
                             }}
                         >
                             <Typography
@@ -195,6 +200,7 @@ const Chat: React.FC<ChatBoxProps> = ({
                             </Typography>
                         </Box>
                     ))}
+                    <div ref={messagesEndRef}></div>
                 </Box>
 
                 {/* Input */}
@@ -253,10 +259,10 @@ const Chat: React.FC<ChatBoxProps> = ({
                     >
                         Ask AI
                     </Button>
-                </Box>            </Box>
-
+                </Box>
+            </Box>
         </Draggable>
     );
 };
 
-export default Chat;
+export default ChatBox;
