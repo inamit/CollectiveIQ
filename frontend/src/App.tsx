@@ -3,6 +3,7 @@ import NavBar from "./components/NavBar/NavBar";
 import { ToastContainer } from "react-toastify";
 import { Outlet } from "react-router-dom";
 import { UserProvider } from "./context/userContext";
+import ChatComponent from "./components/Chat/ChatComponent.tsx";
 
 function App() {
   const AUTO_CLOSE_TIME = 3000;
@@ -19,6 +20,8 @@ function App() {
             <Outlet />
           </div>
         </UserProvider>
+
+        <ChatComponent />
       </div>
     </>
   );
