@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import express, { Express } from "express";
 import bodyParser from "body-parser";
 import { connectDB } from "./db/db";
@@ -8,9 +7,10 @@ import commentsRoute from "./routes/comments_route";
 import usersRoute from "./routes/users_route";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
-import authMiddleware from "./middleware/auth/authMiddleware";
 
-dotenv.config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 const app = express();
 
@@ -34,14 +34,14 @@ app.use(bodyParser.json());
 app.use(cors());
 
 /**
-* @swagger
-* components:
-*   securitySchemes:
-*     bearerAuth:
-*       type: http
-*       scheme: bearer
-*       bearerFormat: JWT
-*/
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
 
 app.use("/uploads", express.static("uploads"));
 app.use("/posts", postsRoute);
