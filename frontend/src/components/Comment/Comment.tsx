@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./Comment.css";
-import { Comment as CommentIcon } from "@mui/icons-material";
+import { Comment as CommentIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
 import Comment from "../../models/comment";
 import UserAvatar from "../UserAvatar/UserAvatar";
@@ -11,6 +11,10 @@ import { LoadingState } from "../../services/loadingState";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../../router/routes";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 
 interface CommentProps {
   comment: Comment;
@@ -24,19 +28,29 @@ const CommentComponent = ({ comment, setCommentsLoadingState }: CommentProps) =>
   const handleDeleteComment = (comment_id: string) => {
     const commentService = new CommentsService(user!, setUser);
     if (user?._id === comment.userId?._id) {
-      const { request } = commentService.deleteComment(comment_id);
-      request
-        .then(() => {
-          setCommentsLoadingState(LoadingState.LOADING);        
-          navigate(routes.HOME); 
-          
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-      toast.success("Comment deleted successfully");
-    } 
-    else {
+      MySwal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const { request } = commentService.deleteComment(comment_id);
+          request
+            .then(() => {
+              setCommentsLoadingState(LoadingState.LOADING);
+              navigate(routes.HOME);
+              toast.success("Comment deleted successfully");
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }
+      });
+    } else {
       toast.error("You can only delete your own comments");
     }
   };
@@ -58,18 +72,21 @@ const CommentComponent = ({ comment, setCommentsLoadingState }: CommentProps) =>
           </Typography>
         </div>
       </div>
-      <Typography variant="body2" sx={{ mb: 2 }} className="comment-text">
-        {comment.content}
-      </Typography>
-      <Button
-        onClick={() => handleDeleteComment(comment._id)}
-        variant="outlined"
-        size="small"
-        color="error"
-        className="delete-comment-button"
-      >
-        Delete Comment
-      </Button>
+      <div className="comment-content">
+        <Typography variant="body2" sx={{ mb: 2 }} className="comment-text">
+          {comment.content}
+        </Typography>
+        <Button
+          onClick={() => handleDeleteComment(comment._id)}
+          variant="outlined"
+          size="small"
+          color="error"
+          className="delete-comment-button"
+          startIcon={<DeleteIcon />}
+        >
+          Delete Comment
+        </Button>
+      </div>
     </div>
   );
 };
