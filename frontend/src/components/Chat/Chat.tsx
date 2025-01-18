@@ -13,6 +13,7 @@ import Draggable from "react-draggable";
 import User from "../../models/user.ts";
 import { ChatService } from "../../services/chatService.ts";
 import { useUser } from "../../context/userContext.tsx";
+import {getAIResponse} from "../../services/aiService.ts";
 
 interface IMessage {
     senderId: string;
@@ -80,6 +81,19 @@ const Chat: React.FC<ChatBoxProps> = ({
         }
     };
 
+    const onAiResponseClicked = async () => {
+        if (receiverId && messages.length) {
+            const chatMessages = messages.map(msg => `${msg.senderId}: ${msg.message}`).join("\n");
+            const response = await getAIResponse(chatMessages);
+            if (response) {
+                setMessages((prev) => [
+                    ...prev,
+                    { senderId: receiverId, message: response },
+                ]);
+            }
+        }
+    }
+
     return (
         <Draggable>
             <Box
@@ -138,7 +152,6 @@ const Chat: React.FC<ChatBoxProps> = ({
                         flex: 1,
                         overflowY: "auto",
                         padding: "16px",
-
                         display: "flex",
                         flexDirection: "column",
                         gap: "12px",
@@ -170,6 +183,9 @@ const Chat: React.FC<ChatBoxProps> = ({
                                     padding: "10px 14px",
                                     boxShadow:
                                         "0px 2px 6px rgba(0, 0, 0, 0.1)",
+                                    marginLeft: msg.senderId === senderId ? "auto" : "16px",
+                                    marginRight: msg.senderId === senderId ? "16px" : "auto",
+                                    marginTop: "4px",
                                     maxWidth: "70%",
                                     wordBreak: "break-word",
                                     fontSize: "0.9rem",
@@ -187,37 +203,58 @@ const Chat: React.FC<ChatBoxProps> = ({
                         padding: "12px",
                         borderTop: "1px solid #ddd",
                         display: "flex",
-                        gap: "8px",
+                        gap: "12px",
+                        alignItems: "center",
                         backgroundColor: "#FFF",
+                        flexWrap: "wrap",
                     }}
                 >
+                    {/* TextField */}
                     <TextField
                         fullWidth
-                        placeholder="Type a message..."
+                        label="Type a message..."
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         size="small"
                         onKeyDown={handleKeyPress}
                         sx={{
+                            flex: 1,
                             "& .MuiOutlinedInput-root": {
                                 borderRadius: "8px",
                             },
                         }}
                     />
+
                     <Button
                         variant="contained"
                         color="primary"
                         onClick={sendMessage}
                         sx={{
-                            minWidth: "auto",
-                            padding: "8px 12px",
+                            padding: "8px 16px",
                             borderRadius: "8px",
+                            display: "flex",
+                            alignItems: "center",
                         }}
                     >
                         <SendIcon />
                     </Button>
-                </Box>
-            </Box>
+
+                    {/* Ask AI Button */}
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={onAiResponseClicked}
+                        sx={{
+                            padding: "8px 16px",
+                            borderRadius: "8px",
+                            display: "flex",
+                            alignItems: "center",
+                        }}
+                    >
+                        Ask AI
+                    </Button>
+                </Box>            </Box>
+
         </Draggable>
     );
 };
