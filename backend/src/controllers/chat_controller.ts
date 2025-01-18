@@ -17,11 +17,3 @@ export const getMessages = async (req: Request, res: Response) => {
     }
 };
 
-export const saveMessage = async (senderId: string, receiverId: string, message: string) => {
-    try {
-        const newMessage = new Chat({ senderId, receiverId, message });
-        await newMessage.save();
-    } catch (error) {
-        console.error("Error saving message:", error);
-    }
-};
