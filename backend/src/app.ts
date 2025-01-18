@@ -17,9 +17,9 @@ initApp()
             };
             const server = https.createServer(httpsOptions, app).listen(port, () => {
                 console.log(`Server is running on port ${port} with https`);
-                const io = new Server(server, {cors: {origin: "*"}});
-                chatSocket(io);
             });
+            const io = new Server(server, {cors: {origin: "*"}});
+            chatSocket(io);
         } else {
             const server = http.createServer(app).listen(port, () => {
                 console.log(`Server is running on port ${port} with http`);
