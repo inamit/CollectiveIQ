@@ -4,22 +4,25 @@ services:
       context: ./backend
       target: production
     ports:
-      - 3000:3000
+      - 4000:3000
     environment:
-      - DB_URL=mongodb://host.docker.internal:27017/test
+      - NODE_ENV=production
+      - DB_URL=mongodb://127.0.0.1:21771/collectiveIQ
       - ACCESS_TOKEN_EXPIRATION='1d'
       - REFRESH_TOKEN_EXPIRATION='2d'
-      - TOKEN_SECRET=mysecret
+      - TOKEN_SECRET=${TOKEN_SECRET}
       - FILE_SIZE_LIMIT=5242880
-      - BASE_URL=http://localhost:3000/
+      - BASE_URL=https://node13.cs.colman.ac.il:4000/
+      - SSL_PASSPHRASE=${SSL_PASSPHRASE}
     networks:
       - my-network
 
   frontend:
     build: ./frontend
-
+    environment:
+      - NODE_ENV=production
     ports:
-      - 443:3000
+      - 443:443
 
 networks:
   my-network:

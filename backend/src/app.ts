@@ -11,6 +11,7 @@ initApp()
       const httpsOptions = {
         key: fs.readFileSync("/app/ssl/client-key.pem"),
         cert: fs.readFileSync("/app/ssl/client-cert.pem"),
+        passphrase: process.env.SSL_PASSPHRASE,
       };
       https.createServer(httpsOptions, app).listen(port, () => {
         console.log(`Server is running on port 443`);
