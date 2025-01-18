@@ -9,8 +9,8 @@ initApp()
   .then((app) => {
     if (process.env.NODE_ENV === "production") {
       const httpsOptions = {
-        key: fs.readFileSync("../ssl/client-key.pem"),
-        cert: fs.readFileSync("../ssl/client-cert.pem"),
+        key: fs.readFileSync("/app/ssl/client-key.pem"),
+        cert: fs.readFileSync("/app/ssl/client-cert.pem"),
       };
       https.createServer(httpsOptions, app).listen(port, () => {
         console.log(`Server is running on port 443`);
