@@ -28,6 +28,7 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
       title: req.body.title,
       content: req.body.content,
       userId: req.params.userId,
+        date: new Date(),
       imageUrl,
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
@@ -83,7 +84,7 @@ const updatePostById = async (req: Request, res: Response): Promise<any> => {
 
     const updatedPost: IPost | null = await Post.findByIdAndUpdate(
       post_id,
-      { title, content, userId: req.params.userId, imageUrl: req.file?.path },
+      { title, content, userId: req.params.userId, date: new Date(), imageUrl: req.file?.path },
       { new: true, runValidators: true }
     );
 
