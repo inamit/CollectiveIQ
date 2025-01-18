@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import Chat from "../models/chat";
+import Chat_model from "../models/chat_model";
 
 export const chatSocket = (io: Server) => {
     io.on("connection", (socket: Socket) => {
@@ -7,7 +7,7 @@ export const chatSocket = (io: Server) => {
 
         socket.on("sendMessage", async ({ senderId, receiverId, message }) => {
             console.log("User sent a message: to:", senderId,receiverId);
-            const chat = new Chat({ senderId, receiverId, message });
+            const chat = new Chat_model({ senderId, receiverId, message });
             await chat.save();
             console.log("saved sent a message:", message);
             io.to(receiverId).emit("receiveMessage", { senderId, message });

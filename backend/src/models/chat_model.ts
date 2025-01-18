@@ -29,7 +29,7 @@ const chatSchema = new Schema<IChat>({
 });
 
 export const CHAT_RESOURCE_NAME = "Chats";
-const Chat = mongoose.model<IChat>(CHAT_RESOURCE_NAME, chatSchema);
+const Chat_model = mongoose.model<IChat>(CHAT_RESOURCE_NAME, chatSchema);
 
 
-export default Chat;
+export default Chat_model;
