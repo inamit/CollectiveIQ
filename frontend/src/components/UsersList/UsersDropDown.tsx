@@ -6,7 +6,6 @@ import {
     Button, ListItemText, ListItemIcon,
 } from "@mui/material";
 import User from "../../models/user.ts";
-import Avatar from "@mui/material/Avatar";
 import UserAvatar from "../UserAvatar/UserAvatar.tsx";
 
 const UserDropdown = ({users, onSelectUser}: { users: User[]; onSelectUser: (user: User) => void }) => {
