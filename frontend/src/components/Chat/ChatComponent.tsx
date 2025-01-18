@@ -14,7 +14,7 @@ const ChatComponent = () => {
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const { user, setUser } = useUser();
-    const senderId =JSON.parse(sessionStorage.user)._id;
+
 
     useEffect(() => {
         if(user){
@@ -36,13 +36,13 @@ const ChatComponent = () => {
 
     return (
         <div>
-            <UserDropdown users={users} onSelectUser={handleSelectUser} />
-            {selectedUser && (
+            { user && ( <UserDropdown users={users} onSelectUser={handleSelectUser} />)}
+        {selectedUser && user && (
                 <ChatBox
                     open={Boolean(selectedUser)}
                     onClose={() => setSelectedUser(null)}
                     user={selectedUser}
-                    senderId={senderId}
+                    senderId={JSON.parse(sessionStorage.user)._id}
                     receiverId={selectedUser._id}
                 />
             )}
