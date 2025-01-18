@@ -6,6 +6,7 @@ export interface IChat {
     receiverId: Types.ObjectId;
     message: string;
     timestamp: Date;
+    isAi?: boolean;
 }
 
 const chatSchema = new Schema<IChat>({
@@ -26,10 +27,14 @@ const chatSchema = new Schema<IChat>({
         type: Date,
         default: new Date()
     },
+    isAi: {
+        type: Boolean,
+        default: false
+    }
 });
 
 export const CHAT_RESOURCE_NAME = "Chats";
-const Chat_model = mongoose.model<IChat>(CHAT_RESOURCE_NAME, chatSchema);
+const Chat = mongoose.model<IChat>(CHAT_RESOURCE_NAME, chatSchema);
 
 
-export default Chat_model;
+export default Chat;

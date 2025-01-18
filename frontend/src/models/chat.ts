@@ -6,4 +6,5 @@ export default interface Chat {
     receiverId: User;
     senderId: User;
     date: Date;
+    isAi?: boolean;
 }
