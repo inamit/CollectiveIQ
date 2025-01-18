@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import socket from "../../sockets/socket.ts";
 import {
     Box,
@@ -12,13 +12,14 @@ import CloseIcon from "@mui/icons-material/Close";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import Draggable from "react-draggable";
 import User from "../../models/user.ts";
-import { ChatService } from "../../services/chatService.ts";
-import { useUser } from "../../context/userContext.tsx";
-import { getAIResponse } from "../../services/aiService.ts";
+import {ChatService} from "../../services/chatService.ts";
+import {useUser} from "../../context/userContext.tsx";
+import {getAIResponse} from "../../services/aiService.ts";
 
 interface IMessage {
     senderId: string;
     message: string;
+    isAi?: boolean;
 }
 
 interface ChatBoxProps {
@@ -36,14 +37,14 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                                          }) => {
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [newMessage, setNewMessage] = useState("");
-    const { setUser } = useUser();
+    const {setUser} = useUser();
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         socket.emit("joinRoom", senderId);
 
         const chatService = new ChatService(user, setUser);
-        const { request } = chatService.getChatHistory(senderId, receiverId);
+        const {request} = chatService.getChatHistory(senderId, receiverId);
         request
             .then((response) => {
                 setMessages(response.data);
@@ -62,20 +63,12 @@ const ChatBox: React.FC<ChatBoxProps> = ({
     }, [senderId, receiverId]);
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
     }, [messages]);
 
     const sendMessage = () => {
         if (newMessage.trim()) {
-            socket.emit("sendMessage", {
-                senderId,
-                receiverId,
-                message: newMessage,
-            });
-            setMessages((prev) => [
-                ...prev,
-                { senderId, message: newMessage },
-            ]);
+            saveMessage(newMessage, false);
             setNewMessage("");
         }
     };
@@ -93,14 +86,24 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                 .map((msg) => `${msg.senderId}: ${msg.message}`)
                 .join("\n");
             const response = await getAIResponse(chatMessages);
-            if (response) {
-                setMessages((prev) => [
-                    ...prev,
-                    { senderId: receiverId, message: response },
-                ]);
-            }
+            saveMessage(response, true);
         }
     };
+
+    const saveMessage = (messageToSave: string, isAi: boolean) => {
+        if (messageToSave) {
+            socket.emit("sendMessage", {
+                senderId,
+                receiverId,
+                message: messageToSave,
+                isAi: isAi,
+            });
+            setMessages((prev) => [
+                ...prev,
+                {senderId: receiverId, message: messageToSave, isAi: isAi},
+            ]);
+        }
+    }
 
     return (
         <Draggable>
@@ -150,7 +153,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                         }}
                         onClick={onClose}
                     >
-                        <CloseIcon />
+                        <CloseIcon/>
                     </IconButton>
                 </Box>
 
@@ -168,39 +171,36 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                 >
                     {messages.map((msg, index) => {
                         const isSender = msg.senderId === senderId;
-                        const isAIResponse = msg.senderId === receiverId;
+                        const isAIResponse = msg.isAi;
                         return (
                             <Box
                                 key={index}
                                 sx={{
                                     display: "flex",
-                                    justifyContent: isSender ? "flex-end" : "flex-start",
+                                    justifyContent:
+                                        msg.isAi ? "flex-start" : isSender ? "flex-end" : "flex-start",
                                 }}
                             >
                                 <Typography
                                     sx={{
-                                        backgroundColor: isSender
+                                        backgroundColor: msg.isAi ? "#F1F8FF" : isSender
                                             ? "#5B6DC9"
-                                            : isAIResponse
-                                                ? "#F1F8FF"
-                                                : "#e0e0e0",
-                                        color: isSender
+                                            : "#e0e0e0",
+                                        color: msg.isAi ? "#0073e6" : isSender
                                             ? "#fff"
-                                            : isAIResponse
-                                                ? "#0073e6"
-                                                : "#000",
+                                            : "#000",
                                         border: isAIResponse ? "1px solid #0073e6" : "none",
                                         borderRadius: "16px",
                                         padding: "10px 14px",
-                                        boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
-                                        marginLeft: isSender ? "auto" : "16px",
-                                        marginRight: isSender ? "16px" : "auto",
+                                        boxShadow:
+                                            "0px 2px 6px rgba(0, 0, 0, 0.1)",
+                                        marginLeft: msg.isAi ? "16px" : isSender ? "auto" : "16px",
+                                        marginRight: msg.isAi ? "auto" : isSender ? "16px" : "auto",
                                         marginTop: "4px",
                                         maxWidth: "70%",
                                         wordBreak: "break-word",
                                         fontSize: "0.9rem",
                                         fontStyle: isAIResponse ? "italic" : "normal",
-                                        userSelect: "text",
                                     }}
                                 >
                                     {isAIResponse && (
@@ -214,11 +214,10 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                                     {msg.message}
                                 </Typography>
                             </Box>
-                        );
+                        )
                     })}
-                    <div ref={messagesEndRef} />
+                    <div ref={messagesEndRef}></div>
                 </Box>
-
 
                 {/* Input */}
                 <Box
@@ -259,7 +258,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                             alignItems: "center",
                         }}
                     >
-                        <SendIcon />
+                        <SendIcon/>
                     </Button>
 
                     {/* Ask AI Button */}
