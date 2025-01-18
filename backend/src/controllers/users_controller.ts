@@ -74,11 +74,17 @@ const registerNewUser = async (req: Request, res: Response): Promise<any> => {
 
 const updateUserById = async (req: Request, res: Response): Promise<any> => {
   const { user_id }: { user_id?: string } = req.params;
-  const updates: Partial<IUser> = req.body;
+  const updates: Partial<IUser> = {};
 
   try {
     if (updates.password) {
       updates.password = await hashPassword(updates.password);
+    }
+    if (req.body.username) {
+      updates.username = req.body.username;
+    }
+    if (req.file?.path) {
+      updates.avatarUrl = req.file.path;
     }
 
     const updatedUser: Partial<IUser> | null = await User.findByIdAndUpdate(
@@ -90,9 +96,6 @@ const updateUserById = async (req: Request, res: Response): Promise<any> => {
       }
     );
 
-    if (updatedUser?.avatarUrl) {
-      updatedUser.avatarUrl = req.file?.path ?? "";
-    }
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -100,7 +103,7 @@ const updateUserById = async (req: Request, res: Response): Promise<any> => {
     delete updatedUser.password;
 
     return await token.returnTokens(<IUser>updatedUser, res, {
-      message: "User updated successfully",
+      message: "User updated successfully", what: updates
     });
   } catch (err: any) {
     console.warn("Error updating user:", err);

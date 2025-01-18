@@ -4,7 +4,7 @@ export default interface User {
   username: string;
   email: string;
   _id: string;
-  imageUrl?: string;
+  avatarUrl?: string;
   posts?: Post[];
   accessToken?: string;
   refreshToken?: string;

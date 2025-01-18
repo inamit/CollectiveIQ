@@ -71,7 +71,7 @@ export default function UserProfile() {
   const { user, setUser, isUserLoaded } = useUser();
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
   const [isEdit, setEdit] = useState(false);
-  const [username, setUsername] = useState(user?.username || "");
+  const [username, setUsername] = useState(user?.username);
   const usersService = user
       ? new UsersService(user, setUser)
       : new UsersService();
@@ -93,29 +93,38 @@ export default function UserProfile() {
 
   const handleEditbutton = async () =>{
     if (isEdit && user != null) {
-      if(image != null){
-        console.log(image)
-        const res = ((await usersService.updateUserProfileImage(image)).request);
-        console.log(res)
-      }
-      if(user.username != username){
-        const res = (await usersService.updateUserById(user._id, username)).request;
-        console.log(res)
-        if(res.status === 200){
-            const responseJson = res.data;
+      try {
+        const payload: { username?: string; image?: File } = {};
+        if (user.username !== username) {
+          payload.username = username;
+        }
+  
+        if (image != null) {
+          payload.image = image;
+        }
+  
+        if (Object.keys(payload).length > 0) {
+          const { request } = await usersService.updateUserById(user._id, payload);
+  
+          if (request.status === 200) {
+            const responseJson = request.data;
             const decodedAccessToken = jwtDecode<User>(responseJson.accessToken);
             setUser({
-                username: decodedAccessToken.username,
-                email: decodedAccessToken.email,
-                refreshToken: responseJson.refreshToken,
-                accessToken: responseJson.accessToken,
-                _id: decodedAccessToken._id,
+              username: decodedAccessToken.username,
+              email: decodedAccessToken.email,
+              avatarUrl: decodedAccessToken.avatarUrl,
+              refreshToken: responseJson.refreshToken,
+              accessToken: responseJson.accessToken,
+              _id: decodedAccessToken._id,
             });
-        } else {
-          toast.error(
-            "Error while update user, try again later..."
-          );
+            toast.success("User updated successfully!");
+          } else {
+            toast.error("Error while updating user, try again later...");
+          }
         }
+      } catch (error) {
+        console.error("Error updating user:", error);
+        toast.error("An unexpected error occurred. Please try again later.");
       }
     }
     setEdit((prev) => !prev);
@@ -132,7 +141,7 @@ export default function UserProfile() {
           <div className="userDetailsContainer">
             <div className="userDetails">
               <div className="user">
-                {isEdit ? <ImagePicker image={image} setImage={setImage} required={false}/> : <UserAvatar className="userAvatar" user={selectedUser!}/>}
+                {isEdit ? <div className="userDetailsText"><ImagePicker image={image} setImage={setImage} required={false}/></div> : <UserAvatar className="userAvatar" user={selectedUser!}/>}
                 <div className="userDetailsText">
                   {isEdit ? (
                     <TextField
@@ -147,10 +156,14 @@ export default function UserProfile() {
                         },
                       }}
                     />
-                  ) : (
-                    <Typography variant="h6" color="white">
-                      @{username}
-                    </Typography>
+                  ) : (<div>
+                      <Typography variant="h3" color="white">
+                        {user?.username}
+                      </Typography>
+                      <Typography variant="h6" color="white">
+                        {user?.email}
+                      </Typography>
+                    </div>
                   )}
                   <span>
                     {selectedUser?.posts

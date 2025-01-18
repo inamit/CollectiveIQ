@@ -25,7 +25,7 @@ export const ImagePicker = ({
         Upload Image:
       </label>
       <div className="imageContainer">
-        <img id="imagePreview" src={URL.createObjectURL(image)} />
+        <img id="imagePreview" src={URL.createObjectURL(image)} style={{ width: "150px", height: "150px", objectFit: "cover" }} />
         <div className="imageOverlay">
           <IconButton aria-label="delete" onClick={() => setImage(null)}>
             <DeleteIcon sx={{ color: "red" }} />
