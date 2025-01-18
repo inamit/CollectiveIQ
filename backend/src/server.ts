@@ -8,19 +8,12 @@ import usersRoute from "./routes/users_route";
 import chatRoute from "./routes/chats_route";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
-import {chatSocket} from "./sockets/chat_socket";
-import { Server as HttpServer } from "http";
-import { Server } from "socket.io";
-import path from "path";
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
 const app = express();
-const httpServer = new HttpServer(app);
-const io = new Server(httpServer, {path:"/socket", cors: { origin: "*" } });
-chatSocket(io);
 
 const options: swaggerJsDoc.Options = {
   definition: {
