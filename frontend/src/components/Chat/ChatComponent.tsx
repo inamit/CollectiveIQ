@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import UserDropdown from "../UsersList/UsersDropDown.tsx";
 import User from "../../models/user.ts";
-import Chat from "./Chat.tsx";
+import ChatBox from "./ChatBox.tsx";
 import {useUser} from "../../context/userContext.tsx";
 import {UsersService} from "../../services/usersService.ts";
 
@@ -17,6 +17,7 @@ const ChatComponent = () => {
     const senderId =JSON.parse(sessionStorage.user)._id;
 
     useEffect(() => {
+        if(user){
             const usersService = new UsersService(user!, setUser);
             const { request } = usersService.getAllUsers();
             request
@@ -26,7 +27,7 @@ const ChatComponent = () => {
                 .catch((err) => {
                     console.error(err);
                 });
-    });
+        }}, [user]);
 
     const handleSelectUser = (selectedUser: User) => {
         setSelectedUser(selectedUser);
@@ -37,7 +38,7 @@ const ChatComponent = () => {
         <div>
             <UserDropdown users={users} onSelectUser={handleSelectUser} />
             {selectedUser && (
-                <Chat
+                <ChatBox
                     open={Boolean(selectedUser)}
                     onClose={() => setSelectedUser(null)}
                     user={selectedUser}
