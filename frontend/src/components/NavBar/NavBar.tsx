@@ -101,7 +101,7 @@ export default function NavBar() {
         <span
           className="navbarAppTitle"
           onClick={() => {
-            navigate(routes.USER_PROFILE);
+            navigate(routes.HOME);
           }}
         >
           <img src={appIcon} alt="app icon" className="appIcon" />

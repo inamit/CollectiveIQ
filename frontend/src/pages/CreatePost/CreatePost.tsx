@@ -20,7 +20,7 @@ const CreatePost = () => {
     setTitle("");
     setQuestion("");
     setImage(null);
-    navigate(routes.USER_PROFILE);
+    navigate(routes.HOME);
   };
 
   const handleAddPost = async (e: any) => {

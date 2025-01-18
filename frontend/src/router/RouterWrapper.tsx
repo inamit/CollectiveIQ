@@ -9,6 +9,7 @@ import CreatePost from "../pages/CreatePost/CreatePost.tsx";
 import PostComponent from "../pages/Post/Post.tsx";
 import SignUp from "../pages/Signup/Signup";
 import SignIn from "../pages/Signin/Signin";
+import HomePage from "../pages/HomePage/HomePage";
 
 export default function AppWrapper() {
   const { isUserLoaded } = useUser();
@@ -20,7 +21,8 @@ export default function AppWrapper() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />}>
+        <Route path={routes.HOME} element={<App />}>
+          <Route index element={<HomePage />} />
           <Route
             path={routes.USER_PROFILE}
             element={
