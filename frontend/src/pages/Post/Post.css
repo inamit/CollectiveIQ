@@ -1,0 +1,72 @@
+.user-avatar {
+  width: 56;
+  height: 56;
+  margin-right: 2;
+}
+
+.post-container {
+  background-color: #121212;
+  min-height: 100vh;
+  padding: 32px;
+  color: #fff;
+}
+
+.post-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #1e1e1e !important;
+  color: #fff !important;
+}
+
+.post-header {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.post-title {
+  text-align: left;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.post-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-button {
+  color: #fff !important;
+}
+.edit-button:hover {
+  color: #5b6dc9 !important;
+}
+
+.delete-button {
+  color: #fff !important;
+}
+
+.delete-button:hover {
+  color: #e57373 !important;
+}
+
+.comments-container {
+  margin-top: 15px;
+}
+
+.comments-count {
+  text-align: left;
+  margin-bottom: 2px;
+}
+
+.post-image {
+  width: 100%;
+  border-radius: 1px;
+  margin-top: 2px;
+}
