@@ -5,11 +5,35 @@ import { Button, Typography } from "@mui/material";
 import Comment from "../../models/comment";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import AppTextField from "../TextField/TextField";
+import { CommentsService } from "../../services/commentsService";
+import { useUser } from "../../context/userContext.tsx";
+import { LoadingState } from "../../services/loadingState";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../../router/routes";
 
 interface CommentProps {
   comment: Comment;
+  setCommentsLoadingState: (state: LoadingState) => void;
 }
-const CommentComponent = ({ comment }: CommentProps) => {
+
+const CommentComponent = ({ comment, setCommentsLoadingState }: CommentProps) => {
+  const { user, setUser } = useUser();
+  const navigate = useNavigate();
+
+  const handleDeleteComment = (comment_id: string) => {
+    const commentService = new CommentsService(user!, setUser);
+    const { request } = commentService.deleteComment(comment_id);
+    request
+      .then(() => {
+        setCommentsLoadingState(LoadingState.LOADING);        
+        navigate(routes.HOME); 
+        
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
   return (
     <div className="comment-container">
       <div className="comment-header">
@@ -30,6 +54,15 @@ const CommentComponent = ({ comment }: CommentProps) => {
       <Typography variant="body2" sx={{ mb: 2 }} className="comment-text">
         {comment.content}
       </Typography>
+      <Button
+        onClick={() => handleDeleteComment(comment._id)}
+        variant="outlined"
+        size="small"
+        color="error"
+        className="delete-comment-button"
+      >
+        Delete Comment
+      </Button>
     </div>
   );
 };
@@ -37,9 +70,10 @@ const CommentComponent = ({ comment }: CommentProps) => {
 interface CommentSectionProps {
   comments: Comment[] | undefined;
   addComment: (content: string) => void;
+  setCommentsLoadingState: (state: LoadingState) => void;
 }
 
-const CommentSection = ({ comments, addComment }: CommentSectionProps) => {
+const CommentSection = ({ comments, addComment, setCommentsLoadingState }: CommentSectionProps) => {
   const [commentText, setCommentText] = useState("");
 
   const handleAddComment = () => {
@@ -75,7 +109,7 @@ const CommentSection = ({ comments, addComment }: CommentSectionProps) => {
       <div className="comments-list">
         {(comments?.length ?? 0) > 0 ? (
           comments?.map((comment: Comment) => (
-            <CommentComponent key={comment._id} comment={comment} />
+            <CommentComponent key={comment._id} comment={comment} setCommentsLoadingState={setCommentsLoadingState} />
           ))
         ) : (
           <p>No comments yet</p>

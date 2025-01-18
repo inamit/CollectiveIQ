@@ -44,6 +44,7 @@ const PostComponent = () => {
     comments,
     setComments,
     refreshPost,
+    setCommentsLoadingState,
   } = usePost(postId);
   const [editablePost, setEditablePost] = useState<Partial<Post> | null>(post);
   const [image, setImage] = useState<File | null>(null);
@@ -229,7 +230,7 @@ const PostComponent = () => {
               {comments.length} Comment
               {comments.length !== 1 ? "s" : ""}
             </Typography>
-            <CommentSection comments={comments} addComment={addComment} />
+            <CommentSection comments={comments} addComment={addComment} setCommentsLoadingState={setCommentsLoadingState}/>
           </Box>
         );
       default:
