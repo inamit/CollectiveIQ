@@ -10,6 +10,7 @@ import { useUser } from "../../context/userContext.tsx";
 import { LoadingState } from "../../services/loadingState";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../../router/routes";
+import { toast } from "react-toastify";
 
 interface CommentProps {
   comment: Comment;
@@ -22,16 +23,22 @@ const CommentComponent = ({ comment, setCommentsLoadingState }: CommentProps) =>
 
   const handleDeleteComment = (comment_id: string) => {
     const commentService = new CommentsService(user!, setUser);
-    const { request } = commentService.deleteComment(comment_id);
-    request
-      .then(() => {
-        setCommentsLoadingState(LoadingState.LOADING);        
-        navigate(routes.HOME); 
-        
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    if (user?._id === comment.userId?._id) {
+      const { request } = commentService.deleteComment(comment_id);
+      request
+        .then(() => {
+          setCommentsLoadingState(LoadingState.LOADING);        
+          navigate(routes.HOME); 
+          
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+      toast.success("Comment deleted successfully");
+    } 
+    else {
+      toast.error("You can only delete your own comments");
+    }
   };
 
   return (
