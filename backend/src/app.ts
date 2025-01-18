@@ -14,11 +14,11 @@ initApp()
         passphrase: process.env.SSL_PASSPHRASE,
       };
       https.createServer(httpsOptions, app).listen(port, () => {
-        console.log(`Server is running on port 443`);
+        console.log(`Server is running on port ${port} with https`);
       });
     } else {
       http.createServer(app).listen(port, () => {
-        console.log(`Server is running on port ${port}`);
+        console.log(`Server is running on port ${port} with http`);
       });
     }
   })
