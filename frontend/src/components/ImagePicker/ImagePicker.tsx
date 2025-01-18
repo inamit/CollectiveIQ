@@ -21,24 +21,11 @@ export const ImagePicker = ({
 
   return image ? (
     <div>
-      <label
-        htmlFor="imagePreview"
-        style={{
-          display: "block",
-          fontSize: "14px",
-          color: "#bbb",
-          marginBottom: "8px",
-          textAlign: "left",
-        }}
-      >
+      <label htmlFor="imagePreview" className="imagePreviewLabel">
         Upload Image:
       </label>
       <div className="imageContainer">
-        <img
-          id="imagePreview"
-          style={{ height: 400, width: 400 }}
-          src={URL.createObjectURL(image)}
-        />
+        <img id="imagePreview" src={URL.createObjectURL(image)} />
         <div className="imageOverlay">
           <IconButton aria-label="delete" onClick={() => setImage(null)}>
             <DeleteIcon sx={{ color: "red" }} />
@@ -58,9 +45,9 @@ export const ImagePicker = ({
       <input
         required={required}
         type="file"
-        style={{ display: "none" }}
+        className="imageInput"
         onChange={handleImageUpload}
       />
     </Button>
   );
-}
+};

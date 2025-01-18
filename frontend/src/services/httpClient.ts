@@ -50,15 +50,20 @@ export class HttpClientFactory {
   }
 
   private async refreshAccessToken(user: User) {
-    const refreshResponse = await this.unauthorizedHttpClient().post(
-      "/users/refresh",
-      { refreshToken: user.refreshToken }
-    );
-    const newTokens = refreshResponse.data;
+    try {
+      const refreshResponse = await this.unauthorizedHttpClient().post(
+        "/users/refresh",
+        { refreshToken: user.refreshToken }
+      );
+      const newTokens = refreshResponse.data;
 
-    user.accessToken = newTokens.accessToken;
-    user.refreshToken = newTokens.refreshToken;
+      user.accessToken = newTokens.accessToken;
+      user.refreshToken = newTokens.refreshToken;
 
-    this.setUser!(user);
+      this.setUser!(user);
+    } catch (error) {
+      console.error("Failed to refresh access token", error);
+      this.setUser!(null);
+    }
   }
 }

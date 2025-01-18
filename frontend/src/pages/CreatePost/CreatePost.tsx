@@ -3,30 +3,28 @@ import { useNavigate } from "react-router-dom";
 import { routes } from "../../router/routes.ts";
 import { PostsService } from "../../services/postsService.ts";
 import { useUser } from "../../context/userContext.tsx";
+import AppTextField from "../../components/TextField/TextField.tsx";
+import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
+import MarkdownEditor from "../../components/Markdown/MarkdownEditor/MarkdownEditor.tsx";
+import "./CreatePost.css";
+import { Button } from "@mui/material";
 
-const AskQuestion = () => {
+const CreatePost = () => {
   const [title, setTitle] = useState("");
   const [question, setQuestion] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const navigate = useNavigate();
   const { user, setUser } = useUser();
 
-  const handleImageUpload = (e: any) => {
-    setImage(e.target.files[0]);
-  };
-
   const handleCancel = () => {
     setTitle("");
     setQuestion("");
     setImage(null);
-    navigate(routes.USER_PROFILE);
+    navigate(routes.HOME);
   };
 
   const handleAddPost = async (e: any) => {
     e.preventDefault();
-    console.log("Title:", title);
-    console.log("Question:", question);
-    console.log("Pic:", image);
     const postService = new PostsService(user!, setUser);
 
     const { request } = postService.saveNewPost(title, question, image);
@@ -40,126 +38,60 @@ const AskQuestion = () => {
       });
   };
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto", color: "#fff" }}>
+    <div className="question-container">
       <h2>Ask a question</h2>
-      <p style={{ marginBottom: "20px", color: "#bbb" }}>
+      <p className="description">
         Get answers from AI models, or share your knowledge with others
       </p>
       <form>
-        <div style={{ marginBottom: "20px" }}>
-          <label
-            htmlFor="title"
-            style={{
-              display: "block",
-              fontSize: "14px",
-              color: "#bbb",
-              marginBottom: "8px",
-              textAlign: "left",
-            }}
-          >
+        <div className="field-container">
+          <label htmlFor="title" className="field-label">
             Title
           </label>
-          <input
+          <AppTextField
             id="title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "4px",
-              border: "1px solid #444",
-              backgroundColor: "#222",
-              color: "#fff",
-            }}
+            fullWidth
             placeholder="Enter a title"
           />
         </div>
 
-        <div style={{ marginBottom: "20px" }}>
-          <label
-            htmlFor="question"
-            style={{
-              display: "block",
-              fontSize: "14px",
-              color: "#bbb",
-              marginBottom: "8px",
-              textAlign: "left",
-            }}
-          >
+        <div className="field-container">
+          <label htmlFor="question" className="field-label">
             What's your question?
           </label>
-          <textarea
-            id="question"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "4px",
-              border: "1px solid #444",
-              backgroundColor: "#222",
-              color: "#fff",
-              minHeight: "150px",
-            }}
-            placeholder="Type your question here"
+
+          <MarkdownEditor
+            content={question}
+            handleInputChange={(_, content) => setQuestion(content)}
           />
         </div>
 
-        <label
-          htmlFor="title"
-          style={{
-            display: "block",
-            fontSize: "14px",
-            color: "#bbb",
-            marginBottom: "8px",
-            textAlign: "left",
-          }}
-        >
-          Upload Image (optional):
-        </label>
-        <div>
-          <input type="file" onChange={handleImageUpload} />
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: "10px",
-          }}
-        >
-          <button
+        <ImagePicker image={image} setImage={setImage} required={false} />
+        <div className="button-container">
+          <Button
             type="submit"
             onClick={handleAddPost}
-            style={{
-              padding: "10px 20px",
-              borderRadius: "12px",
-              backgroundColor: "#617AFA",
-              color: "white",
-              border: "none",
-              cursor: "pointer",
-            }}
+            className="submit-button"
+            color="primary"
+            variant="contained"
           >
             Ask
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={handleCancel}
-            style={{
-              padding: "10px 20px",
-              borderRadius: "12px",
-              backgroundColor: "#41424C",
-              color: "#fff",
-              border: "none",
-              cursor: "pointer",
-            }}
+            color="secondary"
+            variant="contained"
           >
             Cancel
-          </button>
+          </Button>
         </div>
       </form>
     </div>
   );
 };
 
-export default AskQuestion;
+export default CreatePost;

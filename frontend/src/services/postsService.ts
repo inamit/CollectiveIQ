@@ -26,6 +26,15 @@ export class PostsService {
     return { request, cancel: () => controller.abort() };
   }
 
+  getPosts() {
+    const controller = new AbortController();
+    const request = this.httpClient.get<Post[]>(`${config.backendURL}/posts`, {
+      signal: controller.signal,
+    });
+
+    return { request, cancel: () => controller.abort() };
+  }
+
   getPostById(postId: string) {
     const controller = new AbortController();
     const request = this.httpClient.get<Post>(
@@ -52,6 +61,70 @@ export class PostsService {
     let request = this.httpClient.post<Post>(
       `${config.backendURL}/posts`,
       formData,
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
+
+  updatePost(
+    postId: string,
+    title: string,
+    content: string,
+    image: File | null
+  ) {
+    const controller = new AbortController();
+    const formData = new FormData();
+
+    if (image) {
+      formData.append("file", image);
+    }
+    formData.append("title", title);
+    formData.append("content", content);
+
+    let request = this.httpClient.put<Post>(
+      `${config.backendURL}/posts/${postId}`,
+      formData,
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
+
+  deletePost(postId: string) {
+    const controller = new AbortController();
+    let request = this.httpClient.delete<Post>(
+      `${config.backendURL}/posts/${postId}`,
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
+
+  like(postId: string) {
+    const controller = new AbortController();
+    let request = this.httpClient.post<{likesAmount: number, dislikesAmount: number}>(
+      `${config.backendURL}/posts/${postId}/like`,
+      {},
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
+
+  dislike(postId: string) {
+    const controller = new AbortController();
+    let request = this.httpClient.post<{likesAmount: number, dislikesAmount: number}>(
+      `${config.backendURL}/posts/${postId}/dislike`,
+      {},
       {
         signal: controller.signal,
       }

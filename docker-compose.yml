@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      target: production
+    ports:
+      - 4000:3000
+    environment:
+      - NODE_ENV=production
+      - DB_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@172.18.0.1:21771/collectiveIQ
+      - ACCESS_TOKEN_EXPIRATION='1d'
+      - REFRESH_TOKEN_EXPIRATION='2d'
+      - TOKEN_SECRET=${TOKEN_SECRET}
+      - FILE_SIZE_LIMIT=5242880
+      - BASE_URL=https://node13.cs.colman.ac.il:4000/
+      - SSL_PASSPHRASE=${SSL_PASSPHRASE}
+    networks:
+      - my-network
+
+  frontend:
+    build: ./frontend
+    environment:
+      - NODE_ENV=production
+    ports:
+      - 443:443
+
+networks:
+  my-network:
+    driver: bridge

@@ -9,8 +9,8 @@ const getPosts = async (req: Request, res: Response): Promise<any> => {
 
   try {
     let posts: IPost[] | null = await (userId
-      ? Post.find({ userId: userId })
-      : Post.find());
+      ? Post.find({ userId: userId }).populate("userId")
+      : Post.find().populate("userId"));
     return res.json(posts);
   } catch (err: any) {
     console.warn("Error fetching posts:", err);
@@ -30,10 +30,27 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
       userId: req.params.userId,
       imageUrl,
     });
-    const savedPost: IPost = await post.save();
+    const savedPost: IPost = await (await post.save()).populate("userId");
     return res.json(savedPost);
   } catch (err: any) {
     console.warn("Error saving post:", err);
+    return handleMongoQueryError(res, err, POST_RESOURCE_NAME);
+  }
+};
+
+const deletePostById = async (req: Request, res: Response): Promise<any> => {
+  const { post_id }: { post_id?: string } = req.params;
+
+  try {
+    const deletedPost: IPost | null = await Post.findByIdAndDelete(post_id);
+
+    if (!deletedPost) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    return res.json({ message: "Post deleted successfully" });
+  } catch (err: any) {
+    console.warn("Error deleting post:", err);
     return handleMongoQueryError(res, err, POST_RESOURCE_NAME);
   }
 };
@@ -66,13 +83,10 @@ const updatePostById = async (req: Request, res: Response): Promise<any> => {
 
     const updatedPost: IPost | null = await Post.findByIdAndUpdate(
       post_id,
-      { title, content, userId: req.params.userId },
+      { title, content, userId: req.params.userId, imageUrl: req.file?.path },
       { new: true, runValidators: true }
     );
 
-    if (updatedPost?.imageUrl) {
-      updatedPost.imageUrl = req.file?.path ?? "";
-    }
     if (!updatedPost) {
       return res.status(404).json({ error: "Post not found." });
     }
@@ -153,6 +167,7 @@ function getReaction(
 export default {
   getPosts,
   saveNewPost,
+  deletePostById,
   getPostById,
   updatePostById,
   saveImage,

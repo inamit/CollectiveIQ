@@ -34,4 +34,10 @@ export class AuthenticationService {
         jwtToken: credentials,
       });
   }
+
+  signOut(refreshToken: string) {
+    return this.httpClientFactory
+      .unauthorizedHttpClient()
+      .post(config.signoutUrl, { refreshToken });
+  }
 }
