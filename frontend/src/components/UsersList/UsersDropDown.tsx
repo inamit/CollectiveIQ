@@ -50,7 +50,7 @@ const UserDropdown = ({users, onSelectUser}: { users: User[]; onSelectUser: (use
             >
                 Start a conversation with
             </Button>
-            <Menu
+            <Menu sx={{maxHeight: 400}}
                   anchorEl={anchorEl}
                   open={Boolean(anchorEl)}
                   onClose={handleCloseMenu}
@@ -62,15 +62,15 @@ const UserDropdown = ({users, onSelectUser}: { users: User[]; onSelectUser: (use
                       vertical: "bottom",
                       horizontal: "left",
                   }}
-                  PaperProps={{
-                      sx: {
+                  slotProps={{
+                   paper:{   sx: {
                           maxHeight: 400, // Set max height for the menu
                           overflowY: "auto", // Enable vertical scrolling
                           backgroundColor: "#1e1e1e",
                           color: "white",
                           borderRadius: 1,
                           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
-                      },
+                      }},
                   }}
             >
                 {users?.map((user, index) => (
