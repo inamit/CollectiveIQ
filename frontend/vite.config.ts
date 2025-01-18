@@ -8,5 +8,6 @@ export default defineConfig({
       key: "./ssl/client-key.pem",
       cert: "./ssl/client-cert.pem",
     },
+    port: 443,
   },
 });
