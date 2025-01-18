@@ -158,7 +158,7 @@ const PostComponent = () => {
     if (result.isConfirmed) {
       const { request } = new PostsService(user!, setUser).deletePost(postId!);
       request.then(() => {
-        navigate(routes.USER_PROFILE);
+        navigate(routes.HOME);
       });
     }
   };
@@ -196,7 +196,7 @@ const PostComponent = () => {
   };
 
   const getEditButtons = () => {
-    if (user?._id === post?.userId._id) {
+    if (user?._id === post?.userId?._id) {
       return (
         <Box className="post-actions">
           <IconButton

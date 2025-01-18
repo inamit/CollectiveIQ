@@ -42,7 +42,7 @@ export default function SignIn(){
                   _id: decodedAccessToken._id,
                 });
 
-            navigate(routes.USER_PROFILE);
+            navigate(routes.HOME);
           } else {
           toast.error("Error during sign in, try again!");
         }})
