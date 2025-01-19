@@ -25,4 +25,17 @@ export class UsersService {
 
     return { request, cancel: () => controller.abort() };
   }
+
+  getAllUsers() {
+    const controller = new AbortController();
+
+    const request = this.httpClient.get<User[]>(
+        `${config.backendURL}/users/`,
+        {
+          signal: controller.signal,
+        }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
 }

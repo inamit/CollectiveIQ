@@ -5,6 +5,7 @@ import cors from "cors";
 import postsRoute from "./routes/posts_route";
 import commentsRoute from "./routes/comments_route";
 import usersRoute from "./routes/users_route";
+import chatRoute from "./routes/chats_route";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 
@@ -47,6 +48,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/posts", postsRoute);
 app.use("/comments", commentsRoute);
 app.use("/users", usersRoute);
+app.use("/chats", chatRoute);
 
 const initApp = async (): Promise<Express> => {
   try {
