@@ -19,6 +19,7 @@ import {getAIResponse} from "../../services/aiService.ts";
 interface IMessage {
     senderId: string;
     message: string;
+    senderUserName:string
     isAi?: boolean;
 }
 
@@ -68,7 +69,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
 
     const sendMessage = () => {
         if (newMessage.trim()) {
-            saveMessage(newMessage, false);
+            saveMessage(newMessage, user.username,false);
             setNewMessage("");
         }
     };
@@ -83,14 +84,15 @@ const ChatBox: React.FC<ChatBoxProps> = ({
     const onAiResponseClicked = async () => {
         if (receiverId && messages.length) {
             const chatMessages = messages
-                .map((msg) => `${msg.senderId}: ${msg.message}`)
+                .map((msg) => `${msg.senderUserName}: ${msg.message}`)
                 .join("\n");
             const response = await getAIResponse(chatMessages);
-            saveMessage(response, true);
+
+            saveMessage(response, "AI",true);
         }
     };
 
-    const saveMessage = (messageToSave: string, isAi: boolean) => {
+    const saveMessage = (messageToSave: string,senderUserName:string ,isAi: boolean) => {
         if (messageToSave) {
             socket.emit("sendMessage", {
                 senderId,
@@ -100,7 +102,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
             });
             setMessages((prev) => [
                 ...prev,
-                {senderId, message: messageToSave, isAi: isAi},
+                {senderId, message: messageToSave,senderUserName, isAi},
             ]);
         }
     }
