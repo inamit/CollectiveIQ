@@ -26,6 +26,41 @@ export class UsersService {
     return { request, cancel: () => controller.abort() };
   }
 
+  async updateUserById(
+    userId: string,
+    options: { username?: string; image?: File }
+  ) {
+    const { username, image } = options;
+    const controller = new AbortController();
+    const formData = new FormData();
+    if (username) {
+      formData.append("username", username);
+    }
+    if (image) {
+      formData.append("file", image);
+    }
+    const request = await this.httpClient.patch(
+      `${config.backendURL}/users/${userId}`, formData,
+      {
+        signal: controller.signal,
+      });
+
+    return { request, cancel: () => controller.abort() };
+  }
+
+  async updateUserProfileImage(image: File) {
+    const controller = new AbortController();
+    const formData = new FormData();
+    formData.append('file', image);
+
+    const request = await this.httpClient.post(
+      `${config.backendURL}${config.avatarUpload}`, formData, {
+      headers: {
+        'Content-Type': 'image/jpeg'
+      }
+    })
+  }
+  
   getAllUsers() {
     const controller = new AbortController();
 

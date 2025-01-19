@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import PostsList from "../../components/PostsList/PostsList";
 import "./UserProfile.css";
-import { Box, Button, Tab, Tabs } from "@mui/material";
+import { Box, Button, Tab, Tabs, TextField, Typography } from "@mui/material";
 import UserAvatar from "../../components/UserAvatar/UserAvatar";
 import usePosts from "../../hooks/usePosts";
 import { useParams } from "react-router-dom";
 import User from "../../models/user";
 import { UsersService } from "../../services/usersService";
 import { useUser } from "../../context/userContext";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
+import { ImagePicker } from "../../components/ImagePicker/ImagePicker";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -67,19 +70,69 @@ export default function UserProfile() {
   const { userId } = useParams();
   const { user, setUser, isUserLoaded } = useUser();
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
-
+  const [isEdit, setEdit] = useState(false);
+  const [username, setUsername] = useState(user?.username);
+  const usersService = user
+      ? new UsersService(user, setUser)
+      : new UsersService();
+  const [image, setImage] = useState<File | null>(null);
   const { posts, postsLoadingState } = usePosts(selectedUser);
 
   useEffect(() => {
     getSelectedUser(user, setUser, isUserLoaded, userId).then(
       ({ selectedUser }) => {
         setSelectedUser(selectedUser);
+        setUsername(selectedUser?.username)
       }
     );
   }, [user, isUserLoaded]);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
+    setEdit(false);
+  };
+
+  const handleEditbutton = async () =>{
+    if (isEdit && user != null) {
+      try {
+        const payload: { username?: string; image?: File } = {};
+        if (user.username !== username) {
+          payload.username = username;
+        }
+  
+        if (image !== null) {
+          payload.image = image;
+        }
+  
+        if (Object.keys(payload).length > 0) {
+          const { request } = await usersService.updateUserById(user._id, payload);
+  
+          if (request.status === 200) {
+            const responseJson = request.data;
+            const decodedAccessToken = jwtDecode<User>(responseJson.accessToken);
+            setUser({
+              username: decodedAccessToken.username,
+              email: decodedAccessToken.email,
+              avatarUrl: decodedAccessToken.avatarUrl,
+              refreshToken: responseJson.refreshToken,
+              accessToken: responseJson.accessToken,
+              _id: decodedAccessToken._id,
+            });
+            toast.success("User updated successfully!");
+          } else {
+            toast.error("Error while updating user, try again later...");
+          }
+        }
+      } catch (error) {
+        console.error("Error updating user:", error);
+        toast.error("An unexpected error occurred. Please try again later.");
+      }
+    }
+    setEdit((prev) => !prev);
+  }
+  
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(event.target.value);
   };
 
   return (
@@ -89,9 +142,30 @@ export default function UserProfile() {
           <div className="userDetailsContainer">
             <div className="userDetails">
               <div className="user">
-                <UserAvatar className="userAvatar" user={selectedUser!} />
+                {isEdit ? <div className="userDetailsText"><ImagePicker image={image} setImage={setImage} required={false}/></div> : <UserAvatar className="userAvatar" user={selectedUser!}/>}
                 <div className="userDetailsText">
-                  <h1>@{selectedUser?.username}</h1>
+                  {isEdit ? (
+                    <TextField
+                      value={username}
+                      onChange={handleInputChange}
+                      variant="outlined"
+                      size="medium"
+                      inputProps={{ style: { color: "white" } }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": { borderColor: "#4a4a4a" },
+                        },
+                      }}
+                    />
+                  ) : (<div>
+                      <Typography variant="h3" color="white">
+                        {user?.username}
+                      </Typography>
+                      <Typography variant="h6" color="white">
+                        {user?.email}
+                      </Typography>
+                    </div>
+                  )}
                   <span>
                     {selectedUser?.posts
                       ? `${selectedUser?.posts?.length} questions`
@@ -107,8 +181,9 @@ export default function UserProfile() {
                   variant="contained"
                   color="secondary"
                   style={{ width: "100%", maxWidth: "480px" }}
+                  onClick={handleEditbutton}
                 >
-                  Edit Profile
+                   {isEdit ? "Save" : "Edit Profile"}
                 </Button>
               )}
             </div>
