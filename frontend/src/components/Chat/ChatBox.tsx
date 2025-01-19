@@ -121,6 +121,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                     boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
                     display: "flex",
                     flexDirection: "column",
+                    zIndex:"1000"
                 }}
             >
                 {/* Header */}
