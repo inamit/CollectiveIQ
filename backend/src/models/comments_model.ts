@@ -7,6 +7,7 @@ export interface IComment {
   postID: Types.ObjectId;
   content: string;
   userId: Types.ObjectId;
+  date:Date;
 }
 
 const commentSchema = new Schema<IComment>({
@@ -23,6 +24,10 @@ const commentSchema = new Schema<IComment>({
     type: Schema.Types.ObjectId,
     ref: USER_RESOURCE_NAME,
     required: true,
+  },
+  date: {
+    type: Date ,
+    default: new Date(),
   },
 });
 

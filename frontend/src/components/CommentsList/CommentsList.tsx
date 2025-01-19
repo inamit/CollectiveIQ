@@ -1,4 +1,5 @@
 import Divider from "@mui/material/Divider";
+import "./CommentsList.css";
 import { List, ListItem, Pagination, Skeleton } from "@mui/material";
 import React, { useState } from "react";
 import { paginate } from "../../utils/pagination";
@@ -39,20 +40,20 @@ export default function CommentsList({
     );
     return <>{...commentsSkeletons}</>;
   } else if (loadingState === LoadingState.ERROR) {
-    return <div>Error loading posts</div>;
+    return <div>Error loading comments</div>;
   }
 
   return (
     <>
-      {paginatedComments.length === 0 && <div>No posts found</div>}
-      <List className="postsList">
+      {paginatedComments.length === 0 && <div>No comments found</div>}
+      <List className="comments-list">
         {paginatedComments[currentPage - 1]?.map((comment) => (
           <div key={comment._id}>
             <ListItem
               style={{ cursor: "pointer" }}
               onClick={() => navigate(`${routes.COMMENT}/${comment._id}`)}
             >
-              <CommentComponent comment={comment}/>
+              <CommentComponent key={comment._id} comment={comment} refreshComments={() =>{}} />
             </ListItem>
             <Divider />
           </div>

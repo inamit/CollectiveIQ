@@ -50,6 +50,7 @@ const saveNewComment = async (req: Request, res: Response): Promise<any> => {
       postID: post_id,
       content: req.body.content,
       userId: req.params.userId,
+      date: new Date()
     });
     const savedComment: IComment = await (await comment.save()).populate("userId");
     return res.json(savedComment);
@@ -70,7 +71,7 @@ const updateCommentById = async (req: Request, res: Response): Promise<any> => {
 
     const updatedComment: IComment | null = await Comment.findByIdAndUpdate(
       comment_id,
-      { content, userId: req.params.userId },
+      { content, userId: req.params.userId, date: new Date() },
       { new: true, runValidators: true }
     ).populate("userId");
 

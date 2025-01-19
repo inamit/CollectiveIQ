@@ -18,7 +18,6 @@ const useComments = (selectedUser?: User) => {
     setCommentsLoadingState(LoadingState.LOADING);
 
     const commentsService = new CommentsService(user ?? undefined, setUser);
-    console.log(selectedUser)
     const { request, cancel } = selectedUser
       ? commentsService.getCommentsByUser(selectedUser._id)
       : commentsService.getComments();
