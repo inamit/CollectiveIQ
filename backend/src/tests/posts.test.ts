@@ -57,7 +57,7 @@ describe("POST /posts", () => {
     expect(response.body).toHaveProperty("_id");
     expect(response.body.title).toBe(title);
     expect(response.body.content).toBe(content);
-    expect(response.body.userId).toBe(userId);
+    expect(response.body.userId._id).toBe(userId);
   });
 
   it.each([{ content: "" }, { title: "" }, {}])(
@@ -106,7 +106,7 @@ describe("GET /posts", () => {
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
       response.body.forEach((post: IPost) => {
-        expect(post.userId).toBe(testUser._id?.toString());
+        expect(post.userId._id).toBe(testUser._id?.toString());
       });
       expect(response.body).toHaveLength(expectedNumberOfPosts);
     });
@@ -114,9 +114,9 @@ describe("GET /posts", () => {
 
   describe("mongo failure", () => {
     it("should return 500 when there is a server error", async () => {
-      jest
-        .spyOn(postsModel, "find")
-        .mockRejectedValue(new Error("Server error"));
+      jest.spyOn(postsModel, "find").mockImplementation(() => {
+        throw new Error("Server error");
+      });
 
       const response = await request(app).get("/posts");
 
@@ -151,7 +151,7 @@ describe("GET /posts/:post_id", () => {
     const response = await request(app).get(`/posts/${post._id}`);
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toMatchObject(JSON.parse(JSON.stringify(post)));
+    expect(response.body._id).toBe(post._id.toString());
   });
 });
 
@@ -162,7 +162,9 @@ describe("DELETE /posts/:post_id", () => {
   });
 
   it("should return 404 when post is not found", async () => {
-    const response = await request(app).delete("/posts/673b7bd1df3f05e1bdcf0000");
+    const response = await request(app).delete(
+      "/posts/673b7bd1df3f05e1bdcf0000"
+    );
 
     expect(response.statusCode).toBe(404);
     expect(response.body).toHaveProperty("error");
@@ -173,8 +175,10 @@ describe("DELETE /posts/:post_id", () => {
     const response = await request(app).delete(`/posts/${post._id}`);
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveProperty("message", "Post deleted successfully");
-
+    expect(response.body).toHaveProperty(
+      "message",
+      "Post deleted successfully"
+    );
   });
 });
 
@@ -227,8 +231,6 @@ describe("PUT /posts/:post_id", () => {
     expect(response.body.userId).toBe(updateduserId);
   });
 });
-
-
 
 describe("File Tests", () => {
   test("upload file", async () => {

@@ -119,13 +119,13 @@ export const toggleReaction = async (
   const postId = req.params.postId;
 
   try {
-    const post: IPost = (await Post.findById(postId)) as IPost;
+    const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
     getReaction(reactionType, post, userId);
 
-    await Post.findOneAndUpdate(post);
+    await post.save();
 
     res.status(200).json({
       message: `${reactionType} toggled successfully.`,
