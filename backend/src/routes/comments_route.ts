@@ -126,6 +126,9 @@ router.post("/", authMiddleware, commentsController.saveNewComment);
  */
 router.get("/", commentsController.getComments);
 
+
+router.get("/by_user", authMiddleware, commentsController.getCommentsByUser);
+
 /**
  * @swagger
  * paths:

@@ -9,7 +9,7 @@ import AppTextField from "../TextField/TextField";
 interface CommentProps {
   comment: Comment;
 }
-const CommentComponent = ({ comment }: CommentProps) => {
+export const CommentComponent = ({ comment }: CommentProps) => {
   return (
     <div className="comment-container">
       <div className="comment-header">
