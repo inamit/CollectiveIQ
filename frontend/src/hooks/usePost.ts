@@ -77,9 +77,9 @@ const usePost = (postId: string | undefined) => {
   useEffect(() => {
     if (!postId) return;
 
-    const { cancel } = refreshComments();
-
     setCommentsLoadingState(LoadingState.LOADING);
+    
+    const { cancel } = refreshComments();
     
     return () => cancel();
   }, [user, postId]);

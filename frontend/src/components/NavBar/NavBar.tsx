@@ -1,9 +1,6 @@
 import "./NavBar.css";
 import appIcon from "/appIcon.svg";
-import { InputAdornment, Button, Menu, MenuItem } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import BellIcon from "@mui/icons-material/NotificationsNoneOutlined";
-import AppTextField from "../TextField/TextField";
+import { Button, Menu, MenuItem } from "@mui/material";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import User from "../../models/user";
 import UserAvatar from "../UserAvatar/UserAvatar";
