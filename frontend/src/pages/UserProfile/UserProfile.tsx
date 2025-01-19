@@ -82,6 +82,7 @@ export default function UserProfile() {
     getSelectedUser(user, setUser, isUserLoaded, userId).then(
       ({ selectedUser }) => {
         setSelectedUser(selectedUser);
+        setUsername(selectedUser?.username)
       }
     );
   }, [user, isUserLoaded]);
