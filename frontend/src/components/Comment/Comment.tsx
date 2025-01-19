@@ -27,32 +27,27 @@ const CommentComponent = ({ comment, setCommentsLoadingState }: CommentProps) =>
 
   const handleDeleteComment = (comment_id: string) => {
     const commentService = new CommentsService(user!, setUser);
-    if (user?._id === comment.userId?._id) {
-      MySwal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const { request } = commentService.deleteComment(comment_id);
-          request
-            .then(() => {
-              setCommentsLoadingState(LoadingState.LOADING);
-              navigate(routes.HOME);
-              toast.success("Comment deleted successfully");
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        }
-      });
-    } else {
-      toast.error("You can only delete your own comments");
-    }
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const { request } = commentService.deleteComment(comment_id);
+        request
+          .then(() => {
+            setCommentsLoadingState(LoadingState.LOADING);
+            navigate(routes.HOME);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    });
   };
 
   return (
@@ -76,16 +71,18 @@ const CommentComponent = ({ comment, setCommentsLoadingState }: CommentProps) =>
         <Typography variant="body2" sx={{ mb: 2 }} className="comment-text">
           {comment.content}
         </Typography>
-        <Button
-          onClick={() => handleDeleteComment(comment._id)}
-          variant="outlined"
-          size="small"
-          color="error"
-          className="delete-comment-button"
-          startIcon={<DeleteIcon />}
-        >
-          Delete Comment
-        </Button>
+        {user?._id === comment.userId?._id && (
+          <Button
+            onClick={() => handleDeleteComment(comment._id)}
+            variant="outlined"
+            size="small"
+            color="error"
+            className="delete-comment-button"
+            startIcon={<DeleteIcon />}
+          >
+            Delete Comment
+          </Button>
+        )}
       </div>
     </div>
   );
