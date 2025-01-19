@@ -53,14 +53,11 @@ const usePost = (postId: string | undefined) => {
     return () => cancel();
   }, [user, postId]);
 
-  useEffect(() => {
-    if (!postId) return;
-
-    setCommentsLoadingState(LoadingState.LOADING);
+  const refreshComments = () => {
     const { request, cancel } = new CommentsService(
       user ?? undefined,
       setUser
-    ).getCommentsByPost(postId);
+    ).getCommentsByPost(postId!);
 
     request
       .then((commentsResponse) => {
@@ -74,6 +71,16 @@ const usePost = (postId: string | undefined) => {
         }
       });
 
+    return { cancel };
+  }
+
+  useEffect(() => {
+    if (!postId) return;
+
+    const { cancel } = refreshComments();
+
+    setCommentsLoadingState(LoadingState.LOADING);
+    
     return () => cancel();
   }, [user, postId]);
 
@@ -89,6 +96,7 @@ const usePost = (postId: string | undefined) => {
     error,
     setError,
     refreshPost,
+    refreshComments
   };
 };
 

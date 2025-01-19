@@ -7,9 +7,7 @@ import UserAvatar from "../UserAvatar/UserAvatar";
 import AppTextField from "../TextField/TextField";
 import { CommentsService } from "../../services/commentsService";
 import { useUser } from "../../context/userContext.tsx";
-import { LoadingState } from "../../services/loadingState";
 import { useNavigate } from "react-router-dom";
-import { routes } from "../../router/routes";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
@@ -17,12 +15,11 @@ const MySwal = withReactContent(Swal);
 
 interface CommentProps {
   comment: Comment;
-  setCommentsLoadingState: (state: LoadingState) => void;
+  refreshComments: () => void;
 }
 
-const CommentComponent = ({ comment, setCommentsLoadingState }: CommentProps) => {
+const CommentComponent = ({ comment, refreshComments }: CommentProps) => {
   const { user, setUser } = useUser();
-  const navigate = useNavigate();
 
   const handleDeleteComment = (comment_id: string) => {
     const commentService = new CommentsService(user!, setUser);
@@ -39,8 +36,7 @@ const CommentComponent = ({ comment, setCommentsLoadingState }: CommentProps) =>
         const { request } = commentService.deleteComment(comment_id);
         request
           .then(() => {
-            setCommentsLoadingState(LoadingState.LOADING);
-            navigate(routes.HOME);
+            refreshComments();
           })
           .catch((err) => {
             console.error(err);
@@ -90,10 +86,10 @@ const CommentComponent = ({ comment, setCommentsLoadingState }: CommentProps) =>
 interface CommentSectionProps {
   comments: Comment[] | undefined;
   addComment: (content: string) => void;
-  setCommentsLoadingState: (state: LoadingState) => void;
+  refreshComments: () => void;
 }
 
-const CommentSection = ({ comments, addComment, setCommentsLoadingState }: CommentSectionProps) => {
+const CommentSection = ({ comments, addComment, refreshComments }: CommentSectionProps) => {
   const [commentText, setCommentText] = useState("");
   const { user } = useUser();
 
@@ -132,7 +128,7 @@ const CommentSection = ({ comments, addComment, setCommentsLoadingState }: Comme
       <div className="comments-list">
         {(comments?.length ?? 0) > 0 ? (
           comments?.map((comment: Comment) => (
-            <CommentComponent key={comment._id} comment={comment} setCommentsLoadingState={setCommentsLoadingState} />
+            <CommentComponent key={comment._id} comment={comment} refreshComments={refreshComments} />
           ))
         ) : (
           <p>No comments yet</p>
