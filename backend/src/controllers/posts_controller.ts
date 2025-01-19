@@ -28,6 +28,7 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
       title: req.body.title,
       content: req.body.content,
       userId: req.params.userId,
+        date: new Date(),
       imageUrl,
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
@@ -83,7 +84,7 @@ const updatePostById = async (req: Request, res: Response): Promise<any> => {
 
     const updatedPost: IPost | null = await Post.findByIdAndUpdate(
       post_id,
-      { title, content, userId: req.params.userId, imageUrl: req.file?.path },
+      { title, content, userId: req.params.userId, date: new Date(), imageUrl: req.file?.path },
       { new: true, runValidators: true }
     );
 
@@ -119,13 +120,13 @@ export const toggleReaction = async (
   const postId = req.params.postId;
 
   try {
-    const post: IPost = (await Post.findById(postId)) as IPost;
+    const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
     getReaction(reactionType, post, userId);
 
-    await Post.findOneAndUpdate(post);
+    await post.save();
 
     res.status(200).json({
       message: `${reactionType} toggled successfully.`,

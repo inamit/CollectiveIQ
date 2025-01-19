@@ -208,9 +208,9 @@ describe("PUT /comments/:comment_id", () => {
 
   describe("mongo failure", () => {
     it("should return 500 when there is a server error", async () => {
-      jest
-        .spyOn(commentsModel, "findByIdAndUpdate")
-        .mockRejectedValue(new Error("Server error"));
+      jest.spyOn(commentsModel, "findByIdAndUpdate").mockImplementation(() => {
+        throw new Error("Server error");
+      });
 
       const response = await request(app)
         .put(`/comments/${savedComments[0]._id}`)

@@ -59,6 +59,17 @@ export class UsersService {
         'Content-Type': 'image/jpeg'
       }
     })
+  }
+  
+  getAllUsers() {
+    const controller = new AbortController();
+
+    const request = this.httpClient.get<User[]>(
+        `${config.backendURL}/users/`,
+        {
+          signal: controller.signal,
+        }
+    );
 
     return { request, cancel: () => controller.abort() };
   }

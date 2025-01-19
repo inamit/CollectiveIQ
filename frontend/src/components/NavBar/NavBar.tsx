@@ -1,9 +1,6 @@
 import "./NavBar.css";
 import appIcon from "/appIcon.svg";
-import { InputAdornment, Button, Menu, MenuItem } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import BellIcon from "@mui/icons-material/NotificationsNoneOutlined";
-import AppTextField from "../TextField/TextField";
+import { Button, Menu, MenuItem } from "@mui/material";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import User from "../../models/user";
 import UserAvatar from "../UserAvatar/UserAvatar";
@@ -35,13 +32,6 @@ export default function NavBar() {
           }}
         >
           Ask a Question
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          style={{ borderRadius: "12px" }}
-        >
-          <BellIcon />
         </Button>
         <Button onClick={handleClick}>
           <UserAvatar user={user} />
@@ -108,21 +98,6 @@ export default function NavBar() {
           <h1 className="appLabel">CollectiveIQ</h1>
         </span>
         <span className="navbarActions">
-          <AppTextField
-            id="search"
-            placeholder="Search"
-            size="small"
-            variant="outlined"
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
           {user ? getUserActions(user, navigate) : getGuestActions(navigate)}
         </span>
       </nav>
