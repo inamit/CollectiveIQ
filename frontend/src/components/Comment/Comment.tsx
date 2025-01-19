@@ -10,7 +10,6 @@ import { useUser } from "../../context/userContext.tsx";
 import { LoadingState } from "../../services/loadingState";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../../router/routes";
-import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
@@ -96,6 +95,7 @@ interface CommentSectionProps {
 
 const CommentSection = ({ comments, addComment, setCommentsLoadingState }: CommentSectionProps) => {
   const [commentText, setCommentText] = useState("");
+  const { user } = useUser();
 
   const handleAddComment = () => {
     if (commentText.trim()) {
@@ -106,6 +106,7 @@ const CommentSection = ({ comments, addComment, setCommentsLoadingState }: Comme
 
   return (
     <div className="comment-section">
+      {user && (
       <div className="add-comment">
         <AppTextField
           multiline
@@ -126,6 +127,7 @@ const CommentSection = ({ comments, addComment, setCommentsLoadingState }: Comme
           Add Comment
         </Button>
       </div>
+      )}
 
       <div className="comments-list">
         {(comments?.length ?? 0) > 0 ? (
