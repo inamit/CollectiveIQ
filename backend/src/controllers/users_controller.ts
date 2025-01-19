@@ -74,14 +74,11 @@ const registerNewUser = async (req: Request, res: Response): Promise<any> => {
 
 const updateUserById = async (req: Request, res: Response): Promise<any> => {
   const { user_id }: { user_id?: string } = req.params;
-  const updates: Partial<IUser> = {};
+  const updates: Partial<IUser> = req.body;
 
   try {
     if (updates.password) {
       updates.password = await hashPassword(updates.password);
-    }
-    if (req.body.username) {
-      updates.username = req.body.username;
     }
     if (req.file?.path) {
       updates.avatarUrl = req.file.path;
