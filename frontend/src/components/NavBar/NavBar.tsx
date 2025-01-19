@@ -41,7 +41,6 @@ export default function NavBar() {
           color="secondary"
           style={{ borderRadius: "12px" }}
         >
-          <BellIcon />
         </Button>
         <Button onClick={handleClick}>
           <UserAvatar user={user} />
@@ -108,21 +107,6 @@ export default function NavBar() {
           <h1 className="appLabel">CollectiveIQ</h1>
         </span>
         <span className="navbarActions">
-          <AppTextField
-            id="search"
-            placeholder="Search"
-            size="small"
-            variant="outlined"
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
           {user ? getUserActions(user, navigate) : getGuestActions(navigate)}
         </span>
       </nav>
