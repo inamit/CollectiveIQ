@@ -2,7 +2,7 @@ import {AxiosInstance} from "axios";
 import User from "../models/user.ts";
 import {HttpClientFactory} from "./httpClient.ts";
 import config from "../config.json";
-import Chat from "../models/chat.ts";
+import IMessage from "../models/chat.ts";
 
 export class ChatService {
     httpClient: AxiosInstance;
@@ -16,7 +16,7 @@ export class ChatService {
 
     getChatHistory(receiverId: string, senderId: string) {
         const controller = new AbortController();
-        const request = this.httpClient.get<Chat[]>(
+        const request = this.httpClient.get<IMessage[]>(
             `${config.backendURL}/chats/${receiverId}/${senderId}`,
             {
                 signal: controller.signal,
