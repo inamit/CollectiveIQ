@@ -7,11 +7,11 @@ import UserAvatar from "../UserAvatar/UserAvatar";
 import AppTextField from "../TextField/TextField";
 import { CommentsService } from "../../services/commentsService";
 import { useUser } from "../../context/userContext.tsx";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
 const MySwal = withReactContent(Swal);
+import { formatDate } from "../../utils/formatDate.ts";
 
 interface CommentProps {
   comment: Comment;
@@ -58,7 +58,7 @@ const CommentComponent = ({ comment, refreshComments }: CommentProps) => {
             {comment.userId?.username}
           </Typography>
           <Typography variant="body2" sx={{ mb: 2 }} className="comment-time">
-            {comment.date?.toString()}
+            {formatDate(comment?.date)}
           </Typography>
         </div>
       </div>
