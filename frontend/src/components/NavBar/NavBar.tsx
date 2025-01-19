@@ -36,12 +36,6 @@ export default function NavBar() {
         >
           Ask a Question
         </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          style={{ borderRadius: "12px" }}
-        >
-        </Button>
         <Button onClick={handleClick}>
           <UserAvatar user={user} />
         </Button>
