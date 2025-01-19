@@ -5,13 +5,8 @@ import ChatBox from "./ChatBox.tsx";
 import {useUser} from "../../context/userContext.tsx";
 import {UsersService} from "../../services/usersService.ts";
 
-interface IMessage {
-    senderId: string;
-    message: string;
-}
 const ChatComponent = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
-    const [messages, setMessages] = useState<IMessage[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const {user, setUser} = useUser();
 
@@ -32,7 +27,6 @@ const ChatComponent = () => {
 
     const handleSelectUser = (selectedUser: User) => {
         setSelectedUser(selectedUser);
-        setMessages([]);
     };
 
     return (

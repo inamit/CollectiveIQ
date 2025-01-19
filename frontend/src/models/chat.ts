@@ -1,10 +1,6 @@
-import User from "./user.ts";
-
-export default interface Chat {
-    _id: string;
+export default interface IMessage {
+    senderId: string;
     message: string;
-    receiverId: User;
-    senderId: User;
-    date: Date;
+    senderUserName:string
     isAi?: boolean;
 }
