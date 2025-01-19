@@ -181,15 +181,15 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                                 sx={{
                                     display: "flex",
                                     justifyContent:
-                                        msg.isAi ? "flex-start" : isSender ? "flex-end" : "flex-start",
+                                        isAIResponse ? "flex-start" : isSender ? "flex-end" : "flex-start",
                                 }}
                             >
                                 <Typography
                                     sx={{
-                                        backgroundColor: msg.isAi ? "#F1F8FF" : isSender
+                                        backgroundColor: isAIResponse ? "#F1F8FF" : isSender
                                             ? "#5B6DC9"
                                             : "#e0e0e0",
-                                        color: msg.isAi ? "#0073e6" : isSender
+                                        color: isAIResponse ? "#0073e6" : isSender
                                             ? "#fff"
                                             : "#000",
                                         border: isAIResponse ? "1px solid #0073e6" : "none",
@@ -197,8 +197,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                                         padding: "10px 14px",
                                         boxShadow:
                                             "0px 2px 6px rgba(0, 0, 0, 0.1)",
-                                        marginLeft: msg.isAi ? "16px" : isSender ? "auto" : "16px",
-                                        marginRight: msg.isAi ? "auto" : isSender ? "16px" : "auto",
+                                        marginLeft: isAIResponse ? "16px" : isSender ? "auto" : "16px",
+                                        marginRight: isAIResponse ? "auto" : isSender ? "16px" : "auto",
                                         marginTop: "4px",
                                         maxWidth: "70%",
                                         wordBreak: "break-word",

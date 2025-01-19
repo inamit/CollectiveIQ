@@ -10,7 +10,7 @@ export const chatSocket = (io: Server) => {
             const chat = new Chat({ senderId, receiverId, message,isAi });
             await chat.save();
             console.log("saved sent a message:", message);
-            io.to(receiverId).emit("receiveMessage", { senderId, message });
+            io.to(receiverId).emit("receiveMessage", { senderId, message ,isAi});
         });
 
         socket.on("joinRoom", (roomId: string) => {
