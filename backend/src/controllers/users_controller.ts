@@ -103,7 +103,7 @@ const updateUserById = async (req: Request, res: Response): Promise<any> => {
     delete updatedUser.password;
 
     return await token.returnTokens(<IUser>updatedUser, res, {
-      message: "User updated successfully", what: updates
+      message: "User updated successfully"
     });
   } catch (err: any) {
     console.warn("Error updating user:", err);

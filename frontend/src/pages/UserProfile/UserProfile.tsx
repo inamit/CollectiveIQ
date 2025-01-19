@@ -99,7 +99,7 @@ export default function UserProfile() {
           payload.username = username;
         }
   
-        if (image != null) {
+        if (image !== null) {
           payload.image = image;
         }
   

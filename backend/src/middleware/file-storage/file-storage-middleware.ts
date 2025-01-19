@@ -10,6 +10,7 @@ const createStorage = (uploadDir: string): StorageEngine => {
     __dirname,
     "..",
     "..",
+    "..",
     destinationDir,
     uploadDir
   );
