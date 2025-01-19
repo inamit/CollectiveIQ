@@ -47,19 +47,6 @@ export class UsersService {
 
     return { request, cancel: () => controller.abort() };
   }
-
-  async updateUserProfileImage(image: File) {
-    const controller = new AbortController();
-    const formData = new FormData();
-    formData.append('file', image);
-
-    const request = await this.httpClient.post(
-      `${config.backendURL}${config.avatarUpload}`, formData, {
-      headers: {
-        'Content-Type': 'image/jpeg'
-      }
-    })
-  }
   
   getAllUsers() {
     const controller = new AbortController();
