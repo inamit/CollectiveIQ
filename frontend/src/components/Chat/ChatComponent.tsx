@@ -13,13 +13,13 @@ const ChatComponent = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [users, setUsers] = useState<User[]>([]);
-    const { user, setUser } = useUser();
+    const {user, setUser} = useUser();
 
 
     useEffect(() => {
-        if(user){
+        if (user) {
             const usersService = new UsersService(user!, setUser);
-            const { request } = usersService.getAllUsers();
+            const {request} = usersService.getAllUsers();
             request
                 .then((response) => {
                     setUsers(response.data);
@@ -27,7 +27,8 @@ const ChatComponent = () => {
                 .catch((err) => {
                     console.error(err);
                 });
-        }}, [user]);
+        }
+    }, [user]);
 
     const handleSelectUser = (selectedUser: User) => {
         setSelectedUser(selectedUser);
@@ -36,8 +37,8 @@ const ChatComponent = () => {
 
     return (
         <div>
-            { user && ( <UserDropdown users={users} onSelectUser={handleSelectUser} />)}
-        {selectedUser && user && (
+            {user && (<UserDropdown users={users} onSelectUser={handleSelectUser}/>)}
+            {selectedUser && user && (
                 <ChatBox
                     open={Boolean(selectedUser)}
                     onClose={() => setSelectedUser(null)}
