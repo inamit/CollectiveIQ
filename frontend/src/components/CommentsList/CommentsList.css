@@ -1,12 +1,8 @@
-.commentsList {
-    width: 100%;
-  }
   .comments-list {
     margin-top: 16px;
   }
-  
+
   .pagination {
     display: flex;
     align-items: center;
   }
-  

@@ -5,4 +5,5 @@ export default interface Comment {
     content: string;
     userId: User;
     date: Date;
+    postID: string;
 }

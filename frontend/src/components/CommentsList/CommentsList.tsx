@@ -51,7 +51,7 @@ export default function CommentsList({
           <div key={comment._id}>
             <ListItem
               style={{ cursor: "pointer" }}
-              onClick={() => navigate(`${routes.COMMENT}/${comment._id}`)}
+              onClick={() => navigate(`${routes.POST}/${comment.postID}`)}
             >
               <CommentComponent key={comment._id} comment={comment} refreshComments={() =>{}} />
             </ListItem>
