@@ -80,6 +80,9 @@ const updateUserById = async (req: Request, res: Response): Promise<any> => {
     if (updates.password) {
       updates.password = await hashPassword(updates.password);
     }
+    if (req.file?.path) {
+      updates.avatarUrl = req.file.path;
+    }
 
     const updatedUser: Partial<IUser> | null = await User.findByIdAndUpdate(
       user_id,
@@ -90,16 +93,15 @@ const updateUserById = async (req: Request, res: Response): Promise<any> => {
       }
     );
 
-    if (updatedUser?.avatarUrl) {
-      updatedUser.avatarUrl = req.file?.path ?? "";
-    }
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
     }
 
     delete updatedUser.password;
 
-    return res.json(updatedUser);
+    return await token.returnTokens(<IUser>updatedUser, res, {
+      message: "User updated successfully"
+    });
   } catch (err: any) {
     console.warn("Error updating user:", err);
     return handleMongoQueryError(res, err, USER_RESOURCE_NAME);

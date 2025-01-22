@@ -20,7 +20,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [isUserLoaded, setIsUserLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUserState(JSON.parse(storedUser));
     }
@@ -30,9 +30,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const setUser = (userData: User | null) => {
     if (userData) {
-      sessionStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("user", JSON.stringify(userData));
     } else {
-      sessionStorage.removeItem("user");
+      localStorage.removeItem("user");
     }
     setUserState(userData);
   };

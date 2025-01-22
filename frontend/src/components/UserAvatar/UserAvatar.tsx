@@ -41,7 +41,7 @@ export default function UserAvatar({
   return (
     <Avatar
       className={className}
-      src={user?.imageUrl}
+      src={user?.avatarUrl}
       {...stringAvatar(user?.username)}
     ></Avatar>
   );

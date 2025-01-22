@@ -2,6 +2,7 @@ import mongoose, {Schema, Types} from "mongoose";
 
 export interface IChat {
     _id?: string;
+    senderUserName: string;
     senderId: Types.ObjectId;
     receiverId: Types.ObjectId;
     message: string;
@@ -13,6 +14,10 @@ const chatSchema = new Schema<IChat>({
 
     senderId: {
         type: Schema.Types.ObjectId,
+        required: true,
+    },
+    senderUserName: {
+        type: String,
         required: true,
     },
     receiverId: {
