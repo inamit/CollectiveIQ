@@ -8,6 +8,8 @@ import { useParams } from "react-router-dom";
 import User from "../../models/user";
 import { UsersService } from "../../services/usersService";
 import { useUser } from "../../context/userContext";
+import CommentsList from "../../components/CommentsList/CommentsList";
+import useComments from "../../hooks/useComments";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { ImagePicker } from "../../components/ImagePicker/ImagePicker";
@@ -77,6 +79,7 @@ export default function UserProfile() {
       : new UsersService();
   const [image, setImage] = useState<File | null>(null);
   const { posts, postsLoadingState } = usePosts(selectedUser);
+  const { comments, commentsLoadingState } = useComments(selectedUser);
 
   useEffect(() => {
     getSelectedUser(user, setUser, isUserLoaded, userId).then(
@@ -210,7 +213,11 @@ export default function UserProfile() {
             />
           </CustomTabPanel>
           <CustomTabPanel value={selectedTab} index={1}>
-            <div>Not implemented yet</div>
+            <CommentsList
+                maxCommentsPerPage={5}
+                comments={comments ?? []}
+                loadingState={commentsLoadingState}
+              />
           </CustomTabPanel>
         </div>
       </div>
