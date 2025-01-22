@@ -14,7 +14,7 @@ export default function Logout(){
         if(user?.refreshToken != null){
             authenticationService.signOut(user?.refreshToken).then((res) => {
                 if(res.status === 200){
-                    sessionStorage.clear();
+                    localStorage.clear();
                     setUser(null);
                     navigate(routes.SIGN_UP);
                 }

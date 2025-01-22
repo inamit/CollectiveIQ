@@ -37,7 +37,7 @@ const ChatComponent = () => {
                     open={Boolean(selectedUser)}
                     onClose={() => setSelectedUser(null)}
                     user={selectedUser}
-                    senderId={JSON.parse(sessionStorage.user)._id}
+                    senderId={user._id}
                     receiverId={selectedUser._id}
                 />
             )}
