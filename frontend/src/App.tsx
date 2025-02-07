@@ -19,7 +19,6 @@ function App() {
                     <div className="appContainer">
                         <Outlet/>
                     </div>
-                    <ChatComponent/>
                 </UserProvider>
 
 
