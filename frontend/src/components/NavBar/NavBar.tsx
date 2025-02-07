@@ -53,7 +53,6 @@ export default function NavBar() {
           >
             Profile
           </MenuItem>
-          <MenuItem onClick={handleClose}>Settings</MenuItem>
           <Logout></Logout>
         </Menu>
       </span>
