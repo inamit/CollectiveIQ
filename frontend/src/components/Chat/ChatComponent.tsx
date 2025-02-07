@@ -36,7 +36,7 @@ const ChatComponent = () => {
                 <ChatBox
                     open={Boolean(selectedUser)}
                     onClose={() => setSelectedUser(null)}
-                    user={selectedUser}
+                    user={user}
                     senderId={user._id}
                     receiverId={selectedUser._id}
                 />
