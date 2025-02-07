@@ -30,8 +30,9 @@
 }
 
 #imagePreview {
-  height: 400px;
-  width: 400px;
+  width: 150px;  
+  height: 150px; 
+  object-fit: cover; 
 }
 
 .imageInput {

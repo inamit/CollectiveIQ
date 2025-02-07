@@ -10,6 +10,7 @@ const createStorage = (uploadDir: string): StorageEngine => {
     __dirname,
     "..",
     "..",
+    "..",
     destinationDir,
     uploadDir
   );
@@ -62,6 +63,6 @@ export const saveFile = (req: Request, res: Response): void => {
     res.status(200).send({ url: process.env.BASE_URL! + req.file?.path });
   } catch (err: any) {
     console.warn(`Error saving file: `, err);
-    fileStorageErrorHandler(err, req, res, () => {});
+    fileStorageErrorHandler(err, req, res, () => { });
   }
 };
