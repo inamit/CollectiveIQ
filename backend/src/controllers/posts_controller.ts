@@ -52,7 +52,7 @@ const deletePostById = async (req: Request, res: Response): Promise<any> => {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-    post.deleteOne();
+    await Post.findByIdAndDelete(post_id);
 
     return res.json({ message: "Post deleted successfully" });
   } catch (err: any) {
