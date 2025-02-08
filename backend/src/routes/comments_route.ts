@@ -156,7 +156,7 @@ router.get("/", commentsController.getComments);
  *                schema:
  *                  $ref: '#/components/schemas/UnexpectedError'
  */
-router.get("/by_user", authMiddleware, commentsController.getCommentsByUser);
+router.get("/by_user", commentsController.getCommentsByUser);
 
 /**
  * @swagger
