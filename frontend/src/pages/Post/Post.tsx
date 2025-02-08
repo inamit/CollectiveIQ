@@ -230,7 +230,11 @@ const PostComponent = () => {
               {comments.length} Comment
               {comments.length !== 1 ? "s" : ""}
             </Typography>
-            <CommentSection comments={comments} addComment={addComment} refreshComments={refreshComments}/>
+            <CommentSection
+              comments={comments}
+              addComment={addComment}
+              refreshComments={refreshComments}
+            />
           </Box>
         );
       default:
@@ -277,7 +281,14 @@ const PostComponent = () => {
         return <></>;
       case LoadingState.LOADED:
         return (
-          <Box display="flex" alignItems="center" mb={2}>
+          <Box
+            display="flex"
+            alignItems="center"
+            mb={2}
+            onClick={() =>
+              navigate(`${routes.USER_PROFILE}/${post?.userId?._id}`)
+            }
+          >
             <UserAvatar user={post?.userId} className="user-avatar" />
             <Box display="flex" alignItems="start" flexDirection="column">
               <Typography variant="body1">{post?.userId?.username}</Typography>

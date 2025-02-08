@@ -10,7 +10,6 @@ import PostComponent from "../pages/Post/Post.tsx";
 import SignUp from "../pages/Signup/Signup";
 import SignIn from "../pages/Signin/Signin";
 import HomePage from "../pages/HomePage/HomePage";
-import ChatComponent from "../components/Chat/ChatComponent.tsx";
 
 export default function AppWrapper() {
   const { isUserLoaded } = useUser();
@@ -29,7 +28,6 @@ export default function AppWrapper() {
             element={
               <AuthRequired>
                 <UserProfile />
-                <ChatComponent/>
               </AuthRequired>
             }
           />
