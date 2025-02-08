@@ -28,7 +28,7 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
       title: req.body.title,
       content: req.body.content,
       userId: req.params.userId,
-        date: new Date(),
+      date: new Date(),
       imageUrl,
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
@@ -43,11 +43,16 @@ const deletePostById = async (req: Request, res: Response): Promise<any> => {
   const { post_id }: { post_id?: string } = req.params;
 
   try {
-    const deletedPost: IPost | null = await Post.findByIdAndDelete(post_id);
+    const post = await Post.findById(post_id);
 
-    if (!deletedPost) {
+    if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
+    if (post.userId.toString() !== req.params.userId) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    post.deleteOne();
 
     return res.json({ message: "Post deleted successfully" });
   } catch (err: any) {
@@ -82,9 +87,24 @@ const updatePostById = async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json({ error: "Content or title is required." });
     }
 
+    const post = await Post.findById(post_id);
+    if (!post) {
+      return res.status(404).json({ error: "Post not found." });
+    }
+
+    if (post.userId.toString() !== req.params.userId) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
     const updatedPost: IPost | null = await Post.findByIdAndUpdate(
       post_id,
-      { title, content, userId: req.params.userId, date: new Date(), imageUrl: req.file?.path },
+      {
+        title,
+        content,
+        userId: req.params.userId,
+        date: new Date(),
+        imageUrl: req.file?.path,
+      },
       { new: true, runValidators: true }
     );
 

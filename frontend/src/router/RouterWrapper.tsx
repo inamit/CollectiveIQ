@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router";
 import App from "../App";
 import { useUser } from "../context/userContext";
 import AuthRedirect from "../pages/AuthRedirect";

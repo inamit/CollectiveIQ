@@ -16,7 +16,7 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import CommentSection from "../../components/Comment/Comment.tsx";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import { useUser } from "../../context/userContext.tsx";
 import usePost from "../../hooks/usePost.ts";
 import Post from "../../models/post.ts";
@@ -230,7 +230,11 @@ const PostComponent = () => {
               {comments.length} Comment
               {comments.length !== 1 ? "s" : ""}
             </Typography>
-            <CommentSection comments={comments} addComment={addComment} refreshComments={refreshComments}/>
+            <CommentSection
+              comments={comments}
+              addComment={addComment}
+              refreshComments={refreshComments}
+            />
           </Box>
         );
       default:
@@ -277,7 +281,15 @@ const PostComponent = () => {
         return <></>;
       case LoadingState.LOADED:
         return (
-          <Box display="flex" alignItems="center" mb={2}>
+          <Box
+            display="flex"
+            alignItems="center"
+            mb={2}
+            className="user-details"
+            onClick={() =>
+              navigate(`${routes.USER_PROFILE}/${post?.userId?._id}`)
+            }
+          >
             <UserAvatar user={post?.userId} className="user-avatar" />
             <Box display="flex" alignItems="start" flexDirection="column">
               <Typography variant="body1">{post?.userId?.username}</Typography>

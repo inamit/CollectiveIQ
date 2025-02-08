@@ -211,13 +211,15 @@ describe("PUT /users/:user_id", () => {
       email: updatedEmail,
       password: updatedPassword,
     });
+
+    const savedUser = await usersModel.findById(user._id);
     const isMatchedpassword = await bcrypt.compare(
       updatedPassword,
-      response.body.password
+      savedUser!.password
     );
     expect(response.statusCode).toBe(200);
-    expect(response.body.username).toBe(updatedUsername);
-    expect(response.body.email).toBe(updatedEmail);
+    expect(savedUser!.username).toBe(updatedUsername);
+    expect(savedUser!.email).toBe(updatedEmail);
     expect(isMatchedpassword).toBe(true);
   });
 });

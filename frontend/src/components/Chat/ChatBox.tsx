@@ -1,290 +1,195 @@
-import React, {useEffect, useRef, useState} from "react";
+import "./ChatBox.scss";
+import React, { useEffect, useRef, useState } from "react";
 import socket from "../../sockets/socket.ts";
-import {Box, TextField, Button, Typography, IconButton} from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import CloseIcon from "@mui/icons-material/Close";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
-import Draggable from "react-draggable";
 import User from "../../models/user.ts";
-import {ChatService} from "../../services/chatService.ts";
-import {useUser} from "../../context/userContext.tsx";
-import {getAIResponse} from "../../services/aiService.ts";
+import { ChatService } from "../../services/chatService.ts";
+import { useUser } from "../../context/userContext.tsx";
+import { getAIResponse } from "../../services/aiService.ts";
 import IMessage from "../../models/chat.ts";
+import AppTextField from "../TextField/TextField.tsx";
+import { toast } from "react-toastify";
 
 interface ChatBoxProps {
-    open: any;
-    user: User;
-    onClose: () => void;
-    senderId: string;
-    receiverId: string;
+  open: any;
+  user: User;
+  senderId: string;
+  receiverId: string;
 }
 
-const ChatBox = ({user, onClose, senderId, receiverId}: ChatBoxProps) => {
-    const [messages, setMessages] = useState<IMessage[]>([]);
-    const [newMessage, setNewMessage] = useState("");
-    const {setUser} = useUser();
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
+  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const { setUser } = useUser();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        socket.emit("joinRoom", senderId);
+  useEffect(() => {
+    socket.emit("joinRoom", senderId);
 
-        const chatService = new ChatService(user, setUser);
-        const {request} = chatService.getChatHistory(senderId, receiverId);
-        request
-            .then((response) => {
-                setMessages(response.data);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+    const chatService = new ChatService(user, setUser);
+    const { request } = chatService.getChatHistory(senderId, receiverId);
+    request
+      .then((response) => {
+        setMessages(response.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
-        socket.on("receiveMessage", (message: IMessage) => {
-            setMessages((prev) => [...prev, message]);
-        });
+    socket.on("receiveMessage", (message: IMessage) => {
+      setMessages((prev) => [...prev, message]);
+    });
 
-        return () => {
-            socket.off("receiveMessage");
-        };
-    }, [senderId, receiverId]);
-
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
-    }, [messages]);
-
-    const sendMessage = () => {
-        if (newMessage.trim()) {
-            saveMessage(newMessage, user.username, false);
-            setNewMessage("");
-        }
+    return () => {
+      socket.off("receiveMessage");
     };
+  }, [senderId, receiverId]);
 
-    const handleKeyPress = (event: React.KeyboardEvent) => {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            sendMessage();
-        }
-    };
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-    const onAiResponseClicked = async () => {
-        if (receiverId && messages.length) {
-            const chatMessages = messages
-                .map((msg) => `${msg.senderUserName}: ${msg.message}`)
-                .join("\n");
-            const response = await getAIResponse(chatMessages);
+  const sendMessage = () => {
+    if (newMessage.trim()) {
+      saveMessage(newMessage, user.username, false);
+      setNewMessage("");
+    }
+  };
 
-            saveMessage(response, "AI", true);
-        }
-    };
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      sendMessage();
+    }
+  };
 
-    const saveMessage = (
-        messageToSave: string,
-        senderUserName: string,
-        isAi: boolean
-    ) => {
-        if (messageToSave) {
-            socket.emit("sendMessage", {
-                senderId,
-                senderUserName,
-                receiverId,
-                message: messageToSave,
-                isAi: isAi,
-            });
-            setMessages((prev) => [
-                ...prev,
-                {senderId, message: messageToSave, senderUserName, isAi},
-            ]);
-        }
-    };
+  const onAiResponseClicked = async () => {
+    if (receiverId && messages.length) {
+      const chatMessages = messages
+        .map((msg) => `${msg.senderUserName}: ${msg.message}`)
+        .join("\n");
 
-    return (
-        <Draggable>
-            <Box
-                sx={{
-                    position: "fixed",
-                    bottom: "20px",
-                    left: "230px",
-                    width: "340px",
-                    height: "450px",
-                    backgroundColor: "white",
-                    borderRadius: "12px",
-                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                    display: "flex",
-                    flexDirection: "column",
-                    zIndex: "1000",
-                }}
-            >
-                {/* Header */}
-                <Box
-                    sx={{
-                        padding: "12px 16px",
-                        backgroundColor: "#5B6DC9",
-                        color: "#fff",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        borderTopLeftRadius: "12px",
-                        borderTopRightRadius: "12px",
-                    }}
-                >
-                    <Typography
-                        variant="body1"
-                        sx={{
-                            fontWeight: "bold",
-                            marginLeft: "10px",
-                        }}
-                    >
-                        {user.username}
-                    </Typography>
-                    <IconButton
-                        size="small"
-                        sx={{
-                            color: "white",
-                            "&:hover": {
-                                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                            },
-                        }}
-                        onClick={onClose}
-                    >
-                        <CloseIcon/>
-                    </IconButton>
-                </Box>
+      const placeholderMessage = {
+        senderId: "AIPlaceholder",
+        message: "AI is thinking...",
+        senderUserName: "AI",
+        isAi: true,
+      };
+      setMessages([...messages, placeholderMessage]);
 
-                {/* Messages */}
-                <Box
-                    sx={{
-                        flex: 1,
-                        overflowY: "auto",
-                        padding: "16px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "12px",
-                        backgroundColor: "#F8F9FB",
-                    }}
-                >
-                    {messages.map((msg, index) => {
-                        const isSender = msg.senderId === senderId;
-                        const isAIResponse = msg.isAi;
-                        return (
-                            <Box
-                                key={index}
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: isAIResponse
-                                        ? "flex-start"
-                                        : isSender
-                                            ? "flex-end"
-                                            : "flex-start",
-                                }}
-                            >
-                                <Typography
-                                    sx={{
-                                        backgroundColor: isAIResponse
-                                            ? "#F1F8FF"
-                                            : isSender
-                                                ? "#5B6DC9"
-                                                : "#e0e0e0",
-                                        color: isAIResponse
-                                            ? "#0073e6"
-                                            : isSender
-                                                ? "#fff"
-                                                : "#000",
-                                        border: isAIResponse ? "1px solid #0073e6" : "none",
-                                        borderRadius: "16px",
-                                        padding: "10px 14px",
-                                        boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
-                                        marginLeft: isAIResponse
-                                            ? "16px"
-                                            : isSender
-                                                ? "auto"
-                                                : "16px",
-                                        marginRight: isAIResponse
-                                            ? "auto"
-                                            : isSender
-                                                ? "16px"
-                                                : "auto",
-                                        marginTop: "4px",
-                                        maxWidth: "70%",
-                                        wordBreak: "break-word",
-                                        fontSize: "0.9rem",
-                                        fontStyle: isAIResponse ? "italic" : "normal",
-                                    }}
-                                >
-                                    {isAIResponse && (
-                                        <SmartToyIcon
-                                            sx={{
-                                                marginRight: "8px",
-                                                color: "#0073e6",
-                                            }}
-                                        />
-                                    )}
-                                    {msg.message}
-                                </Typography>
-                            </Box>
-                        );
-                    })}
-                    <div ref={messagesEndRef}></div>
-                </Box>
+      try {
+        const response = await getAIResponse(chatMessages);
 
-                {/* Input */}
-                <Box
-                    sx={{
-                        padding: "12px",
-                        borderTop: "1px solid #ddd",
-                        display: "flex",
-                        gap: "12px",
-                        alignItems: "center",
-                        backgroundColor: "#FFF",
-                        flexWrap: "wrap",
-                    }}
-                >
-                    {/* TextField */}
-                    <TextField
-                        fullWidth
-                        label="Type a message..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        size="small"
-                        onKeyDown={handleKeyPress}
-                        sx={{
-                            flex: 1,
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: "8px",
-                            },
-                        }}
+        setMessages(messages.filter((msg) => msg !== placeholderMessage));
+        saveMessage(response, "AI", true);
+      } catch (error) {
+        setMessages(messages.filter((msg) => msg !== placeholderMessage));
+        toast.error("Failed to get AI response");
+      }
+    }
+  };
+
+  const saveMessage = (
+    messageToSave: string,
+    senderUserName: string,
+    isAi: boolean
+  ) => {
+    if (messageToSave) {
+      socket.emit("sendMessage", {
+        senderId,
+        senderUserName,
+        receiverId,
+        message: messageToSave,
+        isAi: isAi,
+      });
+      setMessages((prev) => [
+        ...prev,
+        { senderId, message: messageToSave, senderUserName, isAi },
+      ]);
+    }
+  };
+
+  return (
+    <Box className="chat-container">
+      {/* Messages */}
+      <Box className="messages-container">
+        {messages.length > 0 ? (
+          messages.map((msg, index) => {
+            const isSender = msg.senderId === senderId;
+            const isAIResponse = msg.isAi;
+            const messageType = () => {
+              if (isAIResponse) {
+                return "AI";
+              } else if (isSender) {
+                return "sender";
+              } else {
+                return "receiver";
+              }
+            };
+
+            return (
+              <Box
+                key={index}
+                className={`message-container message-container-${messageType()}`}
+              >
+                <Typography className={`message message-${messageType()}`}>
+                  {isAIResponse && (
+                    <SmartToyIcon
+                      sx={{
+                        marginRight: "8px",
+                        color: "#0073e6",
+                      }}
                     />
+                  )}
+                  {msg.message}
+                </Typography>
+              </Box>
+            );
+          })
+        ) : (
+          <div>Start chatting now!</div>
+        )}
+        <div ref={messagesEndRef}></div>
+      </Box>
 
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={sendMessage}
-                        sx={{
-                            padding: "8px 16px",
-                            borderRadius: "8px",
-                            display: "flex",
-                            alignItems: "center",
-                        }}
-                    >
-                        <SendIcon/>
-                    </Button>
+      <Box className="input-container">
+        <AppTextField
+          fullWidth
+          label="Type a message..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          size="small"
+          onKeyDown={handleKeyPress}
+          sx={{
+            flex: 1,
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "8px",
+            },
+          }}
+        />
 
-                    {/* Ask AI Button */}
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={onAiResponseClicked}
-                        sx={{
-                            padding: "8px 16px",
-                            borderRadius: "8px",
-                            display: "flex",
-                            alignItems: "center",
-                        }}
-                    >
-                        Ask AI
-                    </Button>
-                </Box>
-            </Box>
-        </Draggable>
-    );
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={sendMessage}
+          className="input-button"
+        >
+          <SendIcon />
+        </Button>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onAiResponseClicked}
+          className="input-button"
+        >
+          Summarise with AI
+        </Button>
+      </Box>
+    </Box>
+  );
 };
 
 export default ChatBox;

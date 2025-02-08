@@ -84,6 +84,15 @@ const updateUserById = async (req: Request, res: Response): Promise<any> => {
       updates.avatarUrl = req.file.path;
     }
 
+    const user = await User.findById(user_id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user._id.toString() !== req.params.user_id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
     const updatedUser: Partial<IUser> | null = await User.findByIdAndUpdate(
       user_id,
       updates,
@@ -93,14 +102,10 @@ const updateUserById = async (req: Request, res: Response): Promise<any> => {
       }
     );
 
-    if (!updatedUser) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    delete updatedUser.password;
+    delete updatedUser!.password;
 
     return await token.returnTokens(<IUser>updatedUser, res, {
-      message: "User updated successfully"
+      message: "User updated successfully",
     });
   } catch (err: any) {
     console.warn("Error updating user:", err);
@@ -112,6 +117,15 @@ const deleteUserById = async (req: Request, res: Response): Promise<any> => {
   const { user_id }: { user_id?: string } = req.params;
 
   try {
+    const user = await User.findById(user_id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user._id.toString() !== req.params.user_id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
     const deletedUser: IUser | null = await User.findByIdAndDelete(user_id);
     // Delete the post image if it exists
     if (deletedUser?.avatarUrl) {
@@ -121,9 +135,6 @@ const deleteUserById = async (req: Request, res: Response): Promise<any> => {
         avatarFileName
       );
       deleteUserAvatarFromDirectory(filePath);
-    }
-    if (!deletedUser) {
-      return res.status(404).json({ error: "User not found" });
     }
 
     return res.json(deletedUser);
@@ -164,7 +175,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
 
 const logout = async (req: Request, res: Response): Promise<any> => {
   try {
-    const refreshToken = req.body.refreshToken
+    const refreshToken = req.body.refreshToken;
 
     if (!refreshToken) {
       return res.status(400).json({ error: "Refresh token is required." });
@@ -176,7 +187,9 @@ const logout = async (req: Request, res: Response): Promise<any> => {
     );
 
     if (result.modifiedCount === 0) {
-      return res.status(400).json({ error: "No matching refresh token found." });
+      return res
+        .status(400)
+        .json({ error: "No matching refresh token found." });
     } else {
       console.log("Refresh token successfully removed.");
     }

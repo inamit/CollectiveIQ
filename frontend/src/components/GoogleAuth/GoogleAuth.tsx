@@ -1,7 +1,7 @@
 import { GoogleLogin } from "@react-oauth/google";
 import { toast } from "react-toastify";
 import { AuthenticationService } from "../../services/authenticationService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useUser } from "../../context/userContext";
 import { AxiosResponse } from "axios";
 import { jwtDecode } from "jwt-decode";

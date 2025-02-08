@@ -4,7 +4,7 @@ import "./UserProfile.css";
 import { Box, Button, Tab, Tabs, TextField, Typography } from "@mui/material";
 import UserAvatar from "../../components/UserAvatar/UserAvatar";
 import usePosts from "../../hooks/usePosts";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import User from "../../models/user";
 import { UsersService } from "../../services/usersService";
 import { useUser } from "../../context/userContext";
@@ -13,6 +13,7 @@ import useComments from "../../hooks/useComments";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { ImagePicker } from "../../components/ImagePicker/ImagePicker";
+import ChatBox from "../../components/Chat/ChatBox";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -75,8 +76,8 @@ export default function UserProfile() {
   const [isEdit, setEdit] = useState(false);
   const [username, setUsername] = useState(user?.username);
   const usersService = user
-      ? new UsersService(user, setUser)
-      : new UsersService();
+    ? new UsersService(user, setUser)
+    : new UsersService();
   const [image, setImage] = useState<File | null>(null);
   const { posts, postsLoadingState } = usePosts(selectedUser);
   const { comments, commentsLoadingState } = useComments(selectedUser);
@@ -85,7 +86,7 @@ export default function UserProfile() {
     getSelectedUser(user, setUser, isUserLoaded, userId).then(
       ({ selectedUser }) => {
         setSelectedUser(selectedUser);
-        setUsername(selectedUser?.username)
+        setUsername(selectedUser?.username);
       }
     );
   }, [user, isUserLoaded]);
@@ -95,24 +96,29 @@ export default function UserProfile() {
     setEdit(false);
   };
 
-  const handleEditbutton = async () =>{
+  const handleEditbutton = async () => {
     if (isEdit && user != null) {
       try {
         const payload: { username?: string; image?: File } = {};
         if (user.username !== username) {
           payload.username = username;
         }
-  
+
         if (image !== null) {
           payload.image = image;
         }
-  
+
         if (Object.keys(payload).length > 0) {
-          const { request } = await usersService.updateUserById(user._id, payload);
-  
+          const { request } = await usersService.updateUserById(
+            user._id,
+            payload
+          );
+
           if (request.status === 200) {
             const responseJson = request.data;
-            const decodedAccessToken = jwtDecode<User>(responseJson.accessToken);
+            const decodedAccessToken = jwtDecode<User>(
+              responseJson.accessToken
+            );
             setUser({
               username: decodedAccessToken.username,
               email: decodedAccessToken.email,
@@ -132,8 +138,8 @@ export default function UserProfile() {
       }
     }
     setEdit((prev) => !prev);
-  }
-  
+  };
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
   };
@@ -145,7 +151,17 @@ export default function UserProfile() {
           <div className="userDetailsContainer">
             <div className="userDetails">
               <div className="user">
-                {isEdit ? <div className="userDetailsText"><ImagePicker image={image} setImage={setImage} required={false}/></div> : <UserAvatar className="userAvatar" user={selectedUser!}/>}
+                {isEdit ? (
+                  <div className="userDetailsText">
+                    <ImagePicker
+                      image={image}
+                      setImage={setImage}
+                      required={false}
+                    />
+                  </div>
+                ) : (
+                  <UserAvatar className="userAvatar" user={selectedUser!} />
+                )}
                 <div className="userDetailsText">
                   {isEdit ? (
                     <TextField
@@ -160,12 +176,13 @@ export default function UserProfile() {
                         },
                       }}
                     />
-                  ) : (<div>
+                  ) : (
+                    <div>
                       <Typography variant="h3" color="white">
-                        {user?.username}
+                        {selectedUser?.username}
                       </Typography>
                       <Typography variant="h6" color="white">
-                        {user?.email}
+                        {selectedUser?.email}
                       </Typography>
                     </div>
                   )}
@@ -177,16 +194,14 @@ export default function UserProfile() {
                 </div>
               </div>
 
-              {userId ? (
-                <div></div>
-              ) : (
+              {(userId || user?._id === userId) && (
                 <Button
                   variant="contained"
                   color="secondary"
                   style={{ width: "100%", maxWidth: "480px" }}
                   onClick={handleEditbutton}
                 >
-                   {isEdit ? "Save" : "Edit Profile"}
+                  {isEdit ? "Save" : "Edit Profile"}
                 </Button>
               )}
             </div>
@@ -203,6 +218,7 @@ export default function UserProfile() {
             <Tabs value={selectedTab} onChange={handleTabChange}>
               <Tab label="Questions" />
               <Tab label="Answers" />
+              {user && userId && user._id !== userId && <Tab label="Chat" />}
             </Tabs>
           </Box>
           <CustomTabPanel value={selectedTab} index={0}>
@@ -214,11 +230,21 @@ export default function UserProfile() {
           </CustomTabPanel>
           <CustomTabPanel value={selectedTab} index={1}>
             <CommentsList
-                maxCommentsPerPage={5}
-                comments={comments ?? []}
-                loadingState={commentsLoadingState}
-              />
+              maxCommentsPerPage={5}
+              comments={comments ?? []}
+              loadingState={commentsLoadingState}
+            />
           </CustomTabPanel>
+          {user && userId && user._id !== userId && (
+            <CustomTabPanel value={selectedTab} index={2}>
+              <ChatBox
+                open={Boolean(selectedUser)}
+                user={user}
+                senderId={user._id}
+                receiverId={userId}
+              />
+            </CustomTabPanel>
+          )}
         </div>
       </div>
     </>

@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { paginate } from "../../utils/pagination";
 import { LoadingState } from "../../services/loadingState";
 import _ from "lodash";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { routes } from "../../router/routes";
 
 interface Props {
