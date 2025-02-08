@@ -82,12 +82,12 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
       try {
         const response = await getAIResponse(chatMessages);
 
+        setMessages(messages.filter((msg) => msg !== placeholderMessage));
         saveMessage(response, "AI", true);
       } catch (error) {
+        setMessages(messages.filter((msg) => msg !== placeholderMessage));
         toast.error("Failed to get AI response");
       }
-
-      setMessages(messages.filter((msg) => msg !== placeholderMessage));
     }
   };
 
