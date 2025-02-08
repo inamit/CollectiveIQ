@@ -23,7 +23,9 @@ const getComments = async (req: Request, res: Response): Promise<any> => {
 const getCommentsByUser = async (req: Request, res: Response): Promise<any> => {
   try {
     const { userId }: { userId?: string } = req.query;
-    const comments: IComment[] = await Comment.find({ userId: userId }).populate("userId")
+    const comments: IComment[] = await Comment.find({
+      userId: userId,
+    }).populate("userId");
 
     return res.json(comments);
   } catch (err: any) {
@@ -50,9 +52,11 @@ const saveNewComment = async (req: Request, res: Response): Promise<any> => {
       postID: post_id,
       content: req.body.content,
       userId: req.params.userId,
-      date: new Date()
+      date: new Date(),
     });
-    const savedComment: IComment = await (await comment.save()).populate("userId");
+    const savedComment: IComment = await (
+      await comment.save()
+    ).populate("userId");
     return res.json(savedComment);
   } catch (err: any) {
     console.warn("Error saving comment:", err);
@@ -69,15 +73,20 @@ const updateCommentById = async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json({ error: "Content is required." });
     }
 
+    const comment = await Comment.findById(comment_id);
+    if (!comment) {
+      return res.status(404).json({ error: "Comment not found." });
+    }
+
+    if (comment.userId.toString() !== req.params.userId) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
     const updatedComment: IComment | null = await Comment.findByIdAndUpdate(
       comment_id,
       { content, userId: req.params.userId, date: new Date() },
       { new: true, runValidators: true }
     ).populate("userId");
-
-    if (!updatedComment) {
-      return res.status(404).json({ error: "Comment not found." });
-    }
 
     return res.json(updatedComment);
   } catch (err: any) {
@@ -90,13 +99,18 @@ const deleteCommentById = async (req: Request, res: Response): Promise<any> => {
   const { comment_id }: { comment_id?: string } = req.params;
 
   try {
+    const comment = await Comment.findById(comment_id);
+    if (!comment) {
+      return res.status(404).json({ error: "Comment not found." });
+    }
+
+    if (comment.userId.toString() !== req.params.userId) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
     const deletedComment: IComment | null = await Comment.findByIdAndDelete(
       comment_id
     );
-
-    if (!deletedComment) {
-      return res.status(404).json({ error: "Comment not found." });
-    }
 
     return res.json(deletedComment);
   } catch (err: any) {
