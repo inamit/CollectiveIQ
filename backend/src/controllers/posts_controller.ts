@@ -96,6 +96,11 @@ const updatePostById = async (req: Request, res: Response): Promise<any> => {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
+    let imageUrl;
+    if (process.env.BASE_URL && req.file?.path) {
+      imageUrl = process.env.BASE_URL + req.file.path;
+    }
+
     const updatedPost: IPost | null = await Post.findByIdAndUpdate(
       post_id,
       {
@@ -103,7 +108,7 @@ const updatePostById = async (req: Request, res: Response): Promise<any> => {
         content,
         userId: req.params.userId,
         date: new Date(),
-        imageUrl: req.file?.path,
+        imageUrl,
       },
       { new: true, runValidators: true }
     );
