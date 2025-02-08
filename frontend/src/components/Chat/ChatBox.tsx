@@ -10,6 +10,7 @@ import { useUser } from "../../context/userContext.tsx";
 import { getAIResponse } from "../../services/aiService.ts";
 import IMessage from "../../models/chat.ts";
 import AppTextField from "../TextField/TextField.tsx";
+import { toast } from "react-toastify";
 
 interface ChatBoxProps {
   open: any;
@@ -69,9 +70,24 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
       const chatMessages = messages
         .map((msg) => `${msg.senderUserName}: ${msg.message}`)
         .join("\n");
-      const response = await getAIResponse(chatMessages);
 
-      saveMessage(response, "AI", true);
+      const placeholderMessage = {
+        senderId: "AIPlaceholder",
+        message: "AI is thinking...",
+        senderUserName: "AI",
+        isAi: true,
+      };
+      setMessages([...messages, placeholderMessage]);
+
+      try {
+        const response = await getAIResponse(chatMessages);
+
+        saveMessage(response, "AI", true);
+      } catch (error) {
+        toast.error("Failed to get AI response");
+      }
+
+      setMessages(messages.filter((msg) => msg !== placeholderMessage));
     }
   };
 
