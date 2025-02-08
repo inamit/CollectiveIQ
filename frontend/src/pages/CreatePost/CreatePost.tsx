@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { routes } from "../../router/routes.ts";
 import { PostsService } from "../../services/postsService.ts";
 import { useUser } from "../../context/userContext.tsx";

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { AuthenticationService } from "../../services/authenticationService";
 import AppTextField from "../../components/TextField/TextField";

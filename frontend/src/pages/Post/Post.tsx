@@ -16,7 +16,7 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import CommentSection from "../../components/Comment/Comment.tsx";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import { useUser } from "../../context/userContext.tsx";
 import usePost from "../../hooks/usePost.ts";
 import Post from "../../models/post.ts";

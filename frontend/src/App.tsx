@@ -1,7 +1,7 @@
 import "./App.css";
 import NavBar from "./components/NavBar/NavBar";
 import {ToastContainer} from "react-toastify";
-import {Outlet} from "react-router-dom";
+import {Outlet} from "react-router";
 import {UserProvider} from "./context/userContext";
 
 function App() {

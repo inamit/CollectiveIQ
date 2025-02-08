@@ -1,7 +1,7 @@
 import "./NavBar.css";
 import appIcon from "/appIcon.svg";
 import { Button, Menu, MenuItem } from "@mui/material";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router";
 import User from "../../models/user";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import { useUser } from "../../context/userContext";

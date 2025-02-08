@@ -4,7 +4,7 @@ import "./UserProfile.css";
 import { Box, Button, Tab, Tabs, TextField, Typography } from "@mui/material";
 import UserAvatar from "../../components/UserAvatar/UserAvatar";
 import usePosts from "../../hooks/usePosts";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import User from "../../models/user";
 import { UsersService } from "../../services/usersService";
 import { useUser } from "../../context/userContext";

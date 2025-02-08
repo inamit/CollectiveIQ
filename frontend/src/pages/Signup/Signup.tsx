@@ -5,7 +5,7 @@ import { useState } from "react";
 import { AuthenticationService } from "../../services/authenticationService.ts";
 import { Button } from "@mui/material";
 import AppTextField from "../../components/TextField/TextField.tsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useUser } from "../../context/userContext.tsx";
 import { routes } from "../../router/routes.ts";
 import { jwtDecode } from "jwt-decode";
