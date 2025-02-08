@@ -61,7 +61,6 @@ export default function GoogleAuth() {
       text="continue_with"
       shape="pill"
       context="signup"
-      theme="filled_blue"
     />
   );
 }
