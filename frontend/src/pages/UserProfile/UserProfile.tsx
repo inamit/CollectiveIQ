@@ -194,9 +194,7 @@ export default function UserProfile() {
                 </div>
               </div>
 
-              {userId ? (
-                <div></div>
-              ) : (
+              {(userId || user?._id === userId) && (
                 <Button
                   variant="contained"
                   color="secondary"
@@ -220,7 +218,7 @@ export default function UserProfile() {
             <Tabs value={selectedTab} onChange={handleTabChange}>
               <Tab label="Questions" />
               <Tab label="Answers" />
-              {user && userId && <Tab label="Chat" />}
+              {user && userId && user._id !== userId && <Tab label="Chat" />}
             </Tabs>
           </Box>
           <CustomTabPanel value={selectedTab} index={0}>
@@ -237,7 +235,7 @@ export default function UserProfile() {
               loadingState={commentsLoadingState}
             />
           </CustomTabPanel>
-          {user && userId && (
+          {user && userId && user._id !== userId && (
             <CustomTabPanel value={selectedTab} index={2}>
               <ChatBox
                 open={Boolean(selectedUser)}
