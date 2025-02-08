@@ -194,7 +194,7 @@ export default function UserProfile() {
                 </div>
               </div>
 
-              {(userId || user?._id === userId) && (
+              {(!userId || user?._id === userId) && (
                 <Button
                   variant="contained"
                   color="secondary"
