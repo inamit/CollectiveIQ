@@ -285,6 +285,7 @@ const PostComponent = () => {
             display="flex"
             alignItems="center"
             mb={2}
+            className="user-details"
             onClick={() =>
               navigate(`${routes.USER_PROFILE}/${post?.userId?._id}`)
             }
