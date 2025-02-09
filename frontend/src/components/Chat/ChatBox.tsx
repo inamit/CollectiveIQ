@@ -13,185 +13,176 @@ import AppTextField from "../TextField/TextField.tsx";
 import { toast } from "react-toastify";
 
 interface ChatBoxProps {
-  user: User;
-  senderId: string;
-  receiverId: string;
+    open: any;
+    user: User;
+    senderId: string;
+    receiverId: string;
 }
-
 const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
-  const [messages, setMessages] = useState<IMessage[]>([]);
-  const [newMessage, setNewMessage] = useState("");
-  const { setUser } = useUser();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const messagesRef = useRef<IMessage[]>([]); // Keeps track of messages to prevent overwriting
+    const [messages, setMessages] = useState<IMessage[]>([]);
+    const [newMessage, setNewMessage] = useState("");
+    const { setUser } = useUser();
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    socket.emit("joinRoom", senderId);
+    useEffect(() => {
+        socket.emit("joinRoom", senderId);
 
-    const chatService = new ChatService(user, setUser);
-    chatService.getChatHistory(senderId, receiverId).request
-        .then((response) => {
-          const sortedMessages = response.data.sort(
-              (a: IMessage, b: IMessage) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-          );
-          setMessages(sortedMessages);
-          messagesRef.current = sortedMessages;
-        })
-        .catch((err) => console.error(err));
+        const chatService = new ChatService(user, setUser);
+        const { request } = chatService.getChatHistory(senderId, receiverId);
+        request
+            .then((response) => {
+                setMessages(response.data);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
 
-    socket.on("receiveMessage", (message: IMessage) => {
-      setMessages((prev) => {
-        const updatedMessages = [...prev, message];
-        messagesRef.current = updatedMessages;
-        return updatedMessages;
-      });
-    });
+        socket.on("receiveMessage", (message: IMessage) => {
+            setMessages((prev) => [...prev, message]);
+        });
 
-    return () => {
-      socket.off("receiveMessage");
-    };
-  }, [senderId, receiverId]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  const sendMessage = () => {
-    if (newMessage.trim()) {
-      const messageToSend: IMessage = {
-        senderId,
-        senderUserName: user.username,
-        message: newMessage,
-        isAi: false,
-        timestamp: new Date().toISOString(),
-      };
-
-      socket.emit("sendMessage", messageToSend);
-      setNewMessage("");
-    }
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      sendMessage();
-    }
-  };
-
-  const onAiResponseClicked = async () => {
-    if (receiverId && messages.length) {
-      const chatMessages = messages
-          .map((msg) => `${msg.senderUserName}: ${msg.message}`)
-          .join("\n");
-
-      const placeholderMessage: IMessage = {
-        senderId: "AIPlaceholder",
-        message: "AI is thinking...",
-        senderUserName: "AI",
-        isAi: true,
-        timestamp: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, placeholderMessage]);
-
-      try {
-        const response = await getAIResponse(chatMessages);
-
-        setMessages((prev) => prev.filter((msg) => msg !== placeholderMessage));
-        const aiMessage: IMessage = {
-          senderId: "AI",
-          senderUserName: "AI",
-          message: response,
-          isAi: true,
-          timestamp: new Date().toISOString(),
+        return () => {
+            socket.off("receiveMessage");
         };
+    }, [senderId, receiverId]);
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
-        socket.emit("sendMessage", aiMessage);
-      } catch (error) {
-        setMessages((prev) => prev.filter((msg) => msg !== placeholderMessage));
-        toast.error("Failed to get AI response");
-      }
-    }
-  };
+    const sendMessage = () => {
+        if (newMessage.trim()) {
+            saveMessage(newMessage, user.username, false);
+            setNewMessage("");
+        }
+    };
+    const handleKeyPress = (event: React.KeyboardEvent) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+        }
+    };
+    const onAiResponseClicked = async () => {
+        if (receiverId && messages.length) {
+            const chatMessages = messages
+                .map((msg) => `${msg.senderUserName}: ${msg.message}`)
+                .join("\n");
 
-  return (
-    <Box className="chat-container">
-      {/* Messages */}
-      <Box className="messages-container">
-        {messages.length > 0 ? (
-          messages.map((msg, index) => {
-            const isSender = msg.senderId === senderId;
-            const isAIResponse = msg.isAi;
-            const messageType = () => {
-              if (isAIResponse) {
-                return "AI";
-              } else if (isSender) {
-                return "sender";
-              } else {
-                return "receiver";
-              }
+            const placeholderMessage = {
+                senderId: "AIPlaceholder",
+                message: "AI is thinking...",
+                senderUserName: "AI",
+                isAi: true,
+                timestamp: new Date().toISOString(),
             };
+            setMessages([...messages, placeholderMessage]);
 
-            return (
-              <Box
-                key={index}
-                className={`message-container message-container-${messageType()}`}
-              >
-                <Typography className={`message message-${messageType()}`}>
-                  {isAIResponse && (
-                    <SmartToyIcon
-                      sx={{
-                        marginRight: "8px",
-                        color: "#0073e6",
-                      }}
-                    />
-                  )}
-                  {msg.message}
-                </Typography>
-              </Box>
-            );
-          })
-        ) : (
-          <div>Start chatting now!</div>
-        )}
-        <div ref={messagesEndRef}></div>
-      </Box>
+            try {
+                const response = await getAIResponse(chatMessages);
 
-      <Box className="input-container">
-        <AppTextField
-          fullWidth
-          label="Type a message..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          size="small"
-          onKeyDown={handleKeyPress}
-          sx={{
-            flex: 1,
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "8px",
-            },
-          }}
-        />
+                setMessages(messages.filter((msg) => msg !== placeholderMessage));
+                saveMessage(response, "AI", true);
+            } catch (error) {
+                setMessages(messages.filter((msg) => msg !== placeholderMessage));
+                toast.error("Failed to get AI response");
+            }
+        }
+    };
 
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={sendMessage}
-          className="input-button"
-        >
-          <SendIcon />
-        </Button>
+    const saveMessage = (
+        messageToSave: string,
+        senderUserName: string,
+        isAi: boolean
+    ) => {
+        if (messageToSave) {
+            socket.emit("sendMessage", {
+                senderId,
+                senderUserName,
+                receiverId,
+                message: messageToSave,
+                isAi: isAi,
+            });
+            setMessages((prev) => [
+                ...prev,
+                { senderId, message: messageToSave, senderUserName, isAi, timestamp: new Date().toISOString() },
+            ]);
+        }
+    };
 
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={onAiResponseClicked}
-          className="input-button"
-        >
-          Summarise with AI
-        </Button>
-      </Box>
-    </Box>
-  );
+    return (
+        <Box className="chat-container">
+            {/* Messages */}
+            <Box className="messages-container">
+                {messages.length > 0 ? (
+                    messages.map((msg, index) => {
+                        const isSender = msg.senderId === senderId;
+                        const isAIResponse = msg.isAi;
+                        const messageType = () => {
+                            if (isAIResponse) {
+                                return "AI";
+                            } else if (isSender) {
+                                return "sender";
+                            } else {
+                                return "receiver";
+                            }
+                        };
+                        return (
+                            <Box
+                                key={index}
+                                className={`message-container message-container-${messageType()}`}
+                            >
+                                <Typography className={`message message-${messageType()}`}>
+                                    {isAIResponse && (
+                                        <SmartToyIcon
+                                            sx={{
+                                                marginRight: "8px",
+                                                color: "#0073e6",
+                                            }}
+                                        />
+                                    )}
+                                    {msg.message}
+                                </Typography>
+                            </Box>
+                        );
+                    })
+                ) : (
+                    <div>Start chatting now!</div>
+                )}
+                <div ref={messagesEndRef}></div>
+            </Box>
+            <Box className="input-container">
+                <AppTextField
+                    fullWidth
+                    label="Type a message..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    size="small"
+                    onKeyDown={handleKeyPress}
+                    sx={{
+                        flex: 1,
+                        "& .MuiOutlinedInput-root": {
+                            borderRadius: "8px",
+                        },
+                    }}
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={sendMessage}
+                    className="input-button"
+                >
+                    <SendIcon />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={onAiResponseClicked}
+                    className="input-button"
+                >
+                    Summarise with AI
+                </Button>
+            </Box>
+        </Box>
+    );
 };
 
 export default ChatBox;
