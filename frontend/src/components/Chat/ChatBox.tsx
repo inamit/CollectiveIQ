@@ -13,7 +13,6 @@ import AppTextField from "../TextField/TextField.tsx";
 import { toast } from "react-toastify";
 
 interface ChatBoxProps {
-  open: any;
   user: User;
   senderId: string;
   receiverId: string;
@@ -24,22 +23,28 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
   const [newMessage, setNewMessage] = useState("");
   const { setUser } = useUser();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<IMessage[]>([]); // Keeps track of messages to prevent overwriting
 
   useEffect(() => {
     socket.emit("joinRoom", senderId);
 
     const chatService = new ChatService(user, setUser);
-    const { request } = chatService.getChatHistory(senderId, receiverId);
-    request
-      .then((response) => {
-        setMessages(response.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    chatService.getChatHistory(senderId, receiverId).request
+        .then((response) => {
+          const sortedMessages = response.data.sort(
+              (a: IMessage, b: IMessage) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+          );
+          setMessages(sortedMessages);
+          messagesRef.current = sortedMessages;
+        })
+        .catch((err) => console.error(err));
 
     socket.on("receiveMessage", (message: IMessage) => {
-      setMessages((prev) => [...prev, message]);
+      setMessages((prev) => {
+        const updatedMessages = [...prev, message];
+        messagesRef.current = updatedMessages;
+        return updatedMessages;
+      });
     });
 
     return () => {
@@ -53,7 +58,14 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
 
   const sendMessage = () => {
     if (newMessage.trim()) {
-      saveMessage(newMessage, user.username, false);
+      const messageToSend: IMessage = {
+        senderId,
+        senderUserName: user.username,
+        message: newMessage,
+        isAi: false,
+      };
+
+      socket.emit("sendMessage", messageToSend);
       setNewMessage("");
     }
   };
@@ -68,46 +80,35 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
   const onAiResponseClicked = async () => {
     if (receiverId && messages.length) {
       const chatMessages = messages
-        .map((msg) => `${msg.senderUserName}: ${msg.message}`)
-        .join("\n");
+          .map((msg) => `${msg.senderUserName}: ${msg.message}`)
+          .join("\n");
 
-      const placeholderMessage = {
+      const placeholderMessage: IMessage = {
         senderId: "AIPlaceholder",
         message: "AI is thinking...",
         senderUserName: "AI",
         isAi: true,
       };
-      setMessages([...messages, placeholderMessage]);
+      setMessages((prev) => [...prev, placeholderMessage]);
 
       try {
         const response = await getAIResponse(chatMessages);
 
-        setMessages(messages.filter((msg) => msg !== placeholderMessage));
-        saveMessage(response, "AI", true);
+        setMessages((prev) => prev.filter((msg) => msg !== placeholderMessage));
+        const aiMessage: IMessage = {
+          senderId: "AI",
+          senderUserName: "AI",
+          receiverId,
+          message: response,
+          isAi: true,
+          timestamp: new Date().toISOString(),
+        };
+
+        socket.emit("sendMessage", aiMessage);
       } catch (error) {
-        setMessages(messages.filter((msg) => msg !== placeholderMessage));
+        setMessages((prev) => prev.filter((msg) => msg !== placeholderMessage));
         toast.error("Failed to get AI response");
       }
-    }
-  };
-
-  const saveMessage = (
-    messageToSave: string,
-    senderUserName: string,
-    isAi: boolean
-  ) => {
-    if (messageToSave) {
-      socket.emit("sendMessage", {
-        senderId,
-        senderUserName,
-        receiverId,
-        message: messageToSave,
-        isAi: isAi,
-      });
-      setMessages((prev) => [
-        ...prev,
-        { senderId, message: messageToSave, senderUserName, isAi },
-      ]);
     }
   };
 
