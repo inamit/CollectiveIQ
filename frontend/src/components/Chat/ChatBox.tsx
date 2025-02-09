@@ -23,6 +23,7 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
     const [newMessage, setNewMessage] = useState("");
     const { setUser } = useUser();
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesRef = useRef<IMessage[]>([]);
 
     useEffect(() => {
         socket.emit("joinRoom", senderId);
@@ -32,13 +33,18 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
         request
             .then((response) => {
                 setMessages(response.data);
+                messagesRef.current = response.data as IMessage[];
             })
             .catch((err) => {
                 console.error(err);
             });
 
         socket.on("receiveMessage", (message: IMessage) => {
-            setMessages((prev) => [...prev, message]);
+            setMessages((prev) => {
+                const updatedMessages = [...prev, message];
+                messagesRef.current = updatedMessages;
+                return updatedMessages;
+            });
         });
 
         return () => {
