@@ -63,6 +63,7 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
         senderUserName: user.username,
         message: newMessage,
         isAi: false,
+        timestamp: new Date().toISOString(),
       };
 
       socket.emit("sendMessage", messageToSend);
@@ -88,6 +89,7 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
         message: "AI is thinking...",
         senderUserName: "AI",
         isAi: true,
+        timestamp: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, placeholderMessage]);
 
@@ -98,7 +100,6 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
         const aiMessage: IMessage = {
           senderId: "AI",
           senderUserName: "AI",
-          receiverId,
           message: response,
           isAi: true,
           timestamp: new Date().toISOString(),

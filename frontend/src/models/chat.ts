@@ -3,4 +3,5 @@ export default interface IMessage {
     message: string;
     senderUserName:string
     isAi?: boolean;
+    timestamp:string
 }
