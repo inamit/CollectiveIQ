@@ -164,7 +164,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
         .status(400)
         .json({ error: "wrong credentials. Please try again." });
     }
-    return await token.returnTokens(existingUser, res);
+    return await token.returnTokens(existingUser, res, { avatarUrl: existingUser.avatarUrl });
   } catch (err) {
     console.warn("Error while logging in:", err);
     return res
