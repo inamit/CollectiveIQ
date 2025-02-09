@@ -30,7 +30,7 @@ const chatSchema = new Schema<IChat>({
     },
     timestamp: {
         type: Date,
-        default: new Date()
+        default: Date.now
     },
     isAi: {
         type: Boolean,
@@ -40,6 +40,5 @@ const chatSchema = new Schema<IChat>({
 
 export const CHAT_RESOURCE_NAME = "Chats";
 const Chat = mongoose.model<IChat>(CHAT_RESOURCE_NAME, chatSchema);
-
 
 export default Chat;
