@@ -13,7 +13,6 @@ import AppTextField from "../TextField/TextField.tsx";
 import { toast } from "react-toastify";
 
 interface ChatBoxProps {
-    open: any;
     user: User;
     senderId: string;
     receiverId: string;
