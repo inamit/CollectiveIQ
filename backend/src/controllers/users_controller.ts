@@ -65,6 +65,7 @@ const registerNewUser = async (req: Request, res: Response): Promise<any> => {
     const savedUser: IUser = await user.save();
     return await token.returnTokens(savedUser, res, {
       message: "User registered successfully",
+      avatarUrl: savedUser.avatarUrl
     });
   } catch (err: any) {
     console.warn("Error registering user:", err);
@@ -252,6 +253,7 @@ const googleAuthentication = async (
       if (existingUser.username === payload.email) {
         return await token.returnTokens(existingUser, res, {
           message: "logged in with google",
+          avatarUrl: existingUser.avatarUrl
         });
       } else {
         return res
