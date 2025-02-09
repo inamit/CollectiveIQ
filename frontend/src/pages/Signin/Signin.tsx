@@ -39,6 +39,7 @@ export default function SignIn(){
                   email: decodedAccessToken.email,
                   refreshToken: response.data.refreshToken,
                   accessToken: response.data.accessToken,
+                  avatarUrl: response.data.avatarUrl,
                   _id: decodedAccessToken._id,
                 });
 

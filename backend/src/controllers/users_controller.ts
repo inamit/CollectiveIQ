@@ -48,18 +48,18 @@ const registerNewUser = async (req: Request, res: Response): Promise<any> => {
       username,
       email,
       password,
-      avatarImage,
+      avatarUrl,
     }: {
       username: string;
       email: string;
       password: string;
-      avatarImage: string;
+      avatarUrl: string;
     } = req.body;
     const user = new User({
       username,
       email,
       password,
-      avatarImage,
+      avatarUrl,
     });
 
     const savedUser: IUser = await user.save();
@@ -80,8 +80,8 @@ const updateUserById = async (req: Request, res: Response): Promise<any> => {
     if (updates.password) {
       updates.password = await hashPassword(updates.password);
     }
-    if (req.file?.path) {
-      updates.avatarUrl = req.file.path;
+    if (process.env.BASE_URL && req.file?.path) {
+      updates.avatarUrl = process.env.BASE_URL + req.file.path;
     }
 
     const user = await User.findById(user_id);
@@ -164,7 +164,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
         .status(400)
         .json({ error: "wrong credentials. Please try again." });
     }
-    return await token.returnTokens(existingUser, res);
+    return await token.returnTokens(existingUser, res, { avatarUrl: existingUser.avatarUrl });
   } catch (err) {
     console.warn("Error while logging in:", err);
     return res
@@ -263,7 +263,7 @@ const googleAuthentication = async (
     req.body = {
       username: payload.email,
       email: payload.email,
-      avatarImage: payload.picture,
+      avatarUrl: payload.picture,
       password: await hashPassword(uuidv4()),
     };
 
