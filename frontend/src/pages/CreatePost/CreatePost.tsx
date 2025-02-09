@@ -41,7 +41,7 @@ const CreatePost = () => {
     <div className="question-container">
       <h2>Ask a question</h2>
       <p className="description">
-        Get answers from AI models, or share your knowledge with others
+        Ask a question, or share your knowledge with others
       </p>
       <form>
         <div className="field-container">
