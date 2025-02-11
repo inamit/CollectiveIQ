@@ -97,8 +97,12 @@ const PostComponent = () => {
         refreshPost();
       })
       .catch((err) => {
+        if (err.response?.status === 401) {
+          toast.error("You need to be logged in to like a post");
+        } else {
+          toast.error("Failed to like post");
+        }
         console.error(err);
-        toast.error("Failed to like post");
       });
   };
 
@@ -111,8 +115,12 @@ const PostComponent = () => {
         refreshPost();
       })
       .catch((err) => {
+        if (err.response?.status === 401) {
+          toast.error("You need to be logged in to dislike a post");
+        } else {
+          toast.error("Failed to like post");
+        }
         console.error(err);
-        toast.error("Failed to dislike post");
       });
   };
 
