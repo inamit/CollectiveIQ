@@ -15,23 +15,24 @@ import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
-import CommentSection from "../../components/Comment/Comment.tsx";
+import CommentSection from "../../components/Comment/Comment";
 import { useNavigate, useParams } from "react-router";
-import { useUser } from "../../context/userContext.tsx";
-import usePost from "../../hooks/usePost.ts";
-import Post from "../../models/post.ts";
-import { CommentsService } from "../../services/commentsService.ts";
-import UserAvatar from "../../components/UserAvatar/UserAvatar.tsx";
+import { useUser } from "../../context/userContext";
+import usePost from "../../hooks/usePost";
+import Post from "../../models/post";
+import { CommentsService } from "../../services/commentsService";
+import UserAvatar from "../../components/UserAvatar/UserAvatar";
 import { toast } from "react-toastify";
-import AppTextField from "../../components/TextField/TextField.tsx";
-import { PostsService } from "../../services/postsService.ts";
+import AppTextField from "../../components/TextField/TextField";
+import { PostsService } from "../../services/postsService";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { routes } from "../../router/routes.ts";
-import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
-import { formatDate } from "../../utils/formatDate.ts";
-import Markdown from "../../components/Markdown/Markdown.tsx";
-import { LoadingState } from "../../services/loadingState.ts";
+import { routes } from "../../router/routes";
+import { ImagePicker } from "../../components/ImagePicker/ImagePicker";
+import { formatDate } from "../../utils/formatDate";
+import Markdown from "../../components/Markdown/Markdown";
+import { LoadingState } from "../../services/loadingState";
+import { StatusCodes } from "http-status-codes"; // Import the StatusCodes enum
 
 const PostComponent = () => {
   const { postId } = useParams();
@@ -97,7 +98,7 @@ const PostComponent = () => {
         refreshPost();
       })
       .catch((err) => {
-        if (err.response?.status === 401) {
+        if (err.response?.status === StatusCodes.UNAUTHORIZED) {
           toast.error("You need to be logged in to like a post");
         } else {
           toast.error("Failed to like post");
@@ -115,10 +116,10 @@ const PostComponent = () => {
         refreshPost();
       })
       .catch((err) => {
-        if (err.response?.status === 401) {
+        if (err.response?.status === StatusCodes.UNAUTHORIZED) {
           toast.error("You need to be logged in to dislike a post");
         } else {
-          toast.error("Failed to like post");
+          toast.error("Failed to dislike post");
         }
         console.error(err);
       });
