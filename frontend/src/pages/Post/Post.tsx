@@ -32,6 +32,7 @@ import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
 import { formatDate } from "../../utils/formatDate.ts";
 import Markdown from "../../components/Markdown/Markdown.tsx";
 import { LoadingState } from "../../services/loadingState.ts";
+import { StatusCodes } from "http-status-codes";
 
 const PostComponent = () => {
   const { postId } = useParams();
@@ -97,8 +98,12 @@ const PostComponent = () => {
         refreshPost();
       })
       .catch((err) => {
+        if (err.response?.status === StatusCodes.UNAUTHORIZED) {
+          toast.error("You need to be logged in to like a post");
+        } else {
+          toast.error("Failed to like post");
+        }
         console.error(err);
-        toast.error("Failed to like post");
       });
   };
 
@@ -111,8 +116,12 @@ const PostComponent = () => {
         refreshPost();
       })
       .catch((err) => {
+        if (err.response?.status === StatusCodes.UNAUTHORIZED) {
+          toast.error("You need to be logged in to dislike a post");
+        } else {
+          toast.error("Failed to dislike post");
+        }
         console.error(err);
-        toast.error("Failed to dislike post");
       });
   };
 
