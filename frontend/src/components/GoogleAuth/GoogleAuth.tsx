@@ -13,7 +13,11 @@ export default function GoogleAuth() {
   const { setUser } = useUser();
 
   const userSignedUpSuccessfully = (
-    response: AxiosResponse<{ accessToken: string; refreshToken: string }>
+    response: AxiosResponse<{
+      accessToken: string;
+      refreshToken: string;
+      avatarUrl: string;
+    }>
   ) => {
     toast.success("Signed up successfully");
 
@@ -24,6 +28,7 @@ export default function GoogleAuth() {
       email: decodedAccessToken.email,
       refreshToken: responseJson.refreshToken,
       accessToken: responseJson.accessToken,
+      avatarUrl: responseJson.avatarUrl,
       _id: decodedAccessToken._id,
     });
     navigate(routes.HOME);

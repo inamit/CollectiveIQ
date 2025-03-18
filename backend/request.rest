@@ -61,10 +61,8 @@ Content-Type: application/json
 ### Delete a comment
 DELETE http://localhost:3000/comments/673f64adbf63a2c753469891
 
-
 ### Get all users
 GET http://localhost:3000/users
-
 
 ### Register a new user
 POST http://localhost:3000/users
@@ -90,3 +88,27 @@ Content-Type: application/json
 POST http://localhost:3000/users/logout
 Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzRhZjE1YTgyZDhhODkxOWNmYWZkOTIiLCJpYXQiOjE3MzI5NzY3NDAsImV4cCI6MTczMjk4MDM0MH0.RTnOnnytZY_d22ETwDW6W35p-zpxXqj9IXrtE8Np1eI
 Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzRhZjE1YTgyZDhhODkxOWNmYWZkOTIiLCJyYW5kb20iOiI4NDQyNTIiLCJpYXQiOjE3MzI5NzY3NDAsImV4cCI6MTczMzAwMTk0MH0.j5EnmFfNtORXwAVOuqWPvmTKfi327VqYzs8pVV6q1aQ
+
+### Get response from Gemini AI
+POST http://localhost:3000/ai/gemini-response
+Content-Type: application/json
+
+{
+  "input": "Tell me about the latest advancements in AI."
+}
+
+### Get response from Falcon AI
+POST http://localhost:3000/ai/falcon-response
+Content-Type: application/json
+
+{
+  "input": "What do you think about the new iPhone?"
+}
+
+### Get response from Mistral AI
+POST http://localhost:3000/ai/mistral-response
+Content-Type: application/json
+
+{
+  "input": "In what country is Paris located?"
+}

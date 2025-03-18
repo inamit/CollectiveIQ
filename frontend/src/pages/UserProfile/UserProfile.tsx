@@ -238,7 +238,6 @@ export default function UserProfile() {
           {user && userId && user._id !== userId && (
             <CustomTabPanel value={selectedTab} index={2}>
               <ChatBox
-                open={Boolean(selectedUser)}
                 user={user}
                 senderId={user._id}
                 receiverId={userId}
