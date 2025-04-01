@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleGeminiResponse, handleFalconResponse, handleMistralResponse } from "../controllers/ai_controller";
+import { handleGeminiResponse, handleFalconResponse, handleMistralResponse, handleAllResponses } from "../controllers/ai_controller";
 
 const router: Router = Router();
 
@@ -126,5 +126,45 @@ router.post("/falcon-response", handleFalconResponse);
  *                 $ref: '#/components/schemas/Error'
  */
 router.post("/mistral-response", handleMistralResponse);
+
+/**
+ * @swagger
+ * paths:
+ *   /ai/all-responses:
+ *     post:
+ *       tags:
+ *         - AI
+ *       summary: Get responses from all AI models
+ *       description: Fetches responses from Gemini, Falcon, and Mistral AI models
+ *       operationId: getAllResponses
+ *       requestBody:
+ *         description: Input for the AI models
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AIInput'
+ *         required: true
+ *       responses:
+ *         '200':
+ *           description: Successful operation
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   gemini:
+ *                     type: string
+ *                   falcon:
+ *                     type: string
+ *                   mistral:
+ *                     type: string
+ *         '500':
+ *           description: An unexpected error occurred
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/Error'
+ */
+router.post("/all-responses", handleAllResponses);
 
 export default router;

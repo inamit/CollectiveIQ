@@ -2,6 +2,8 @@ import { HfInference } from "@huggingface/inference";
 import fetch from "node-fetch";
 import config from "../config/aiConfig";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import Comment from "../models/comments_model";
+import Post from "../models/posts_model";
 
 const genAI = new GoogleGenerativeAI(config.GeminiAIapiKey);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -35,22 +37,50 @@ const fetchHuggingFaceResponse = async (url: string, input: string): Promise<str
     }
 };
 
-export const getFalconResponse = async (input: string): Promise<string> => {
-    return fetchHuggingFaceResponse(config.FalconApiUrl, input);
+const saveAIResponseAsComment = async (postId: string, content: string): Promise<void> => {
+    try {
+        const postExists = await Post.exists({ _id: postId });
+        if (!postExists) {
+            throw new Error("Post not found.");
+        }
+
+        const comment = new Comment({
+            postID: postId,
+            content,
+            userId: "67ec503b9ad49bcaa166ee02", // AI user ID (created it manully until we decide what do)
+            date: new Date(),
+        });
+
+        await comment.save();
+        console.log("AI response saved as a comment.");
+    } catch (error) {
+        console.error("Error saving AI response as a comment:", error);
+        throw error;
+    }
 };
 
-export const getMistralResponse = async (input: string): Promise<string> => {
+export const getFalconResponse = async (input: string, postId: string): Promise<string> => {
+    const response = await fetchHuggingFaceResponse(config.FalconApiUrl, input);
+    await saveAIResponseAsComment(postId, response);
+    return response;
+};
+
+export const getMistralResponse = async (input: string, postId: string): Promise<string> => {
     const formattedInput = `### User: ${input}\n### Assistant:`;
-    return fetchHuggingFaceResponse(config.MistralApiUrl, formattedInput);
+    const response = await fetchHuggingFaceResponse(config.MistralApiUrl, formattedInput);
+    await saveAIResponseAsComment(postId, response);
+    return response;
 };
 
-export const getGeminiResponse = async (input: string): Promise<string> => {
+export const getGeminiResponse = async (input: string, postId: string): Promise<string> => {
     try {
         const result = await model.generateContent(input);
-        console.log("Generated Answer (Gemini 1.5 Flash):", result.response.text().trim());
-        return result.response.text().trim();
+        const response = result.response.text().trim();
+        console.log("Generated Answer (Gemini 1.5 Flash):", response);
+        await saveAIResponseAsComment(postId, response);
+        return response;
     } catch (error) {
-        console.error('Error fetching AI response:', error);
+        console.error("Error fetching AI response:", error);
         throw error;
     }
 };
