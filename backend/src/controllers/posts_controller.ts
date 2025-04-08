@@ -3,6 +3,7 @@ import { handleMongoQueryError } from "../db/db";
 import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 import mongoose from "mongoose";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
+import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -15,6 +16,19 @@ const getPosts = async (req: Request, res: Response): Promise<any> => {
   } catch (err: any) {
     console.warn("Error fetching posts:", err);
     return handleMongoQueryError(res, err);
+  }
+};
+
+const triggerAIResponses = async (content: string, postId: string): Promise<void> => {
+  try {
+    await Promise.all([
+      getGeminiResponse(content, postId),
+      getFalconResponse(content, postId),
+      getMistralResponse(content, postId),
+    ]);
+    console.log("AI responses successfully triggered for post:", postId);
+  } catch (error) {
+    console.error("Error triggering AI responses for post:", postId, error);
   }
 };
 
@@ -32,6 +46,9 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
       imageUrl,
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
+
+    triggerAIResponses(savedPost.content, String(savedPost._id));
+
     return res.json(savedPost);
   } catch (err: any) {
     console.warn("Error saving post:", err);
