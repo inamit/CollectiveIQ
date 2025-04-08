@@ -37,7 +37,7 @@ const fetchHuggingFaceResponse = async (url: string, input: string): Promise<str
     }
 };
 
-const saveAIResponseAsComment = async (postId: string, content: string): Promise<void> => {
+const saveAIResponseAsComment = async (postId: string, content: string, modelId: string): Promise<void> => {
     try {
         const postExists = await Post.exists({ _id: postId });
         if (!postExists) {
@@ -47,7 +47,7 @@ const saveAIResponseAsComment = async (postId: string, content: string): Promise
         const comment = new Comment({
             postID: postId,
             content,
-            userId: "67ec503b9ad49bcaa166ee02", // AI user ID (created it manully until we decide what do)
+            userId: modelId,
             date: new Date(),
         });
 
@@ -62,14 +62,14 @@ const saveAIResponseAsComment = async (postId: string, content: string): Promise
 export const getFalconResponse = async (input: string, postId: string): Promise<string> => {
     const formattedInput = `# Question: ${input}\n#Answer:`;
     const response = await fetchHuggingFaceResponse(config.FalconApiUrl, formattedInput);
-    await saveAIResponseAsComment(postId, response);
+    await saveAIResponseAsComment(postId, response, process.env.Falcon_userId || "");
     return response;
 };
 
 export const getMistralResponse = async (input: string, postId: string): Promise<string> => {
     const formattedInput = `# Question: ${input}\n# Answer:`;
     const response = await fetchHuggingFaceResponse(config.MistralApiUrl, formattedInput);
-    await saveAIResponseAsComment(postId, response);
+    await saveAIResponseAsComment(postId, response, process.env.Mistral_userId || "");
     return response;
 };
 
@@ -79,7 +79,7 @@ export const getGeminiResponse = async (input: string, postId: string): Promise<
         const result = await model.generateContent(formattedInput);
         const response = result.response.text().trim();
         console.log("Generated Answer (Gemini 1.5 Flash):", response);
-        await saveAIResponseAsComment(postId, response);
+        await saveAIResponseAsComment(postId, response, process.env.Gemini_userId || "");
         return response;
     } catch (error) {
         console.error("Error fetching AI response:", error);
