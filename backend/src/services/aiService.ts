@@ -52,7 +52,7 @@ const saveAIResponseAsComment = async (postId: string, content: string, modelId:
         });
 
         await comment.save();
-        console.log("AI response saved as a comment.");
+        console.log("Huggingface AI response saved as a comment.");
     } catch (error) {
         console.error("Error saving AI response as a comment:", error);
         throw error;
@@ -60,8 +60,7 @@ const saveAIResponseAsComment = async (postId: string, content: string, modelId:
 };
 
 export const getFalconResponse = async (input: string, postId: string): Promise<string> => {
-    const formattedInput = `# Question: ${input}\n#Answer:`;
-    const response = await fetchHuggingFaceResponse(config.FalconApiUrl, formattedInput);
+    const response = await fetchHuggingFaceResponse(config.FalconApiUrl, input);
     await saveAIResponseAsComment(postId, response, process.env.Falcon_userId || "");
     return response;
 };
@@ -75,8 +74,7 @@ export const getMistralResponse = async (input: string, postId: string): Promise
 
 export const getGeminiResponse = async (input: string, postId: string): Promise<string> => {
     try {
-        const formattedInput = `answer me in the format of: # Question: ${input}\n# Answer:`;
-        const result = await model.generateContent(formattedInput);
+        const result = await model.generateContent(input);
         const response = result.response.text().trim();
         console.log("Generated Answer (Gemini 1.5 Flash):", response);
         await saveAIResponseAsComment(postId, response, process.env.Gemini_userId || "");
