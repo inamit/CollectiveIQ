@@ -60,13 +60,14 @@ const saveAIResponseAsComment = async (postId: string, content: string): Promise
 };
 
 export const getFalconResponse = async (input: string, postId: string): Promise<string> => {
-    const response = await fetchHuggingFaceResponse(config.FalconApiUrl, input);
+    const formattedInput = `# Question: ${input}\n#Answer:`;
+    const response = await fetchHuggingFaceResponse(config.FalconApiUrl, formattedInput);
     await saveAIResponseAsComment(postId, response);
     return response;
 };
 
 export const getMistralResponse = async (input: string, postId: string): Promise<string> => {
-    const formattedInput = `### User: ${input}\n### Assistant:`;
+    const formattedInput = `# Question: ${input}\n# Answer:`;
     const response = await fetchHuggingFaceResponse(config.MistralApiUrl, formattedInput);
     await saveAIResponseAsComment(postId, response);
     return response;
@@ -74,7 +75,8 @@ export const getMistralResponse = async (input: string, postId: string): Promise
 
 export const getGeminiResponse = async (input: string, postId: string): Promise<string> => {
     try {
-        const result = await model.generateContent(input);
+        const formattedInput = `answer me in the format of: # Question: ${input}\n# Answer:`;
+        const result = await model.generateContent(formattedInput);
         const response = result.response.text().trim();
         console.log("Generated Answer (Gemini 1.5 Flash):", response);
         await saveAIResponseAsComment(postId, response);
