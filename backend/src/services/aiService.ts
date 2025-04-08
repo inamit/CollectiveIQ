@@ -1,11 +1,10 @@
 import { HfInference } from "@huggingface/inference";
 import fetch from "node-fetch";
-import config from "../config/aiConfig";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Comment from "../models/comments_model";
 import Post from "../models/posts_model";
 
-const genAI = new GoogleGenerativeAI(config.GeminiAIapiKey);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY  || "");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 const hf = new HfInference(process.env.HUGGING_FACE_API_KEY);
 
@@ -60,15 +59,15 @@ const saveAIResponseAsComment = async (postId: string, content: string, modelId:
 };
 
 export const getFalconResponse = async (input: string, postId: string): Promise<string> => {
-    const response = await fetchHuggingFaceResponse(config.FalconApiUrl, input);
-    await saveAIResponseAsComment(postId, response, process.env.Falcon_userId || "");
+    const response = await fetchHuggingFaceResponse(process.env.FALCON_API_URL || "", input);
+    await saveAIResponseAsComment(postId, response, process.env.FALCON_USERID || "");
     return response;
 };
 
 export const getMistralResponse = async (input: string, postId: string): Promise<string> => {
     const formattedInput = `# Question: ${input}\n# Answer:`;
-    const response = await fetchHuggingFaceResponse(config.MistralApiUrl, formattedInput);
-    await saveAIResponseAsComment(postId, response, process.env.Mistral_userId || "");
+    const response = await fetchHuggingFaceResponse(process.env.MISTRAL_API_URL || "", formattedInput);
+    await saveAIResponseAsComment(postId, response, process.env.MISTRAL_USERID || "");
     return response;
 };
 
@@ -77,7 +76,7 @@ export const getGeminiResponse = async (input: string, postId: string): Promise<
         const result = await model.generateContent(input);
         const response = result.response.text().trim();
         console.log("Generated Answer (Gemini 1.5 Flash):", response);
-        await saveAIResponseAsComment(postId, response, process.env.Gemini_userId || "");
+        await saveAIResponseAsComment(postId, response, process.env.GEMINI_USERID || "");
         return response;
     } catch (error) {
         console.error("Error fetching AI response:", error);

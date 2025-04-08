@@ -19,6 +19,19 @@ const getPosts = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
+const triggerAIResponses = async (content: string, postId: string): Promise<void> => {
+  try {
+    await Promise.all([
+      getGeminiResponse(content, postId),
+      getFalconResponse(content, postId),
+      getMistralResponse(content, postId),
+    ]);
+    console.log("AI responses successfully triggered for post:", postId);
+  } catch (error) {
+    console.error("Error triggering AI responses for post:", postId, error);
+  }
+};
+
 const saveNewPost = async (req: Request, res: Response): Promise<any> => {
   try {
     let imageUrl;
@@ -34,9 +47,7 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
 
-    getGeminiResponse(req.body.content, String(savedPost._id) || "");
-    getFalconResponse(req.body.content, String(savedPost._id) || "");
-    getMistralResponse(req.body.content, String(savedPost._id) || "");
+    triggerAIResponses(savedPost.content, String(savedPost._id));
 
     return res.json(savedPost);
   } catch (err: any) {
