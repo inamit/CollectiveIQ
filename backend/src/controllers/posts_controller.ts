@@ -136,6 +136,15 @@ const dislikePost = async (req: Request, res: Response): Promise<any> => {
   return toggleReaction(req, res, "dislikes");
 };
 
+const defineTag = async (req: Request, res: Response): Promise<any> => {
+  try {
+    return res.json();
+  } catch (err: any) {
+    console.warn("Error define post tag:", err);
+    return handleMongoQueryError(res, err, POST_RESOURCE_NAME);
+  }
+};
+
 export const toggleReaction = async (
   req: Request,
   res: Response,
