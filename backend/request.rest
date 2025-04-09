@@ -8,9 +8,9 @@ POST http://localhost:3000/posts
 Content-Type: application/json
 
 {
-  "title": "New Title",
-  "content": "New Post",
-  "userId": "amit"
+  "title": "Madrid",
+  "content": "where is madrid located?",
+  "userId": "678a931b76be8cfc89dee43d"
 }
 
 ### Delete a post
@@ -90,33 +90,25 @@ Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzRhZjE1YTg
 Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzRhZjE1YTgyZDhhODkxOWNmYWZkOTIiLCJyYW5kb20iOiI4NDQyNTIiLCJpYXQiOjE3MzI5NzY3NDAsImV4cCI6MTczMzAwMTk0MH0.j5EnmFfNtORXwAVOuqWPvmTKfi327VqYzs8pVV6q1aQ
 
 ### Get response from Gemini AI
-POST http://localhost:3000/ai/gemini-response?post_id=67520781f8f699e41b8bcef1
+POST http://localhost:3000/ai/gemini-response?post_id=67f66c103aee1ed18a27f420
 Content-Type: application/json
 
 {
-  "input": "Tell me about the latest advancements in AI."
+  "input": "Madrid is in England."
 }
 
 ### Get response from Falcon AI
-POST http://localhost:3000/ai/falcon-response?post_id=67520781f8f699e41b8bcef1
+POST http://localhost:3000/ai/falcon-response?post_id=67f66c103aee1ed18a27f420
 Content-Type: application/json
 
 {
-  "input": "What do you think about the new iPhone?"
+  "input": "Madrid is in England."
 }
 
 ### Get response from Mistral AI
-POST http://localhost:3000/ai/mistral-response?post_id=67520781f8f699e41b8bcef1
+POST http://localhost:3000/ai/mistral-response?post_id=67f66c103aee1ed18a27f420
 Content-Type: application/json
 
 {
-  "input": "In what country is Paris located?"
-}
-
-### Get responses from all AI models
-POST http://localhost:3000/ai/all-responses?post_id=67520781f8f699e41b8bcef1
-Content-Type: application/json
-
-{
-  "input": "What are the latest trends in AI?"
+  "input": "Madrid is in England."
 }
