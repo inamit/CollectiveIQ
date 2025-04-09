@@ -10,7 +10,7 @@ const handleAIResponse = (getResponse: (input: string, postId: string) => Promis
     try {
       const post: IPost | null = await Post.findById(post_id).populate("userId");
       const formattedInput = `Here is a question: ${post?.content}. 
-        This is the answer: ${input}. Give your opnion on the answer.`;
+        This is the answer: ${input}. Give your opinion on the answer.`;
       const response = await getResponse(formattedInput, post_id || "");
       res.json({ response });
     } catch (error) {
