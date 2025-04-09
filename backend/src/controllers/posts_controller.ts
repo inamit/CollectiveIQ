@@ -47,6 +47,7 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
 
+    defineTagWithLLM(savedPost.content, String(savedPost._id))
     triggerAIResponses(savedPost.content, String(savedPost._id));
 
     return res.json(savedPost);
@@ -207,6 +208,22 @@ function getReaction(
     }
   }
 }
+async function defineTagWithLLM(question: string, post_id: string) {
+  try {
+    const input = `${process.env.TAG_STRING}  ${process.env.TAG_LIST} the question: ${question}`
+    const aiResponse = await getGeminiResponse(input)
+    const updatedPost: IPost | null = await Post.findByIdAndUpdate(
+      post_id,
+      {
+        tag: aiResponse
+      },
+      { new: true, runValidators: true }
+    );
+  } catch (error) {
+    console.warn("Error defineTagWithLLM in post:", error);
+  }
+}
+
 export default {
   getPosts,
   saveNewPost,
