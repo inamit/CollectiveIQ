@@ -3,8 +3,8 @@ import fetch from "node-fetch";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Comment from "../models/comments_model";
 import Post from "../models/posts_model";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY  || "");
+require('dotenv').config();
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 const hf = new HfInference(process.env.HUGGING_FACE_API_KEY);
 
@@ -80,6 +80,18 @@ export const getGeminiResponse = async (input: string, postId: string): Promise<
         return response;
     } catch (error) {
         console.error("Error fetching AI response:", error);
+        throw error;
+    }
+};
+
+export const getGeminiTagResponse = async (input: string): Promise<string> => {
+    try {
+        const result = await model.generateContent(input);
+        const response = result.response.text().trim();
+        console.log("Generated Answer (Gemini 1.5 Flash) tags:", response);
+        return response;
+    } catch (error) {
+        console.error("Error fetching AI for tag define response:", error);
         throw error;
     }
 };

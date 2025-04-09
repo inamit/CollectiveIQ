@@ -3,7 +3,7 @@ import { handleMongoQueryError } from "../db/db";
 import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 import mongoose from "mongoose";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
-import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
+import { getGeminiResponse, getFalconResponse, getMistralResponse, getGeminiTagResponse } from "../services/aiService";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -46,7 +46,7 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
       imageUrl,
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
-
+    defineTagWithLLM(savedPost.content, String(savedPost._id))
     triggerAIResponses(savedPost.content, String(savedPost._id));
 
     return res.json(savedPost);
@@ -153,15 +153,6 @@ const dislikePost = async (req: Request, res: Response): Promise<any> => {
   return toggleReaction(req, res, "dislikes");
 };
 
-const defineTag = async (req: Request, res: Response): Promise<any> => {
-  try {
-    return res.json();
-  } catch (err: any) {
-    console.warn("Error define post tag:", err);
-    return handleMongoQueryError(res, err, POST_RESOURCE_NAME);
-  }
-};
-
 export const toggleReaction = async (
   req: Request,
   res: Response,
@@ -216,6 +207,23 @@ function getReaction(
     }
   }
 }
+async function defineTagWithLLM(question: string, post_id: string) {
+  try {
+    const input = process.env.TAG_STRING + " " + process.env.TAG_LIST + "\n the question: \n" + question
+    const ai_Res = await getGeminiTagResponse(input)
+    console.log(ai_Res)
+    const updatedPost: IPost | null = await Post.findByIdAndUpdate(
+      post_id,
+      {
+        tag: ai_Res
+      },
+      { new: true, runValidators: true }
+    );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export default {
   getPosts,
   saveNewPost,

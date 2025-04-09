@@ -46,8 +46,8 @@ const postSchema = new Schema<IPost>({
   },
   tag: {
     type: String,
-    required: false,
-  },
+    required: false
+  }
 });
 
 export const POST_RESOURCE_NAME = "Post";
