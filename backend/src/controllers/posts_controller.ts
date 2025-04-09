@@ -3,7 +3,7 @@ import { handleMongoQueryError } from "../db/db";
 import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 import mongoose from "mongoose";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
-import { getGeminiResponse, getFalconResponse, getMistralResponse, getGeminiTagResponse } from "../services/aiService";
+import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -46,6 +46,7 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
       imageUrl,
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
+
     defineTagWithLLM(savedPost.content, String(savedPost._id))
     triggerAIResponses(savedPost.content, String(savedPost._id));
 
@@ -209,18 +210,17 @@ function getReaction(
 }
 async function defineTagWithLLM(question: string, post_id: string) {
   try {
-    const input = process.env.TAG_STRING + " " + process.env.TAG_LIST + "\n the question: \n" + question
-    const ai_Res = await getGeminiTagResponse(input)
-    console.log(ai_Res)
+    const input = `${process.env.TAG_STRING}  ${process.env.TAG_LIST} the question: ${question}`
+    const aiResponse = await getGeminiResponse(input)
     const updatedPost: IPost | null = await Post.findByIdAndUpdate(
       post_id,
       {
-        tag: ai_Res
+        tag: aiResponse
       },
       { new: true, runValidators: true }
     );
   } catch (error) {
-    console.error(error);
+    console.warn("Error defineTagWithLLM in post:", error);
   }
 }
 

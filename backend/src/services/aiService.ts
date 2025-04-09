@@ -71,27 +71,16 @@ export const getMistralResponse = async (input: string, postId: string): Promise
     return response;
 };
 
-export const getGeminiResponse = async (input: string, postId: string): Promise<string> => {
+export const getGeminiResponse = async (input: string, postId?: string): Promise<string> => {
     try {
         const result = await model.generateContent(input);
         const response = result.response.text().trim();
-        console.log("Generated Answer (Gemini 1.5 Flash):", response);
-        await saveAIResponseAsComment(postId, response, process.env.GEMINI_USERID || "");
+        if (postId != null) {
+            await saveAIResponseAsComment(postId, response, process.env.GEMINI_USERID || "");
+        }
         return response;
     } catch (error) {
         console.error("Error fetching AI response:", error);
-        throw error;
-    }
-};
-
-export const getGeminiTagResponse = async (input: string): Promise<string> => {
-    try {
-        const result = await model.generateContent(input);
-        const response = result.response.text().trim();
-        console.log("Generated Answer (Gemini 1.5 Flash) tags:", response);
-        return response;
-    } catch (error) {
-        console.error("Error fetching AI for tag define response:", error);
         throw error;
     }
 };
