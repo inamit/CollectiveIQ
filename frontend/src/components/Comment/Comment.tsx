@@ -1,9 +1,11 @@
 import { useState } from "react";
 import "./Comment.css";
-import { Comment as CommentIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import {
+  Comment as CommentIcon,
+  Delete as DeleteIcon,
+} from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
 import Comment from "../../models/comment";
-import UserAvatar from "../UserAvatar/UserAvatar";
 import AppTextField from "../TextField/TextField";
 import { CommentsService } from "../../services/commentsService";
 import { useUser } from "../../context/userContext.tsx";
@@ -12,13 +14,19 @@ import withReactContent from "sweetalert2-react-content";
 
 const MySwal = withReactContent(Swal);
 import { formatDate } from "../../utils/formatDate.ts";
+import CommentsList from "../CommentsList/CommentsList.tsx";
+import { LoadingState } from "../../services/loadingState.ts";
+import UserDetails from "../UserAvatar/UserDetails.tsx";
 
 interface CommentProps {
   comment: Comment;
   refreshComments: () => void;
 }
 
-export const CommentComponent = ({ comment, refreshComments }: CommentProps) => {
+export const CommentComponent = ({
+  comment,
+  refreshComments,
+}: CommentProps) => {
   const { user, setUser } = useUser();
 
   const handleDeleteComment = (comment_id: string) => {
@@ -48,19 +56,10 @@ export const CommentComponent = ({ comment, refreshComments }: CommentProps) => 
   return (
     <div className="comment-container">
       <div className="comment-header">
-        <UserAvatar user={comment.userId} className="user-avatar" />
-        <div className="comment-details">
-          <Typography
-            variant="body2"
-            sx={{ mb: 2 }}
-            className="comment-username"
-          >
-            {comment.userId?.username}
-          </Typography>
-          <Typography variant="body2" sx={{ mb: 2 }} className="comment-time">
-            {formatDate(comment?.date)}
-          </Typography>
-        </div>
+        <UserDetails
+          user={comment.userId}
+          description={formatDate(comment?.date)}
+        />
       </div>
       <div className="comment-content">
         <Typography variant="body2" sx={{ mb: 2 }} className="comment-text">
@@ -85,11 +84,17 @@ export const CommentComponent = ({ comment, refreshComments }: CommentProps) => 
 
 interface CommentSectionProps {
   comments: Comment[] | undefined;
+  commentsLoadingState?: LoadingState;
   addComment: (content: string) => void;
   refreshComments: () => void;
 }
 
-const CommentSection = ({ comments, addComment, refreshComments }: CommentSectionProps) => {
+const CommentSection = ({
+  comments,
+  addComment,
+  refreshComments,
+  commentsLoadingState,
+}: CommentSectionProps) => {
   const [commentText, setCommentText] = useState("");
   const { user } = useUser();
 
@@ -103,39 +108,69 @@ const CommentSection = ({ comments, addComment, refreshComments }: CommentSectio
   return (
     <div className="comment-section">
       {user && (
-      <div className="add-comment">
-        <AppTextField
-          multiline
-          maxRows={5}
-          label="Add a comment..."
-          slotProps={{ inputLabel: { style: { color: "#fff" } } }}
-          sx={{ "& fieldset": { borderColor: "#ccc" } }}
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-        />
-        <Button
-          onClick={handleAddComment}
-          variant="contained"
-          size="small"
-          startIcon={<CommentIcon />}
-          className="add-comment-button"
-        >
-          Add Comment
-        </Button>
-      </div>
+        <div className="add-comment">
+          <AppTextField
+            multiline
+            maxRows={5}
+            label="Add a comment..."
+            slotProps={{ inputLabel: { style: { color: "#fff" } } }}
+            sx={{ "& fieldset": { borderColor: "#ccc" } }}
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+          />
+          <Button
+            onClick={handleAddComment}
+            variant="contained"
+            size="small"
+            startIcon={<CommentIcon />}
+            className="add-comment-button"
+          >
+            Add Comment
+          </Button>
+        </div>
       )}
 
       <div className="comments-list">
-        {(comments?.length ?? 0) > 0 ? (
-          comments?.map((comment: Comment) => (
-            <CommentComponent key={comment._id} comment={comment} refreshComments={refreshComments} />
-          ))
-        ) : (
-          <p>No comments yet</p>
-        )}
+        <CommentsList
+          maxCommentsPerPage={5}
+          comments={buildCommentTree(comments ?? [])}
+          loadingState={commentsLoadingState}
+          showDividers={false}
+          refreshComments={refreshComments}
+        />
       </div>
     </div>
   );
+
+  function buildCommentTree(comments: Comment[]): Comment[] {
+    const commentMap = new Map<string, Comment>();
+    const rootComments: Comment[] = [];
+
+    // Create all comment nodes first
+    comments.forEach((comment) => {
+      commentMap.set(comment._id, { ...comment, replies: [] });
+    });
+
+    // Build the hierarchy
+    comments.forEach((comment) => {
+      const commentNode = commentMap.get(comment._id)!;
+
+      if (comment.parentCommentID) {
+        // This is a reply, add to parent's replies
+        const parent = commentMap.get(comment.parentCommentID);
+        if (parent) {
+          parent.replies!.push(commentNode);
+        } else {
+          rootComments.push(commentNode);
+        }
+      } else {
+        // This is a root comment
+        rootComments.push(commentNode);
+      }
+    });
+
+    return rootComments;
+  }
 };
 
 export default CommentSection;

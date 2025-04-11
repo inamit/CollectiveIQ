@@ -243,6 +243,7 @@ const PostComponent = () => {
               comments={comments}
               addComment={addComment}
               refreshComments={refreshComments}
+              commentsLoadingState={commentsLoadingState}
             />
           </Box>
         );
