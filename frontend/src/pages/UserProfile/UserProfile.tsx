@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import PostsList from "../../components/PostsList/PostsList";
 import "./UserProfile.css";
-import { Box, Button, Tab, Tabs, TextField, Typography } from "@mui/material";
-import UserAvatar from "../../components/UserAvatar/UserAvatar";
+import { Box, Button, Tab, Tabs, TextField } from "@mui/material";
 import usePosts from "../../hooks/usePosts";
 import { useParams } from "react-router";
 import User from "../../models/user";
@@ -14,6 +13,7 @@ import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { ImagePicker } from "../../components/ImagePicker/ImagePicker";
 import ChatBox from "../../components/Chat/ChatBox";
+import UserDetails from "../../components/UserAvatar/UserDetails";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -152,18 +152,13 @@ export default function UserProfile() {
             <div className="userDetails">
               <div className="user">
                 {isEdit ? (
-                  <div className="userDetailsText">
+                  <>
                     <ImagePicker
                       image={image}
                       setImage={setImage}
                       required={false}
                     />
-                  </div>
-                ) : (
-                  <UserAvatar className="userAvatar" user={selectedUser!} />
-                )}
-                <div className="userDetailsText">
-                  {isEdit ? (
+
                     <TextField
                       value={username}
                       onChange={handleInputChange}
@@ -176,22 +171,21 @@ export default function UserProfile() {
                         },
                       }}
                     />
-                  ) : (
-                    <div>
-                      <Typography variant="h3" color="white">
-                        {selectedUser?.username}
-                      </Typography>
-                      <Typography variant="h6" color="white">
-                        {selectedUser?.email}
-                      </Typography>
-                    </div>
-                  )}
-                  <span>
-                    {selectedUser?.posts
-                      ? `${selectedUser?.posts?.length} questions`
-                      : ""}
-                  </span>
-                </div>
+                  </>
+                ) : (
+                  <UserDetails
+                    user={selectedUser}
+                    description={selectedUser?.email}
+                    userNameTextVariant="h3"
+                    descriptionTextVariant="h6"
+                    avatarSize={"128px"}
+                  />
+                )}
+                <span>
+                  {selectedUser?.posts
+                    ? `${selectedUser?.posts?.length} questions`
+                    : ""}
+                </span>
               </div>
 
               {(!userId || user?._id === userId) && (
@@ -237,11 +231,7 @@ export default function UserProfile() {
           </CustomTabPanel>
           {user && userId && user._id !== userId && (
             <CustomTabPanel value={selectedTab} index={2}>
-              <ChatBox
-                user={user}
-                senderId={user._id}
-                receiverId={userId}
-              />
+              <ChatBox user={user} senderId={user._id} receiverId={userId} />
             </CustomTabPanel>
           )}
         </div>

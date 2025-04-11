@@ -34,13 +34,16 @@ function stringAvatar(name?: string) {
 export default function UserAvatar({
   user,
   className,
+  size = "40px",
 }: {
   user?: User;
   className?: string;
+  size?: string | number;
 }) {
   return (
     <Avatar
       className={className}
+      style={{ width: size, height: size }}
       src={user?.avatarUrl}
       {...stringAvatar(user?.username)}
     ></Avatar>
