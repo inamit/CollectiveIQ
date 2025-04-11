@@ -50,6 +50,7 @@ const saveNewComment = async (req: Request, res: Response): Promise<any> => {
 
     const comment = new Comment({
       postID: post_id,
+      parentCommentID: req.body.parentCommentID,
       content: req.body.content,
       userId: req.params.userId,
       date: new Date(),

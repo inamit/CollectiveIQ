@@ -25,6 +25,10 @@ import authMiddleware from "../middleware/auth/authMiddleware";
  *         type: string
  *         minLength: 24
  *         maxLength: 24
+ *       parentCommentID:
+ *         type: string
+ *         minLength: 24
+ *         maxLength: 24
  *       content:
  *         type: string
  *       userId:
@@ -38,6 +42,8 @@ import authMiddleware from "../middleware/auth/authMiddleware";
  *       - userId
  *     properties:
  *       content:
+ *         type: string
+ *       parentCommentID:
  *         type: string
  *  requestBodies:
  *      Comment:
@@ -203,7 +209,11 @@ router.get("/by_user", commentsController.getCommentsByUser);
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.put("/:comment_id", authMiddleware, commentsController.updateCommentById);
+router.put(
+  "/:comment_id",
+  authMiddleware,
+  commentsController.updateCommentById
+);
 
 /**
  * @swagger
@@ -242,6 +252,10 @@ router.put("/:comment_id", authMiddleware, commentsController.updateCommentById)
  *             schema:
  *               $ref: '#/components/schemas/UnexpectedError'
  */
-router.delete("/:comment_id", authMiddleware, commentsController.deleteCommentById);
+router.delete(
+  "/:comment_id",
+  authMiddleware,
+  commentsController.deleteCommentById
+);
 
 export default router;
