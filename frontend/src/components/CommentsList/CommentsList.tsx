@@ -64,13 +64,14 @@ export default function CommentsList({
                 refreshComments={refreshComments}
               />
             </ListItem>
-            {showDividers ?? <Divider />}
+            {showDividers && <Divider />}
 
             {comment.replies && comment.replies.length > 0 && (
               <CommentsList
                 comments={comment.replies}
                 maxCommentsPerPage={maxCommentsPerPage}
                 level={level + 1}
+                showDividers={showDividers}
               />
             )}
           </div>
