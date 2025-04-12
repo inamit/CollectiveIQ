@@ -4,6 +4,7 @@ import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 import mongoose from "mongoose";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
 import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
+import {toggleReaction} from "./likes_controller";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -147,67 +148,13 @@ const saveImage = (req: Request, res: Response): void => {
 };
 
 const likePost = async (req: Request, res: Response): Promise<any> => {
-  return toggleReaction(req, res, "likes");
+  return toggleReaction(req, res, "likes", Post);
 };
 
 const dislikePost = async (req: Request, res: Response): Promise<any> => {
-  return toggleReaction(req, res, "dislikes");
+  return toggleReaction(req, res, "dislikes", Post);
 };
 
-export const toggleReaction = async (
-  req: Request,
-  res: Response,
-  reactionType: "likes" | "dislikes"
-) => {
-  const userId = req.params.userId;
-  const postId = req.params.postId;
-
-  try {
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-    getReaction(reactionType, post, userId);
-
-    await post.save();
-
-    res.status(200).json({
-      message: `${reactionType} toggled successfully.`,
-      likesAmount: post.likes?.length,
-      dislikesAmount: post.dislikes?.length,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
-function getReaction(
-  reactionType: "likes" | "dislikes",
-  post: IPost,
-  userId: string
-) {
-  const currentReactionArray =
-    reactionType === "likes" ? post.likes : post.dislikes;
-  const oppositeReactionArray =
-    reactionType === "likes" ? post.dislikes : post.likes;
-
-  if (currentReactionArray) {
-    const alreadyReacted: boolean = currentReactionArray.some(
-      (id) => String(id) === String(userId)
-    );
-    if (alreadyReacted) {
-      post[reactionType] = currentReactionArray.filter(
-        (id) => !id.equals(userId)
-      );
-    } else {
-      const userObjectId = new mongoose.Types.ObjectId(userId);
-      currentReactionArray.push(userObjectId);
-      post[reactionType === "likes" ? "dislikes" : "likes"] =
-        oppositeReactionArray?.filter((id) => !id.equals(userId));
-    }
-  }
-}
 async function defineTagWithLLM(question: string, post_id: string) {
   try {
     const input = `${process.env.TAG_STRING}  ${process.env.TAG_LIST} the question: ${question}`
