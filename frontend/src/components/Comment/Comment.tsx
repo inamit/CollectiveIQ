@@ -62,7 +62,7 @@ export const CommentComponent = ({ comment, refreshComments }: CommentProps) => 
 
       refreshComments();
     } catch (error) {
-      Swal.fire("AI Response", "Failed", "error");
+      Swal.fire("AI Response", "Failed to fetch response", "error");
     }
   };
 
