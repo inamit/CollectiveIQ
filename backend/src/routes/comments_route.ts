@@ -244,4 +244,70 @@ router.put("/:comment_id", authMiddleware, commentsController.updateCommentById)
  */
 router.delete("/:comment_id", authMiddleware, commentsController.deleteCommentById);
 
+/**
+ * @swagger
+ * paths:
+ *  /comments/{commentId}/like:
+ *   post:
+ *     summary: Like or unlike a comment
+ *     tags:
+ *      - Comment
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *      content:
+ *        multipart/form-data:
+ *          schema:
+ *            allOf:
+ *              - $ref: '#/components/schemas/CommentInput'
+ *              - required:
+ *                  - commentId
+ *              - properties:
+ *                  commentId:
+ *                    type: string
+ *     responses:
+ *       200:
+ *         description: like to a comment uploaded successfully
+ *       500:
+ *         description: failed to upload
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ */
+router.post("/:itemId/like", authMiddleware, commentsController.likeComment);
+
+/**
+ * @swagger
+ * paths:
+ *  /comments/{commentId}/dislike:
+ *   post:
+ *     summary: Dislike or un-dislike a comment
+ *     tags:
+ *      - Comment
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *      content:
+ *        multipart/form-data:
+ *          schema:
+ *            allOf:
+ *              - $ref: '#/components/schemas/CommentInput'
+ *              - required:
+ *                  - commentId
+ *              - properties:
+ *                  commentId:
+ *                    type: string
+ *     responses:
+ *       200:
+ *         description: dislike to a comment uploaded successfully
+ *       500:
+ *         description: failed to upload
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ */
+router.post("/:itemId/dislike", authMiddleware, commentsController.dislikeComment);
+
 export default router;
