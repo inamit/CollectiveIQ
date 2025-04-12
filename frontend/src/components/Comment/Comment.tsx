@@ -105,6 +105,18 @@ export const CommentComponent = ({ comment, refreshComments }: CommentProps) => 
       </span>
             </IconButton>
           </div>
+            {user?._id === comment.userId?._id && (
+                <Button
+                    onClick={() => handleDeleteComment(comment._id)}
+                    variant="outlined"
+                    size="small"
+                    color="error"
+                    className="delete-comment-button"
+                    startIcon={<DeleteIcon />}
+                >
+                    Delete
+                </Button>
+            )}
         </div>
       </div>
     </div>
