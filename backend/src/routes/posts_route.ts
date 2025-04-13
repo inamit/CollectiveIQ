@@ -315,7 +315,7 @@ router.post(
  *            schema:
  *              $ref: '#/components/schemas/Error'
  */
-router.post("/:postId/like", authMiddleware, postsController.likePost);
+router.post("/:itemId/like", authMiddleware, postsController.likePost);
 
 /**
  * @swagger
@@ -348,5 +348,5 @@ router.post("/:postId/like", authMiddleware, postsController.likePost);
  *            schema:
  *              $ref: '#/components/schemas/Error'
  */
-router.post("/:postId/dislike", authMiddleware, postsController.dislikePost);
+router.post("/:itemId/dislike", authMiddleware, postsController.dislikePost);
 export default router;

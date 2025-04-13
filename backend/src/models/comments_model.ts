@@ -1,10 +1,11 @@
 import mongoose, { Schema, Types } from "mongoose";
 import { USER_RESOURCE_NAME } from "./users_model";
 import { POST_RESOURCE_NAME } from "./posts_model";
+import {Likeable} from "./likeable";
 
 export const COMMENT_RESOURCE_NAME = "Comment";
 
-export interface IComment {
+export interface IComment extends Likeable {
   _id: Types.ObjectId;
   postID: Types.ObjectId;
   parentCommentID?: Types.ObjectId;
@@ -35,6 +36,16 @@ const commentSchema = new Schema<IComment>({
   date: {
     type: Date,
     default: new Date(),
+  },
+  likes: {
+    type: [Schema.Types.ObjectId],
+    default: [],
+    ref: USER_RESOURCE_NAME,
+  },
+  dislikes: {
+    type: [Schema.Types.ObjectId],
+    default: [],
+    ref: USER_RESOURCE_NAME,
   },
 });
 

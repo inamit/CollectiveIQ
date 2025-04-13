@@ -5,6 +5,7 @@ import Comment, {
   COMMENT_RESOURCE_NAME,
   IComment,
 } from "../models/comments_model";
+import {toggleReaction} from "./likes_controller";
 
 const getComments = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -119,11 +120,19 @@ const deleteCommentById = async (req: Request, res: Response): Promise<any> => {
     return handleMongoQueryError(res, err);
   }
 };
+const likeComment = async (req: Request, res: Response): Promise<any> => {
+  return toggleReaction(req, res, "likes", Comment);
+};
 
+const dislikeComment = async (req: Request, res: Response): Promise<any> => {
+  return toggleReaction(req, res, "dislikes", Comment);
+};
 export default {
   getComments,
   saveNewComment,
   updateCommentById,
   deleteCommentById,
   getCommentsByUser,
+  likeComment,
+  dislikeComment
 };

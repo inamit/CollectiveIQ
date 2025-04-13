@@ -3,8 +3,10 @@ import "./Comment.css";
 import {
   Comment as CommentIcon,
   Delete as DeleteIcon,
+  ThumbUp as ThumbUpIcon,
+  ThumbDown as ThumbDownIcon,
 } from "@mui/icons-material";
-import { Button, Typography } from "@mui/material";
+import { Button, Typography, IconButton } from "@mui/material";
 import Comment from "../../models/comment";
 import AppTextField from "../TextField/TextField";
 import { CommentsService } from "../../services/commentsService";
@@ -52,7 +54,21 @@ export const CommentComponent = ({
       }
     });
   };
+  const handleReaction = (type: "like" | "dislike") => {
+    const commentService = new CommentsService(user!, setUser);
+    const { request } =
+      type === "like"
+        ? commentService.like(comment._id)
+        : commentService.dislike(comment._id);
 
+    request
+      .then(() => {
+        refreshComments(); // reload with new counts
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   return (
     <div className="comment-container">
       <div className="comment-header">
@@ -65,18 +81,50 @@ export const CommentComponent = ({
         <Typography variant="body2" sx={{ mb: 2 }} className="comment-text">
           {comment.content}
         </Typography>
-        {user?._id === comment.userId?._id && (
-          <Button
-            onClick={() => handleDeleteComment(comment._id)}
-            variant="outlined"
-            size="small"
-            color="error"
-            className="delete-comment-button"
-            startIcon={<DeleteIcon />}
-          >
-            Delete Comment
-          </Button>
-        )}
+        <div className="comment-footer">
+          <div className="left-actions">
+            <IconButton
+              size="small"
+              color={
+                comment.likes?.includes(user?._id as string)
+                  ? "primary"
+                  : "default"
+              }
+              onClick={() => handleReaction("like")}
+            >
+              <ThumbUpIcon fontSize="small" />
+              <span style={{ marginLeft: "4px", fontSize: "0.8rem" }}>
+                {comment.likes?.length || 0}
+              </span>
+            </IconButton>
+            <IconButton
+              size="small"
+              color={
+                comment.dislikes?.includes(user?._id as string)
+                  ? "error"
+                  : "default"
+              }
+              onClick={() => handleReaction("dislike")}
+            >
+              <ThumbDownIcon fontSize="small" />
+              <span style={{ marginLeft: "4px", fontSize: "0.8rem" }}>
+                {comment.dislikes?.length || 0}
+              </span>
+            </IconButton>
+          </div>
+          {user?._id === comment.userId?._id && (
+            <Button
+              onClick={() => handleDeleteComment(comment._id)}
+              variant="outlined"
+              size="small"
+              color="error"
+              className="delete-comment-button"
+              startIcon={<DeleteIcon />}
+            >
+              Delete
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
