@@ -146,17 +146,14 @@ const CommentSection = ({
     const commentMap = new Map<string, Comment>();
     const rootComments: Comment[] = [];
 
-    // Create all comment nodes first
     comments.forEach((comment) => {
       commentMap.set(comment._id, { ...comment, replies: [] });
     });
 
-    // Build the hierarchy
     comments.forEach((comment) => {
       const commentNode = commentMap.get(comment._id)!;
 
       if (comment.parentCommentID) {
-        // This is a reply, add to parent's replies
         const parent = commentMap.get(comment.parentCommentID);
         if (parent) {
           parent.replies!.push(commentNode);
@@ -164,7 +161,6 @@ const CommentSection = ({
           rootComments.push(commentNode);
         }
       } else {
-        // This is a root comment
         rootComments.push(commentNode);
       }
     });
