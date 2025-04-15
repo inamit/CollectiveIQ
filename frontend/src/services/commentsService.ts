@@ -72,4 +72,29 @@ export class CommentsService {
 
     return { request, cancel: () => controller.abort() };
   }
+  like(commentId: string) {
+    const controller = new AbortController();
+    let request = this.httpClient.post<{likesAmount: number, dislikesAmount: number}>(
+        `${config.backendURL}/comments/${commentId}/like`,
+        {},
+        {
+          signal: controller.signal,
+        }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
+
+  dislike(commentId: string) {
+    const controller = new AbortController();
+    let request = this.httpClient.post<{likesAmount: number, dislikesAmount: number}>(
+        `${config.backendURL}/comments/${commentId}/dislike`,
+        {},
+        {
+          signal: controller.signal,
+        }
+    );
+
+    return { request, cancel: () => controller.abort() };
+  }
 }

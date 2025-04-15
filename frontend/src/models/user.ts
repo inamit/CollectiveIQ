@@ -8,4 +8,5 @@ export default interface User {
   posts?: Post[];
   accessToken?: string;
   refreshToken?: string;
+  isAI?: boolean;
 }

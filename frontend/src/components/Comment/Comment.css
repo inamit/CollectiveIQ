@@ -48,6 +48,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 8px;
+  cursor: pointer;
 }
 
 .comment-avatar {
@@ -59,7 +60,7 @@
 
 .comment-details {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px; /* Space between username and timestamp */
 }
 
@@ -70,11 +71,6 @@
   color: #fff; /* Ensure the username is visible */
 }
 
-.comment-time {
-  font-size: 12px;
-  color: #999;
-}
-
 .comment-text {
   font-size: 14px;
   color: #ccc;
@@ -82,3 +78,17 @@
   white-space: pre-line; /* Ensures line breaks are respected */
   text-align: left; /* Aligns the comment text to the left */
 }
+
+.comment-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.left-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+

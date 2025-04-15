@@ -14,12 +14,18 @@ interface CommentProps {
   comments: Comment[];
   maxCommentsPerPage: number;
   loadingState?: LoadingState;
+  level?: number;
+  showDividers?: boolean;
+  refreshComments?: () => void;
 }
 
 export default function CommentsList({
   comments,
   maxCommentsPerPage,
   loadingState,
+  level = 0,
+  showDividers = true,
+  refreshComments = () => {},
 }: CommentProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
@@ -44,18 +50,30 @@ export default function CommentsList({
   }
 
   return (
-    <>
-      {paginatedComments.length === 0 && <div>No comments found</div>}
+    <div style={{ paddingLeft: `${level * 20}px` }}>
+      {paginatedComments.length === 0 && <div>No comments yet</div>}
       <List className="comments-list">
         {paginatedComments[currentPage - 1]?.map((comment) => (
           <div key={comment._id}>
             <ListItem
-              style={{ cursor: "pointer" }}
               onClick={() => navigate(`${routes.POST}/${comment.postID}`)}
             >
-              <CommentComponent key={comment._id} comment={comment} refreshComments={() =>{}} />
+              <CommentComponent
+                key={comment._id}
+                comment={comment}
+                refreshComments={refreshComments}
+              />
             </ListItem>
-            <Divider />
+            {showDividers && <Divider />}
+
+            {comment.replies && comment.replies.length > 0 && (
+              <CommentsList
+                comments={comment.replies}
+                maxCommentsPerPage={maxCommentsPerPage}
+                level={level + 1}
+                showDividers={showDividers}
+              />
+            )}
           </div>
         ))}
       </List>
@@ -70,6 +88,6 @@ export default function CommentsList({
           />
         </div>
       )}
-    </>
+    </div>
   );
 }

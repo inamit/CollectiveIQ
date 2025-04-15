@@ -8,15 +8,9 @@
 
 .user {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
   margin-right: 16px;
-}
-
-.userAvatar {
-  width: 128px !important;
-  height: 128px !important;
-  min-height: 128px;
 }
 
 .userProfileContainer {
