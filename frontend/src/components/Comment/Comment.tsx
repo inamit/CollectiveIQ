@@ -13,6 +13,8 @@ import { CommentsService } from "../../services/commentsService";
 import { useUser } from "../../context/userContext.tsx";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import axios from "axios";
+import config from "../../config.json";
 
 const MySwal = withReactContent(Swal);
 import { formatDate } from "../../utils/formatDate.ts";
@@ -63,12 +65,33 @@ export const CommentComponent = ({
 
     request
       .then(() => {
-        refreshComments(); // reload with new counts
+        refreshComments();
       })
       .catch((err) => {
         console.error(err);
       });
   };
+
+    const handleAIRequest = async (route: string) => {
+    try {
+      const response = await axios.post(
+        `${config.backendURL}/ai/${route}`,
+        {
+          input: comment.content,
+        },
+        {
+          params: { post_id: comment.postID },
+        }
+      );
+      Swal.fire("AI Response", "Success", "success");
+
+      refreshComments();
+    } catch (error) {
+      console.error(error);
+      Swal.fire("AI Response", "Failed to fetch response", "error");
+    }
+  };
+  
   return (
     <div className="comment-container">
       <div className="comment-header">
@@ -125,6 +148,35 @@ export const CommentComponent = ({
             </Button>
           )}
         </div>
+        <div className="ai-buttons" style={{ display: "flex", gap: "10px" }}>
+          <Button
+            onClick={() => handleAIRequest("gemini-response")}
+            variant="contained"
+            size="small"
+            color="secondary"
+            className="ai-button"
+          >
+            Challenge Gemini
+          </Button>
+          <Button
+            onClick={() => handleAIRequest("falcon-response")}
+            variant="contained"
+            size="small"
+            color="secondary"
+            className="ai-button"
+          >
+            Challenge Falcon
+          </Button>
+          <Button
+            onClick={() => handleAIRequest("mistral-response")}
+            variant="contained"
+            size="small"
+            color="secondary"
+            className="ai-button"
+          >
+            Challenge Mistral
+          </Button>
+      </div>
       </div>
     </div>
   );
@@ -218,3 +270,8 @@ const CommentSection = ({
 };
 
 export default CommentSection;
+
+
+
+
+
