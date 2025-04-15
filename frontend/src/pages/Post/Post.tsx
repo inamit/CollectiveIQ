@@ -21,7 +21,6 @@ import { useUser } from "../../context/userContext.tsx";
 import usePost from "../../hooks/usePost.ts";
 import Post from "../../models/post.ts";
 import { CommentsService } from "../../services/commentsService.ts";
-import UserAvatar from "../../components/UserAvatar/UserAvatar.tsx";
 import { toast } from "react-toastify";
 import AppTextField from "../../components/TextField/TextField.tsx";
 import { PostsService } from "../../services/postsService.ts";
@@ -33,6 +32,7 @@ import { formatDate } from "../../utils/formatDate.ts";
 import Markdown from "../../components/Markdown/Markdown.tsx";
 import { LoadingState } from "../../services/loadingState.ts";
 import { StatusCodes } from "http-status-codes";
+import UserDetails from "../../components/UserAvatar/UserDetails.tsx";
 
 const PostComponent = () => {
   const { postId } = useParams();
@@ -243,6 +243,7 @@ const PostComponent = () => {
               comments={comments}
               addComment={addComment}
               refreshComments={refreshComments}
+              commentsLoadingState={commentsLoadingState}
             />
           </Box>
         );
@@ -290,23 +291,10 @@ const PostComponent = () => {
         return <></>;
       case LoadingState.LOADED:
         return (
-          <Box
-            display="flex"
-            alignItems="center"
-            mb={2}
-            className="user-details"
-            onClick={() =>
-              navigate(`${routes.USER_PROFILE}/${post?.userId?._id}`)
-            }
-          >
-            <UserAvatar user={post?.userId} className="user-avatar" />
-            <Box display="flex" alignItems="start" flexDirection="column">
-              <Typography variant="body1">{post?.userId?.username}</Typography>
-              <Typography variant="caption">
-                {formatDate(post?.date)}
-              </Typography>
-            </Box>
-          </Box>
+          <UserDetails
+            user={post?.userId}
+            description={formatDate(post?.date)}
+          />
         );
       default:
         return (

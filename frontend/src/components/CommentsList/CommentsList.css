@@ -1,8 +1,4 @@
-  .comments-list {
-    margin-top: 16px;
-  }
-
-  .pagination {
-    display: flex;
-    align-items: center;
-  }
+.pagination {
+  display: flex;
+  align-items: center;
+}
