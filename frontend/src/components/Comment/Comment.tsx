@@ -92,7 +92,10 @@ export const CommentComponent = ({
     try {
       const response = await commentService.httpClient.post(
         `${config.backendURL}/ai/${selectedAI}`,
-        { input: comment.content },
+        { 
+          input: comment.content,  
+          parentCommentID: comment._id 
+        },
         {
           params: { post_id: comment.postID },
           signal: controller.signal,
@@ -175,15 +178,17 @@ export const CommentComponent = ({
               <MenuItem value="mistral-response">Mistral</MenuItem>
             </Select>
           </FormControl>
-          <Button
-            className="ai-button"
-            onClick={handleAIRequest}
-            variant="contained"
-            size="small"
-            color="secondary"
-          >
-            Ask the AI
-          </Button>
+          <div className="ai-button-container">
+            <Button
+              className="ai-button"
+              onClick={handleAIRequest}
+              variant="contained"
+              size="small"
+              color="secondary"
+            >
+              Challenge me
+            </Button>
+          </div>
         </div>
       </div>
     </div>

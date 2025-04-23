@@ -94,7 +94,8 @@
 
 .ai-dropdown {
   margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+}
+
+.ai-button-container{
+  margin-top: 10px;
 }
