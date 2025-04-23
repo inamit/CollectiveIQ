@@ -67,7 +67,7 @@ export const getFalconResponse = async (input: string, postId: string, parentCom
 
 export const getMistralResponse = async (input: string, postId: string, parentCommentID?: string): Promise<string> => {
     const formattedInput = `# Question: ${input}\n# Answer:`;
-    const response = await fetchHuggingFaceResponse("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1", formattedInput);
+    const response = await fetchHuggingFaceResponse(process.env.MISTRAL_API_URL || "", formattedInput);
     await saveAIResponseAsComment(postId, response, process.env.MISTRAL_USERID || "", parentCommentID || "");
     return response;
 };
