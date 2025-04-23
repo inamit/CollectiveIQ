@@ -98,7 +98,7 @@ export const CommentComponent = ({
           signal: controller.signal,
         }
       );
-      Swal.fire("AI Response", response.data.response, "success");
+      Swal.fire("AI Response", "success", "success");
       refreshComments();
     } catch (error) {
       console.error(error);
