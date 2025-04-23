@@ -61,22 +61,22 @@
 .comment-details {
   display: flex;
   align-items: flex-start;
-  gap: 8px; /* Space between username and timestamp */
+  gap: 8px;
 }
 
 .comment-username {
   font-weight: bold;
   font-size: 14px;
   margin: 0;
-  color: #fff; /* Ensure the username is visible */
+  color: #fff;
 }
 
 .comment-text {
   font-size: 14px;
   color: #ccc;
   margin-top: 10px;
-  white-space: pre-line; /* Ensures line breaks are respected */
-  text-align: left; /* Aligns the comment text to the left */
+  white-space: pre-line;
+  text-align: left;
 }
 
 .comment-footer {

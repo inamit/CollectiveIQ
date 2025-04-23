@@ -86,7 +86,7 @@ export const CommentComponent = ({
       return;
     }
   
-    const commentService = new CommentsService(user!, setUser); // Use the same CommentsService instance
+    const commentService = new CommentsService(user!, setUser);
     const controller = new AbortController();
   
     try {
