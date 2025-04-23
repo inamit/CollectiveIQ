@@ -101,7 +101,7 @@ export const CommentComponent = ({
       Swal.fire("AI Response", response.data.response, "success");
       refreshComments();
     } catch (error) {
-      console.error(`Error calling ${selectedAI}:`, error);
+      console.error(error);
       Swal.fire("AI Response", "Failed to fetch response", "error");
     }
   };
