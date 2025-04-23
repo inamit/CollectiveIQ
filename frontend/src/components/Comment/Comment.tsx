@@ -6,14 +6,21 @@ import {
   ThumbUp as ThumbUpIcon,
   ThumbDown as ThumbDownIcon,
 } from "@mui/icons-material";
-import { Button, Typography, IconButton } from "@mui/material";
+import {
+  Button,
+  Typography,
+  IconButton,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 import Comment from "../../models/comment";
 import AppTextField from "../TextField/TextField";
 import { CommentsService } from "../../services/commentsService";
 import { useUser } from "../../context/userContext.tsx";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import axios from "axios";
 import config from "../../config.json";
 
 const MySwal = withReactContent(Swal);
@@ -32,6 +39,7 @@ export const CommentComponent = ({
   refreshComments,
 }: CommentProps) => {
   const { user, setUser } = useUser();
+  const [selectedAI, setSelectedAI] = useState("");
 
   const handleDeleteComment = (comment_id: string) => {
     const commentService = new CommentsService(user!, setUser);
@@ -72,21 +80,28 @@ export const CommentComponent = ({
       });
   };
 
-    const handleAIRequest = async (route: string) => {
+  const handleAIRequest = async () => {
+    if (!selectedAI) {
+      Swal.fire("Error", "Please select an AI model.", "error");
+      return;
+    }
+  
+    const commentService = new CommentsService(user!, setUser); // Use the same CommentsService instance
+    const controller = new AbortController();
+  
     try {
-      const response = await axios.post(
-        `${config.backendURL}/ai/${route}`,
-        {
-          input: comment.content,
-        },
+      const response = await commentService.httpClient.post(
+        `${config.backendURL}/ai/${selectedAI}`,
+        { input: comment.content },
         {
           params: { post_id: comment.postID },
+          signal: controller.signal,
         }
       );
-      Swal.fire("AI Response", "Success", "success");
-
+      Swal.fire("AI Response", response.data.response, "success");
       refreshComments();
     } catch (error) {
+      console.error(`Error calling ${selectedAI}:`, error);
       Swal.fire("AI Response", "Failed to fetch response", "error");
     }
   };
@@ -147,35 +162,29 @@ export const CommentComponent = ({
             </Button>
           )}
         </div>
-        <div className="ai-buttons" style={{ display: "flex", gap: "10px" }}>
+        <div className="ai-dropdown">
+          <FormControl fullWidth size="small">
+            <InputLabel>Select AI Model</InputLabel>
+            <Select
+              value={selectedAI}
+              onChange={(e) => setSelectedAI(e.target.value)}
+              label="Select AI Model"
+            >
+              <MenuItem value="gemini-response">Gemini</MenuItem>
+              <MenuItem value="falcon-response">Falcon</MenuItem>
+              <MenuItem value="mistral-response">Mistral</MenuItem>
+            </Select>
+          </FormControl>
           <Button
-            onClick={() => handleAIRequest("gemini-response")}
+            className="ai-button"
+            onClick={handleAIRequest}
             variant="contained"
             size="small"
             color="secondary"
-            className="ai-button"
           >
-            Challenge Gemini
+            Ask the AI
           </Button>
-          <Button
-            onClick={() => handleAIRequest("falcon-response")}
-            variant="contained"
-            size="small"
-            color="secondary"
-            className="ai-button"
-          >
-            Challenge Falcon
-          </Button>
-          <Button
-            onClick={() => handleAIRequest("mistral-response")}
-            variant="contained"
-            size="small"
-            color="secondary"
-            className="ai-button"
-          >
-            Challenge Mistral
-          </Button>
-      </div>
+        </div>
       </div>
     </div>
   );
