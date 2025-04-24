@@ -36,7 +36,7 @@ const fetchHuggingFaceResponse = async (url: string, input: string): Promise<str
     }
 };
 
-const saveAIResponseAsComment = async (postId: string, content: string, modelId: string): Promise<void> => {
+const saveAIResponseAsComment = async (postId: string, content: string, modelId: string, parentCommentID: string): Promise<void> => {
     try {
         const postExists = await Post.exists({ _id: postId });
         if (!postExists) {
@@ -45,6 +45,7 @@ const saveAIResponseAsComment = async (postId: string, content: string, modelId:
 
         const comment = new Comment({
             postID: postId,
+            parentCommentID: parentCommentID,
             content,
             userId: modelId,
             date: new Date(),
@@ -58,25 +59,25 @@ const saveAIResponseAsComment = async (postId: string, content: string, modelId:
     }
 };
 
-export const getFalconResponse = async (input: string, postId: string): Promise<string> => {
+export const getFalconResponse = async (input: string, postId: string, parentCommentID?: string): Promise<string> => {
     const response = await fetchHuggingFaceResponse(process.env.FALCON_API_URL || "", input);
-    await saveAIResponseAsComment(postId, response, process.env.FALCON_USERID || "");
+    await saveAIResponseAsComment(postId, response, process.env.FALCON_USERID || "", parentCommentID || "");
     return response;
 };
 
-export const getMistralResponse = async (input: string, postId: string): Promise<string> => {
+export const getMistralResponse = async (input: string, postId: string, parentCommentID?: string): Promise<string> => {
     const formattedInput = `# Question: ${input}\n# Answer:`;
     const response = await fetchHuggingFaceResponse(process.env.MISTRAL_API_URL || "", formattedInput);
-    await saveAIResponseAsComment(postId, response, process.env.MISTRAL_USERID || "");
+    await saveAIResponseAsComment(postId, response, process.env.MISTRAL_USERID || "", parentCommentID || "");
     return response;
 };
 
-export const getGeminiResponse = async (input: string, postId?: string): Promise<string> => {
+export const getGeminiResponse = async (input: string, postId?: string, parentCommentID?: string): Promise<string> => {
     try {
         const result = await model.generateContent(input);
         const response = result.response.text().trim();
         if (postId != null) {
-            await saveAIResponseAsComment(postId, response, process.env.GEMINI_USERID || "");
+            await saveAIResponseAsComment(postId, response, process.env.GEMINI_USERID || "", parentCommentID || "");
         }
         return response;
     } catch (error) {

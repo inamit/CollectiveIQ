@@ -6,13 +6,22 @@ import {
   ThumbUp as ThumbUpIcon,
   ThumbDown as ThumbDownIcon,
 } from "@mui/icons-material";
-import { Button, Typography, IconButton } from "@mui/material";
+import {
+  Button,
+  Typography,
+  IconButton,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 import Comment from "../../models/comment";
 import AppTextField from "../TextField/TextField";
 import { CommentsService } from "../../services/commentsService";
 import { useUser } from "../../context/userContext.tsx";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import config from "../../config.json";
 
 const MySwal = withReactContent(Swal);
 import { formatDate } from "../../utils/formatDate.ts";
@@ -30,6 +39,7 @@ export const CommentComponent = ({
   refreshComments,
 }: CommentProps) => {
   const { user, setUser } = useUser();
+  const [selectedAI, setSelectedAI] = useState("");
 
   const handleDeleteComment = (comment_id: string) => {
     const commentService = new CommentsService(user!, setUser);
@@ -63,12 +73,42 @@ export const CommentComponent = ({
 
     request
       .then(() => {
-        refreshComments(); // reload with new counts
+        refreshComments();
       })
       .catch((err) => {
         console.error(err);
       });
   };
+
+  const handleAIRequest = async () => {
+    if (!selectedAI) {
+      Swal.fire("Error", "Please select an AI model.", "error");
+      return;
+    }
+  
+    const commentService = new CommentsService(user!, setUser);
+    const controller = new AbortController();
+  
+    try {
+      const response = await commentService.httpClient.post(
+        `${config.backendURL}/ai/${selectedAI}`,
+        { 
+          input: comment.content,  
+          parentCommentID: comment._id 
+        },
+        {
+          params: { post_id: comment.postID },
+          signal: controller.signal,
+        }
+      );
+      Swal.fire("AI Response", "success", "success");
+      refreshComments();
+    } catch (error) {
+      console.error(error);
+      Swal.fire("AI Response", "Failed to fetch response", "error");
+    }
+  };
+  
   return (
     <div className="comment-container">
       <div className="comment-header">
@@ -83,6 +123,15 @@ export const CommentComponent = ({
         </Typography>
         <div className="comment-footer">
           <div className="left-actions">
+          <Button
+              className="ai-button"
+              onClick={handleAIRequest}
+              variant="contained"
+              size="small"
+              color="secondary"
+            >
+              Challenge me
+            </Button>
             <IconButton
               size="small"
               color={
@@ -124,6 +173,20 @@ export const CommentComponent = ({
               Delete
             </Button>
           )}
+        </div>
+        <div className="ai-dropdown">
+          <FormControl fullWidth size="small">
+            <InputLabel>Select AI Model</InputLabel>
+            <Select
+              value={selectedAI}
+              onChange={(e) => setSelectedAI(e.target.value)}
+              label="Select AI Model"
+            >
+              <MenuItem value="gemini-response">Gemini</MenuItem>
+              <MenuItem value="falcon-response">Falcon</MenuItem>
+              <MenuItem value="mistral-response">Mistral</MenuItem>
+            </Select>
+          </FormControl>
         </div>
       </div>
     </div>
@@ -218,3 +281,8 @@ const CommentSection = ({
 };
 
 export default CommentSection;
+
+
+
+
+
