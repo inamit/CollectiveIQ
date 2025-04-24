@@ -123,6 +123,15 @@ export const CommentComponent = ({
         </Typography>
         <div className="comment-footer">
           <div className="left-actions">
+          <Button
+              className="ai-button"
+              onClick={handleAIRequest}
+              variant="contained"
+              size="small"
+              color="secondary"
+            >
+              Challenge me
+            </Button>
             <IconButton
               size="small"
               color={
@@ -178,17 +187,6 @@ export const CommentComponent = ({
               <MenuItem value="mistral-response">Mistral</MenuItem>
             </Select>
           </FormControl>
-          <div className="ai-button-container">
-            <Button
-              className="ai-button"
-              onClick={handleAIRequest}
-              variant="contained"
-              size="small"
-              color="secondary"
-            >
-              Challenge me
-            </Button>
-          </div>
         </div>
       </div>
     </div>
