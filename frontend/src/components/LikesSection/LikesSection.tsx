@@ -1,5 +1,3 @@
-import "./LikesSection.css";
-
 import { IconButton, Typography } from "@mui/material";
 import {
   ThumbUpAltOutlined as ThumbUpAltOutlinedIcon,
@@ -49,9 +47,9 @@ export const LikesSection = ({
       })
       .catch((err) => {
         if (err.response?.status === StatusCodes.UNAUTHORIZED) {
-          toast.error("You need to be logged in to like a post");
+          toast.error(`You need to be logged in to ${type}`);
         } else {
-          toast.error("Failed to like post");
+          toast.error(`Failed to ${type}`);
         }
         console.error(err);
       });
