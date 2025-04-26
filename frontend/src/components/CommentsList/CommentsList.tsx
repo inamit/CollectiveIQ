@@ -72,6 +72,7 @@ export default function CommentsList({
                 maxCommentsPerPage={maxCommentsPerPage}
                 level={level + 1}
                 showDividers={showDividers}
+                refreshComments={refreshComments}
               />
             )}
           </div>

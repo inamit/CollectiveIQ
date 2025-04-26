@@ -3,13 +3,10 @@ import "./Comment.css";
 import {
   Comment as CommentIcon,
   Delete as DeleteIcon,
-  ThumbUp as ThumbUpIcon,
-  ThumbDown as ThumbDownIcon,
 } from "@mui/icons-material";
 import {
   Button,
   Typography,
-  IconButton,
   MenuItem,
   Select,
   FormControl,
@@ -28,6 +25,7 @@ import { formatDate } from "../../utils/formatDate.ts";
 import CommentsList from "../CommentsList/CommentsList.tsx";
 import { LoadingState } from "../../services/loadingState.ts";
 import UserDetails from "../UserAvatar/UserDetails.tsx";
+import { LikesSection } from "../LikesSection/LikesSection.tsx";
 
 interface CommentProps {
   comment: Comment;
@@ -64,37 +62,22 @@ export const CommentComponent = ({
       }
     });
   };
-  const handleReaction = (type: "like" | "dislike") => {
-    const commentService = new CommentsService(user!, setUser);
-    const { request } =
-      type === "like"
-        ? commentService.like(comment._id)
-        : commentService.dislike(comment._id);
-
-    request
-      .then(() => {
-        refreshComments();
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
 
   const handleAIRequest = async () => {
     if (!selectedAI) {
       Swal.fire("Error", "Please select an AI model.", "error");
       return;
     }
-  
+
     const commentService = new CommentsService(user!, setUser);
     const controller = new AbortController();
-  
+
     try {
-      const response = await commentService.httpClient.post(
+      await commentService.httpClient.post(
         `${config.backendURL}/ai/${selectedAI}`,
-        { 
-          input: comment.content,  
-          parentCommentID: comment._id 
+        {
+          input: comment.content,
+          parentCommentID: comment._id,
         },
         {
           params: { post_id: comment.postID },
@@ -108,7 +91,7 @@ export const CommentComponent = ({
       Swal.fire("AI Response", "Failed to fetch response", "error");
     }
   };
-  
+
   return (
     <div className="comment-container">
       <div className="comment-header">
@@ -123,43 +106,23 @@ export const CommentComponent = ({
         </Typography>
         <div className="comment-footer">
           <div className="left-actions">
-          <Button
-              className="ai-button"
-              onClick={handleAIRequest}
-              variant="contained"
-              size="small"
-              color="secondary"
-            >
-              Challenge me
-            </Button>
-            <IconButton
-              size="small"
-              color={
-                comment.likes?.includes(user?._id as string)
-                  ? "primary"
-                  : "default"
-              }
-              onClick={() => handleReaction("like")}
-            >
-              <ThumbUpIcon fontSize="small" />
-              <span style={{ marginLeft: "4px", fontSize: "0.8rem" }}>
-                {comment.likes?.length || 0}
-              </span>
-            </IconButton>
-            <IconButton
-              size="small"
-              color={
-                comment.dislikes?.includes(user?._id as string)
-                  ? "error"
-                  : "default"
-              }
-              onClick={() => handleReaction("dislike")}
-            >
-              <ThumbDownIcon fontSize="small" />
-              <span style={{ marginLeft: "4px", fontSize: "0.8rem" }}>
-                {comment.dislikes?.length || 0}
-              </span>
-            </IconButton>
+            {user?._id === comment.userId?._id && (
+              <Button
+                className="ai-button"
+                onClick={handleAIRequest}
+                variant="contained"
+                size="small"
+                color="secondary"
+              >
+                Challenge me
+              </Button>
+            )}
+            <LikesSection
+              currentUser={user}
+              likeable={comment}
+              likeableService={new CommentsService(user!, setUser)}
+              refresh={refreshComments}
+            />
           </div>
           {user?._id === comment.userId?._id && (
             <Button
@@ -281,8 +244,3 @@ const CommentSection = ({
 };
 
 export default CommentSection;
-
-
-
-
-

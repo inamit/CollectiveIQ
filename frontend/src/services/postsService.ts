@@ -1,17 +1,11 @@
-import { HttpClientFactory } from "./httpClient";
 import config from "../config.json";
 import Post from "../models/post";
 import User from "../models/user";
-import { AxiosInstance } from "axios";
+import { AbsLikeableService } from "./abslikeableService";
 
-export class PostsService {
-  httpClient: AxiosInstance;
-
+export class PostsService extends AbsLikeableService {
   constructor(user?: User, setUser?: (user: User | null) => void) {
-    const httpClientFactory = new HttpClientFactory(user, setUser);
-    this.httpClient = user
-      ? httpClientFactory.authorizedHttpClient()
-      : httpClientFactory.unauthorizedHttpClient();
+    super("posts", user, setUser);
   }
 
   getPostsByUser(userId: string) {
@@ -99,32 +93,6 @@ export class PostsService {
     const controller = new AbortController();
     let request = this.httpClient.delete<Post>(
       `${config.backendURL}/posts/${postId}`,
-      {
-        signal: controller.signal,
-      }
-    );
-
-    return { request, cancel: () => controller.abort() };
-  }
-
-  like(postId: string) {
-    const controller = new AbortController();
-    let request = this.httpClient.post<{likesAmount: number, dislikesAmount: number}>(
-      `${config.backendURL}/posts/${postId}/like`,
-      {},
-      {
-        signal: controller.signal,
-      }
-    );
-
-    return { request, cancel: () => controller.abort() };
-  }
-
-  dislike(postId: string) {
-    const controller = new AbortController();
-    let request = this.httpClient.post<{likesAmount: number, dislikesAmount: number}>(
-      `${config.backendURL}/posts/${postId}/dislike`,
-      {},
       {
         signal: controller.signal,
       }
