@@ -11,7 +11,7 @@ import {
   Typography,
   IconButton
 } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion";
 import Comment from "../../models/comment";
 import AppTextField from "../TextField/TextField";
 import { CommentsService } from "../../services/commentsService";
@@ -91,6 +91,7 @@ export const CommentComponent = ({
                     params: { post_id: comment.postID },
                 }
             );
+            Swal.fire("AI Response", "Success", "success");
             refreshComments();
         } catch (error) {
             console.error(error);
