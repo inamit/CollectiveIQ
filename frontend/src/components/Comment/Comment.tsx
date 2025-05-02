@@ -221,7 +221,7 @@ export const CommentComponent = ({
                                 height: "40px",
                             }}
                         >
-                            {aiLoading ? "AI is typing......" : "Challenge me"}
+                            {aiLoading ? "AI is thinking......" : "Challenge me"}
                         </Button>
 
                         {user?._id === comment.userId?._id && (
