@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useState} from "react";
 import "./Comment.css";
 import {
     Comment as CommentIcon,
@@ -7,11 +7,11 @@ import {
     Delete as DeleteIcon,
 } from "@mui/icons-material";
 import {
-  Button,
-  Typography,
-  IconButton
+    Button,
+    Typography,
+    IconButton, CircularProgress
 } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion";
+import {motion, AnimatePresence} from "framer-motion"
 import Comment from "../../models/comment";
 import AppTextField from "../TextField/TextField";
 import { CommentsService } from "../../services/commentsService";
@@ -35,8 +35,9 @@ export const CommentComponent = ({
                                      comment,
                                      refreshComments,
                                  }: CommentProps) => {
-    const { user, setUser } = useUser();
+    const {user, setUser} = useUser();
     const [showAIDropdown, setShowAIDropdown] = useState(false);
+    const [aiLoading, setAILoading] = useState(false);
 
     const handleDeleteComment = (comment_id: string) => {
         const commentService = new CommentsService(user!, setUser);
@@ -50,7 +51,7 @@ export const CommentComponent = ({
             confirmButtonText: "Yes, delete it!",
         }).then((result) => {
             if (result.isConfirmed) {
-                const { request } = commentService.deleteComment(comment_id);
+                const {request} = commentService.deleteComment(comment_id);
                 request
                     .then(() => {
                         refreshComments();
@@ -64,7 +65,7 @@ export const CommentComponent = ({
 
     const handleReaction = (type: "like" | "dislike") => {
         const commentService = new CommentsService(user!, setUser);
-        const { request } =
+        const {request} =
             type === "like"
                 ? commentService.like(comment._id)
                 : commentService.dislike(comment._id);
@@ -80,6 +81,8 @@ export const CommentComponent = ({
 
     const handleModelSelect = async (selectedModel: string) => {
         const commentService = new CommentsService(user!, setUser);
+        setAILoading(true);
+
         try {
             const response = await commentService.httpClient.post(
                 `${config.backendURL}/ai/${selectedModel}`,
@@ -88,16 +91,18 @@ export const CommentComponent = ({
                     parentCommentID: comment._id,
                 },
                 {
-                    params: { post_id: comment.postID },
+                    params: {post_id: comment.postID},
                 }
             );
-            Swal.fire("AI Response", "Success", "success");
-            refreshComments();
+            setTimeout(() => {
+                refreshComments();
+            }, 500);
+
         } catch (error) {
             console.error(error);
-            Swal.fire("AI Response", "Failed to fetch response", "error");
         } finally {
             setShowAIDropdown(false);
+            setAILoading(false);
         }
     };
 
@@ -110,7 +115,7 @@ export const CommentComponent = ({
                 />
             </div>
             <div className="comment-content">
-                <Typography variant="body2" sx={{ mb: 2 }} className="comment-text">
+                <Typography variant="body2" sx={{mb: 2}} className="comment-text">
                     {comment.content}
                 </Typography>
                 <div className="comment-footer">
@@ -124,8 +129,8 @@ export const CommentComponent = ({
                             }
                             onClick={() => handleReaction("like")}
                         >
-                            <ThumbUpIcon fontSize="small" />
-                            <span style={{ marginLeft: "4px", fontSize: "0.8rem" }}>
+                            <ThumbUpIcon fontSize="small"/>
+                            <span style={{marginLeft: "4px", fontSize: "0.8rem"}}>
                 {comment.likes?.length || 0}
               </span>
                         </IconButton>
@@ -138,8 +143,8 @@ export const CommentComponent = ({
                             }
                             onClick={() => handleReaction("dislike")}
                         >
-                            <ThumbDownIcon fontSize="small" />
-                            <span style={{ marginLeft: "4px", fontSize: "0.8rem" }}>
+                            <ThumbDownIcon fontSize="small"/>
+                            <span style={{marginLeft: "4px", fontSize: "0.8rem"}}>
                 {comment.dislikes?.length || 0}
               </span>
                         </IconButton>
@@ -157,10 +162,10 @@ export const CommentComponent = ({
                         <AnimatePresence>
                             {showAIDropdown && (
                                 <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    transition={{ duration: 0.2 }}
+                                    initial={{opacity: 0, y: 10}}
+                                    animate={{opacity: 1, y: 0}}
+                                    exit={{opacity: 0, y: 10}}
+                                    transition={{duration: 0.2}}
                                     style={{
                                         position: "absolute",
                                         bottom: "100%",
@@ -174,9 +179,9 @@ export const CommentComponent = ({
                                     }}
                                 >
                                     {[
-                                        { label: "Gemini", value: "gemini-response" },
-                                        { label: "Falcon", value: "falcon-response" },
-                                        { label: "Mistral", value: "mistral-response" },
+                                        {label: "Gemini", value: "gemini-response"},
+                                        {label: "Falcon", value: "falcon-response"},
+                                        {label: "Mistral", value: "mistral-response"},
                                     ].map((model) => (
                                         <Button
                                             key={model.value}
@@ -204,14 +209,21 @@ export const CommentComponent = ({
                             onClick={() => setShowAIDropdown((prev) => !prev)}
                             variant="contained"
                             size="small"
+                            disabled={aiLoading}
+                            startIcon={
+                                aiLoading ? (
+                                    <CircularProgress color="inherit" size={16}/>
+                                ) : undefined
+                            }
                             sx={{
                                 backgroundColor: "primary",
-                                "&:hover": { backgroundColor: "primary" },
+                                "&:hover": {backgroundColor: "primary"},
                                 height: "40px",
                             }}
                         >
-                            Challenge me
+                            {aiLoading ? "AI is typing......" : "Challenge me"}
                         </Button>
+
                         {user?._id === comment.userId?._id && (
                             <Button
                                 onClick={() => handleDeleteComment(comment._id)}
@@ -219,7 +231,7 @@ export const CommentComponent = ({
                                 size="small"
                                 color="error"
                                 className="delete-comment-button"
-                                startIcon={<DeleteIcon />}
+                                startIcon={<DeleteIcon/>}
                             >
                                 Delete
                             </Button>
@@ -227,6 +239,7 @@ export const CommentComponent = ({
                     </div>
                 </div>
             </div>
+
         </div>
     );
 };
@@ -245,7 +258,7 @@ const CommentSection = ({
                             commentsLoadingState,
                         }: CommentSectionProps) => {
     const [commentText, setCommentText] = useState("");
-    const { user } = useUser();
+    const {user} = useUser();
 
     const handleAddComment = () => {
         if (commentText.trim()) {
@@ -262,8 +275,8 @@ const CommentSection = ({
                         multiline
                         maxRows={5}
                         label="Add a comment..."
-                        slotProps={{ inputLabel: { style: { color: "#fff" } } }}
-                        sx={{ "& fieldset": { borderColor: "#ccc" } }}
+                        slotProps={{inputLabel: {style: {color: "#fff"}}}}
+                        sx={{"& fieldset": {borderColor: "#ccc"}}}
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
                     />
@@ -271,7 +284,7 @@ const CommentSection = ({
                         onClick={handleAddComment}
                         variant="contained"
                         size="small"
-                        startIcon={<CommentIcon />}
+                        startIcon={<CommentIcon/>}
                         className="add-comment-button"
                     >
                         Add Comment
@@ -296,7 +309,7 @@ const CommentSection = ({
         const rootComments: Comment[] = [];
 
         comments.forEach((comment) => {
-            commentMap.set(comment._id, { ...comment, replies: [] });
+            commentMap.set(comment._id, {...comment, replies: []});
         });
 
         comments.forEach((comment) => {
