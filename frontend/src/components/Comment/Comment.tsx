@@ -2,16 +2,21 @@ import { useState } from "react";
 import "./Comment.css";
 import {
   Comment as CommentIcon,
+  ThumbUp as ThumbUpIcon,
+  ThumbDown as ThumbDownIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
 import {
   Button,
   Typography,
+  IconButton,
+  CircularProgress,
   MenuItem,
   Select,
   FormControl,
   InputLabel,
 } from "@mui/material";
+import { motion, AnimatePresence } from "framer-motion";
 import Comment from "../../models/comment";
 import AppTextField from "../TextField/TextField";
 import { CommentsService } from "../../services/commentsService";
@@ -19,13 +24,13 @@ import { useUser } from "../../context/userContext.tsx";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import config from "../../config.json";
-
-const MySwal = withReactContent(Swal);
 import { formatDate } from "../../utils/formatDate.ts";
 import CommentsList from "../CommentsList/CommentsList.tsx";
 import { LoadingState } from "../../services/loadingState.ts";
 import UserDetails from "../UserAvatar/UserDetails.tsx";
 import { LikesSection } from "../LikesSection/LikesSection.tsx";
+
+const MySwal = withReactContent(Swal);
 
 interface CommentProps {
   comment: Comment;
@@ -37,7 +42,8 @@ export const CommentComponent = ({
   refreshComments,
 }: CommentProps) => {
   const { user, setUser } = useUser();
-  const [selectedAI, setSelectedAI] = useState("");
+  const [showAIDropdown, setShowAIDropdown] = useState(false);
+  const [aiLoading, setAILoading] = useState(false);
 
   const handleDeleteComment = (comment_id: string) => {
     const commentService = new CommentsService(user!, setUser);
@@ -63,32 +69,29 @@ export const CommentComponent = ({
     });
   };
 
-  const handleAIRequest = async () => {
-    if (!selectedAI) {
-      Swal.fire("Error", "Please select an AI model.", "error");
-      return;
-    }
-
+  const handleModelSelect = async (selectedModel: string) => {
     const commentService = new CommentsService(user!, setUser);
-    const controller = new AbortController();
+    setAILoading(true);
 
     try {
       await commentService.httpClient.post(
-        `${config.backendURL}/ai/${selectedAI}`,
+        `${config.backendURL}/ai/${selectedModel}`,
         {
           input: comment.content,
           parentCommentID: comment._id,
         },
         {
           params: { post_id: comment.postID },
-          signal: controller.signal,
         }
       );
-      Swal.fire("AI Response", "success", "success");
-      refreshComments();
+      setTimeout(() => {
+        refreshComments();
+      }, 500);
     } catch (error) {
       console.error(error);
-      Swal.fire("AI Response", "Failed to fetch response", "error");
+    } finally {
+      setShowAIDropdown(false);
+      setAILoading(false);
     }
   };
 
@@ -106,17 +109,6 @@ export const CommentComponent = ({
         </Typography>
         <div className="comment-footer">
           <div className="left-actions">
-            {user?._id === comment.userId?._id && (
-              <Button
-                className="ai-button"
-                onClick={handleAIRequest}
-                variant="contained"
-                size="small"
-                color="secondary"
-              >
-                Challenge me
-              </Button>
-            )}
             <LikesSection
               currentUser={user}
               likeable={comment}
@@ -124,32 +116,96 @@ export const CommentComponent = ({
               refresh={refreshComments}
             />
           </div>
-          {user?._id === comment.userId?._id && (
-            <Button
-              onClick={() => handleDeleteComment(comment._id)}
-              variant="outlined"
-              size="small"
-              color="error"
-              className="delete-comment-button"
-              startIcon={<DeleteIcon />}
-            >
-              Delete
-            </Button>
-          )}
-        </div>
-        <div className="ai-dropdown">
-          <FormControl fullWidth size="small">
-            <InputLabel>Select AI Model</InputLabel>
-            <Select
-              value={selectedAI}
-              onChange={(e) => setSelectedAI(e.target.value)}
-              label="Select AI Model"
-            >
-              <MenuItem value="gemini-response">Gemini</MenuItem>
-              <MenuItem value="falcon-response">Falcon</MenuItem>
-              <MenuItem value="mistral-response">Mistral</MenuItem>
-            </Select>
-          </FormControl>
+          <div
+            className="right-actions"
+            style={{
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              gap: "8px",
+            }}
+          >
+            <AnimatePresence>
+              {showAIDropdown && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.2 }}
+                  style={{
+                    position: "absolute",
+                    bottom: "100%",
+                    marginBottom: "8px",
+                    zIndex: 10,
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                    overflow: "hidden",
+                    minWidth: "140px",
+                  }}
+                >
+                  {[
+                    { label: "Gemini", value: "gemini-response" },
+                    { label: "Falcon", value: "falcon-response" },
+                    { label: "Mistral", value: "mistral-response" },
+                  ].map((model) => (
+                    <Button
+                      key={model.value}
+                      onClick={() => handleModelSelect(model.value)}
+                      sx={{
+                        justifyContent: "flex-start",
+                        width: "100%",
+                        color: "black",
+                        textTransform: "none",
+                        fontSize: "0.9rem",
+                        padding: "8px 12px",
+                        borderRadius: 0,
+                        "&:hover": {
+                          backgroundColor: "#f0f0f0",
+                        },
+                      }}
+                    >
+                      {model.label}
+                    </Button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+            {user && (
+              <Button
+                onClick={() => setShowAIDropdown((prev) => !prev)}
+                variant="contained"
+                size="small"
+                disabled={aiLoading}
+                startIcon={
+                  aiLoading ? (
+                    <CircularProgress color="inherit" size={16} />
+                  ) : undefined
+                }
+                sx={{
+                  backgroundColor: "primary",
+                  "&:hover": { backgroundColor: "primary" },
+                  height: "40px",
+                }}
+              >
+                {aiLoading ? "AI is thinking......" : "Challenge me"}
+              </Button>
+            )}
+
+            {user?._id === comment.userId?._id && (
+              <Button
+                onClick={() => handleDeleteComment(comment._id)}
+                variant="outlined"
+                size="small"
+                color="error"
+                className="delete-comment-button"
+                startIcon={<DeleteIcon />}
+              >
+                Delete
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
