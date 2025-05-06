@@ -25,6 +25,16 @@ export const theme = createTheme({
         },
       },
     },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: "#9e9e9e",
+          "&.Mui-disabled": {
+            color: "#000000",
+          },
+        },
+      },
+    },
     MuiTab: {
       styleOverrides: {
         root: {

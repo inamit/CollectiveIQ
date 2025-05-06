@@ -1,17 +1,11 @@
-import { HttpClientFactory } from "./httpClient";
 import config from "../config.json";
 import User from "../models/user";
 import Comment from "../models/comment";
-import { AxiosInstance } from "axios";
+import { AbsLikeableService } from "./abslikeableService";
 
-export class CommentsService {
-  httpClient: AxiosInstance;
-
+export class CommentsService extends AbsLikeableService {
   constructor(user?: User, setUser?: (user: User | null) => void) {
-    const httpClientFactory = new HttpClientFactory(user, setUser);
-    this.httpClient = user
-      ? httpClientFactory.authorizedHttpClient()
-      : httpClientFactory.unauthorizedHttpClient();
+    super("comments", user, setUser);
   }
 
   getCommentsByPost(postId: string) {
@@ -25,12 +19,15 @@ export class CommentsService {
 
     return { request, cancel: () => controller.abort() };
   }
-  
+
   getComments() {
     const controller = new AbortController();
-    const request = this.httpClient.get<Comment[]>(`${config.backendURL}/comments`, {
-      signal: controller.signal,
-    });
+    const request = this.httpClient.get<Comment[]>(
+      `${config.backendURL}/comments`,
+      {
+        signal: controller.signal,
+      }
+    );
 
     return { request, cancel: () => controller.abort() };
   }
@@ -68,31 +65,6 @@ export class CommentsService {
       {
         signal: controller.signal,
       }
-    );
-
-    return { request, cancel: () => controller.abort() };
-  }
-  like(commentId: string) {
-    const controller = new AbortController();
-    let request = this.httpClient.post<{likesAmount: number, dislikesAmount: number}>(
-        `${config.backendURL}/comments/${commentId}/like`,
-        {},
-        {
-          signal: controller.signal,
-        }
-    );
-
-    return { request, cancel: () => controller.abort() };
-  }
-
-  dislike(commentId: string) {
-    const controller = new AbortController();
-    let request = this.httpClient.post<{likesAmount: number, dislikesAmount: number}>(
-        `${config.backendURL}/comments/${commentId}/dislike`,
-        {},
-        {
-          signal: controller.signal,
-        }
     );
 
     return { request, cancel: () => controller.abort() };

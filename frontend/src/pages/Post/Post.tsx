@@ -11,10 +11,6 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
-import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
-import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import CommentSection from "../../components/Comment/Comment.tsx";
 import { useNavigate, useParams } from "react-router";
 import { useUser } from "../../context/userContext.tsx";
@@ -31,8 +27,8 @@ import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
 import { formatDate } from "../../utils/formatDate.ts";
 import Markdown from "../../components/Markdown/Markdown.tsx";
 import { LoadingState } from "../../services/loadingState.ts";
-import { StatusCodes } from "http-status-codes";
 import UserDetails from "../../components/UserAvatar/UserDetails.tsx";
+import { LikesSection } from "../../components/LikesSection/LikesSection.tsx";
 
 const PostComponent = () => {
   const { postId } = useParams();
@@ -77,53 +73,7 @@ const PostComponent = () => {
     setEditablePost({ ...editablePost, [field]: value });
   };
 
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
-
-  useEffect(() => {
-    if (post && user) {
-      setLiked(post.likes.includes(user._id));
-      setDisliked(post.dislikes.includes(user._id));
-    }
-  }, [post?.likes, post?.dislikes]);
-
   const [isEditing, setIsEditing] = useState(false);
-
-  const handleLike = () => {
-    const postService = new PostsService(user!, setUser);
-
-    postService
-      .like(postId!)
-      .request.then(() => {
-        refreshPost();
-      })
-      .catch((err) => {
-        if (err.response?.status === StatusCodes.UNAUTHORIZED) {
-          toast.error("You need to be logged in to like a post");
-        } else {
-          toast.error("Failed to like post");
-        }
-        console.error(err);
-      });
-  };
-
-  const handleDislike = () => {
-    const postService = new PostsService(user!, setUser);
-
-    postService
-      .dislike(postId!)
-      .request.then(() => {
-        refreshPost();
-      })
-      .catch((err) => {
-        if (err.response?.status === StatusCodes.UNAUTHORIZED) {
-          toast.error("You need to be logged in to dislike a post");
-        } else {
-          toast.error("Failed to dislike post");
-        }
-        console.error(err);
-      });
-  };
 
   const toggleEditMode = () => {
     if (isEditing) {
@@ -345,20 +295,12 @@ const PostComponent = () => {
             </CardContent>
 
             <Box display="flex" alignItems="center" gap={2} px={2}>
-              <IconButton
-                onClick={handleLike}
-                sx={{ color: liked ? "#5B6DC9" : "inherit" }}
-              >
-                {liked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
-              </IconButton>
-              <Typography>{post?.likes.length}</Typography>
-              <IconButton
-                onClick={handleDislike}
-                sx={{ color: disliked ? "#E57373" : "inherit" }}
-              >
-                {disliked ? <ThumbDownAltIcon /> : <ThumbDownAltOutlinedIcon />}
-              </IconButton>
-              <Typography>{post?.dislikes.length}</Typography>
+              <LikesSection
+                currentUser={user}
+                likeable={post as Post}
+                likeableService={new PostsService(user!, setUser)}
+                refresh={refreshPost}
+              />
             </Box>
           </>
         );
