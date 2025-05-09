@@ -1,18 +1,21 @@
 import logging
 from fastapi import FastAPI, Query
+from contextlib import asynccontextmanager
 from app.ml.model import model
 from app.db.postsService import fetch_posts_from_db, fetch_post_by_id
 from app.ml.similarity import find_similar_posts
 
 logger = logging.getLogger('uvicorn.error')
 
-app = FastAPI()
 
-
-@app.on_event("startup")
-async def startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     posts = fetch_posts_from_db()
     model.add_posts_to_index(posts)
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/similar-posts")
