@@ -55,7 +55,7 @@ export default function PostsList({
             >
               <PostTile post={post} />
             </ListItem>
-            <Divider />
+
           </div>
         ))}
       </List>
