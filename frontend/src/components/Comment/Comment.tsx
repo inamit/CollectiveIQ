@@ -2,20 +2,9 @@ import { useState } from "react";
 import "./Comment.css";
 import {
   Comment as CommentIcon,
-  ThumbUp as ThumbUpIcon,
-  ThumbDown as ThumbDownIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import {
-  Button,
-  Typography,
-  IconButton,
-  CircularProgress,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-} from "@mui/material";
+import { Button, Typography, CircularProgress } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import Comment from "../../models/comment";
 import AppTextField from "../TextField/TextField";
