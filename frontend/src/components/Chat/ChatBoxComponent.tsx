@@ -95,6 +95,7 @@ const ChatBoxComponent: React.FC<ChatBoxContainerProps> = ({
         if (messageToSave) {
             socket.emit("sendMessage", {
                 senderId,
+                senderUserName,
                 receiverId,
                 message: messageToSave,
                 isAi,

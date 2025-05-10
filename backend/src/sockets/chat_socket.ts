@@ -6,7 +6,7 @@ export const chatSocket = (io: Server) => {
         console.log("User connected:", socket.id);
 
         socket.on("sendMessage", async ({senderId, senderUserName, receiverId, message, isAi}) => {
-            console.log("User sent a message: to:", senderUserName, receiverId);
+            console.log(`User ${senderUserName} sent a message: to:`, receiverId);
             const chat = new Chat({senderId, senderUserName, receiverId, message, isAi});
             await chat.save();
             console.log("saved sent a message:", message);

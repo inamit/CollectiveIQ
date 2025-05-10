@@ -42,8 +42,8 @@ const ChatComponent = () => {
                 <ChatBoxComponent
                     open={Boolean(selectedUser)}
                     onClose={() => setSelectedUser(null)}
-                    user={selectedUser}
-                    senderId={JSON.parse(localStorage?.user)._id}
+                    user={user}
+                    senderId={user._id}
                     receiverId={selectedUser._id}
                 />
             )}
