@@ -1,4 +1,3 @@
-import usePosts from '../../hooks/usePosts';
 import PostsList from '../../components/PostsList/PostsList';
 import './HomePage.css';
 import {usePostsContext} from "../../context/postsContext.tsx";

@@ -1,7 +1,6 @@
 import "./PostsList.css";
 import Post from "../../models/post";
 import PostTile from "../PostTile/PostTile";
-import Divider from "@mui/material/Divider";
 import { List, ListItem, Pagination, Skeleton } from "@mui/material";
 import React, { useState } from "react";
 import { paginate } from "../../utils/pagination";
