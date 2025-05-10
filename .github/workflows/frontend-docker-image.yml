@@ -1,0 +1,52 @@
+name: Build and Push Frontend Docker Image
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "frontend/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    environment: prod
+    steps:
+    - uses: actions/checkout@v4
+    - name: save ssl to file
+      run: | 
+        mkdir frontend/ssl
+        cd frontend/ssl
+        echo $PRIVATE_KEY | base64 -d > client-key.pem
+        echo $CERT | base64 -d > client-cert.pem
+      env:
+        PRIVATE_KEY: ${{ secrets.CLIENT_KEY_BASE64 }}
+        CERT: ${{ secrets.CLIENT_CERT_BASE64 }}
+    - name: Get image tags
+      id: tags
+      run: |
+        echo "tags=inamit323colman/collectiveiq-frontend:$(date +%s),inamit323colman/collectiveiq-frontend:latest" >> $GITHUB_OUTPUT
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build and push Docker image
+      id: push
+      uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+      with:
+        context: ./frontend
+        file: ./frontend/Dockerfile
+        push: true
+        tags: ${{ steps.tags.outputs.tags }}
+    - name: Generate artifact attestation
+      uses: actions/attest-build-provenance@v2
+      with:
+        subject-name: index.docker.io/inamit323colman/collectiveiq-frontend
+        subject-digest: ${{ steps.push.outputs.digest }}
+        push-to-registry: true
