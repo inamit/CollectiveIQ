@@ -16,23 +16,15 @@ import React from "react";
 import Logout from "../Logout/Logout";
 import AppTextField from "../TextField/TextField.tsx";
 import usePosts from "../../hooks/usePosts.ts";
+import {usePostsContext} from "../../context/postsContext.tsx";
 
 export default function NavBar() {
     const navigate = useNavigate();
     const { user } = useUser();
-    const { posts } = usePosts();
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const menuOpen = Boolean(anchorEl);
-
-    const [searchValue, setSearchValue] = React.useState("");
-
-    // Filter posts based on the search value (using title and content)
-    const filteredPosts = searchValue.trim()
-        ? [...posts].filter((post) =>
-            post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-            post.content.toLowerCase().includes(searchValue.toLowerCase())
-        )
-        : [];
+    const { searchValue, setSearchValue, filteredPosts } = usePostsContext();
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -62,23 +54,6 @@ export default function NavBar() {
                         },
                     }}
                 />
-
-                {filteredPosts.length > 0 && (
-                    <div className="searchResultsDropdownFixed">
-                        {filteredPosts.map((post) => (
-                            <div
-                                key={post._id}
-                                className="searchResultItem"
-                                onClick={() => {
-                                    setSearchValue("");
-                                    navigate(`${routes.POST}/${post._id}`);
-                                }}
-                            >
-                                {post.title}
-                            </div>
-                        ))}
-                    </div>
-                )}
 
                 <Button
                     variant="contained"

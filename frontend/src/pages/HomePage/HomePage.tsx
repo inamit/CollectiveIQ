@@ -1,14 +1,16 @@
 import usePosts from '../../hooks/usePosts';
 import PostsList from '../../components/PostsList/PostsList';
 import './HomePage.css';
+import {usePostsContext} from "../../context/postsContext.tsx";
 
 const HomePage = () => {
-  const { posts } = usePosts();
+  const { filteredPosts } = usePostsContext();
+
 
   return (
     <div className="homepage-container">
       <h1 className="homepage-title">CollectiveIQ</h1>
-        <PostsList posts={posts || []} maxPostsPerPage={10} />
+        <PostsList posts={filteredPosts || []} maxPostsPerPage={10} />
     </div>
   );
 };
