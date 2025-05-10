@@ -2,7 +2,7 @@ import "./PostsList.css";
 import Post from "../../models/post";
 import PostTile from "../PostTile/PostTile";
 import { List, ListItem, Pagination, Skeleton } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { paginate } from "../../utils/pagination";
 import { LoadingState } from "../../services/loadingState";
 import _ from "lodash";
@@ -15,15 +15,15 @@ interface Props {
   loadingState?: LoadingState;
 }
 
-export default function PostsList({
-  posts,
-  maxPostsPerPage,
-  loadingState,
-}: Props) {
+export default function PostsList({ posts, maxPostsPerPage, loadingState }: Props) {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   const paginatedPosts: Post[][] = paginate(posts, maxPostsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [posts]);
 
   if (loadingState === LoadingState.LOADING) {
     const postsSkeletons: React.JSX.Element[] = [];
