@@ -7,24 +7,23 @@ import {
     MenuItem,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { NavigateFunction, useNavigate } from "react-router";
+import {NavigateFunction, useNavigate} from "react-router";
 import User from "../../models/user";
 import UserAvatar from "../UserAvatar/UserAvatar";
-import { useUser } from "../../context/userContext";
-import { routes } from "../../router/routes";
+import {useUser} from "../../context/userContext";
+import {routes} from "../../router/routes";
 import React from "react";
 import Logout from "../Logout/Logout";
 import AppTextField from "../TextField/TextField.tsx";
-import usePosts from "../../hooks/usePosts.ts";
 import {usePostsContext} from "../../context/postsContext.tsx";
 
 export default function NavBar() {
     const navigate = useNavigate();
-    const { user } = useUser();
+    const {user} = useUser();
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const menuOpen = Boolean(anchorEl);
-    const { searchValue, setSearchValue, filteredPosts } = usePostsContext();
+    const {searchValue, setSearchValue, filteredPosts} = usePostsContext();
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -36,56 +35,61 @@ export default function NavBar() {
 
     function getUserActions(user: User, navigate: NavigateFunction) {
         return (
-            <span className="userActions" style={{ position: "relative" }}>
-                <AppTextField
-                    id="search"
-                    placeholder="Search"
-                    size="small"
-                    variant="outlined"
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    slotProps={{
-                        input: {
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon />
-                                </InputAdornment>
-                            ),
-                        },
-                    }}
-                />
+            <span className="userActions">
+    <div className="searchWrapper">
+        <AppTextField
+            id="search"
+            placeholder="Search"
+            size="small"
+            variant="outlined"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            slotProps={{
+                input: {
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon/>
+                        </InputAdornment>
+                    ),
+                },
+            }}
+        />
+    </div>
 
-                <Button
-                    variant="contained"
-                    color="primary"
-                    style={{ borderRadius: "12px" }}
-                    onClick={() => {
-                        navigate(routes.CREATE_POST);
-                    }}
-                >
-                    Ask a Question
-                </Button>
-                <Button onClick={handleClick}>
-                    <UserAvatar user={user} />
-                </Button>
-                <Menu
-                    id="basic-menu"
-                    anchorEl={anchorEl}
-                    open={menuOpen}
-                    onClose={handleClose}
-                    MenuListProps={{
-                        "aria-labelledby": "basic-button",
-                    }}
-                >
-                    <MenuItem
-                        onClick={() => {
-                            handleClose();
-                            navigate(routes.USER_PROFILE);
-                        }}
-                    >
-                        Profile
-                    </MenuItem>
-                    <Logout />
+    <div className="rightActions">
+        <Button
+            variant="contained"
+            color="primary"
+            style={{borderRadius: "12px"}}
+            onClick={() => {
+                navigate(routes.CREATE_POST);
+            }}
+        >
+            Ask a Question
+        </Button>
+        <Button onClick={handleClick}>
+            <UserAvatar user={user}/>
+        </Button>
+    </div>
+
+    <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={menuOpen}
+        onClose={handleClose}
+        MenuListProps={{
+            "aria-labelledby": "basic-button",
+        }}
+    >
+        <MenuItem
+            onClick={() => {
+                handleClose();
+                navigate(routes.USER_PROFILE);
+            }}
+        >
+            Profile
+        </MenuItem>
+                    <Logout/>
                 </Menu>
             </span>
         );
@@ -125,7 +129,7 @@ export default function NavBar() {
                         navigate(routes.HOME);
                     }}
                 >
-                    <img src={appIcon} alt="app icon" className="appIcon" />
+                    <img src={appIcon} alt="app icon" className="appIcon"/>
                     <h1 className="appLabel">CollectiveIQ</h1>
                 </span>
                 <span className="navbarActions">
