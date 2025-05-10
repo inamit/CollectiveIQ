@@ -16,6 +16,7 @@ import {useNavigate} from "react-router";
 import {routes} from "../../router/routes";
 import {ThumbUp, ThumbDown, Comment} from "@mui/icons-material";
 import {useState} from "react";
+import UserAvatar from "../UserAvatar/UserAvatar.tsx";
 
 interface Props {
     post: Post;
@@ -75,7 +76,7 @@ export default function PostTile({post}: Props) {
             >
 
                 <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar src={post.userId?.avatarUrl}/>
+                    <UserAvatar className="avatar" user={post.userId} />
                     <Box>
                         <Typography fontWeight="bold" color="white">
                             {post.userId?.username}
