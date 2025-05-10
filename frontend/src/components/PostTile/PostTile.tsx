@@ -73,7 +73,7 @@ export default function PostTile({post}: Props) {
                     },
                 }}
             >
-                {/* Header */}
+
                 <Box display="flex" alignItems="center" gap={2}>
                     <Avatar src={post.userId?.avatarUrl}/>
                     <Box>
@@ -86,7 +86,6 @@ export default function PostTile({post}: Props) {
                     </Box>
                 </Box>
 
-                {/* Content */}
                 <CardContent>
                     <Typography variant="h6" color="white" gutterBottom>
                         {post.title}
@@ -121,7 +120,6 @@ export default function PostTile({post}: Props) {
                     )}
                 </CardContent>
 
-                {/* Likes and Dislikes */}
                 <Box display="flex" alignItems="center" gap={1}>
                     <Tooltip title="Like">
                         <IconButton size="small" sx={{ color: "primary.main" }}>
@@ -133,7 +131,7 @@ export default function PostTile({post}: Props) {
                     </Typography>
                 </Box>
 
-                {/* Dislikes */}
+
                 <Box display="flex" alignItems="center" gap={1}>
                     <Tooltip title="Dislike">
                         <IconButton size="small" sx={{ color: "#f44336" }}>
@@ -145,7 +143,6 @@ export default function PostTile({post}: Props) {
                     </Typography>
                 </Box>
 
-                {/* Comment count bubble */}
                 <Box
                     display="flex"
                     alignItems="center"
