@@ -1,3 +1,4 @@
+// PostTile.tsx
 import {
     Typography,
     Box,
@@ -9,12 +10,12 @@ import {
     Button,
 } from "@mui/material";
 import Post from "../../models/post";
-import {formatDate} from "../../utils/formatDate";
+import { formatDate } from "../../utils/formatDate";
 import usePost from "../../hooks/usePost";
-import {useNavigate} from "react-router";
-import {routes} from "../../router/routes";
-import {ThumbUp, ThumbDown, Comment} from "@mui/icons-material";
-import {useState} from "react";
+import { useNavigate } from "react-router";
+import { routes } from "../../router/routes";
+import { ThumbUp, ThumbDown, Comment } from "@mui/icons-material";
+import { useState } from "react";
 import UserAvatar from "../UserAvatar/UserAvatar.tsx";
 
 interface Props {
@@ -25,8 +26,8 @@ function pluralize(count: number, singular: string, plural: string) {
     return `${count} ${count === 1 ? singular : plural}`;
 }
 
-export default function PostTile({post}: Props) {
-    const {comments} = usePost(post._id);
+export default function PostTile({ post }: Props) {
+    const { comments } = usePost(post._id);
     const navigate = useNavigate();
     const [expanded, setExpanded] = useState(false);
 
@@ -53,7 +54,7 @@ export default function PostTile({post}: Props) {
             display="flex"
             justifyContent="center"
             alignItems="center"
-            sx={{width: "100%", padding: 2, bgcolor: "transparent"}}
+            sx={{ width: "100%", padding: 2, bgcolor: "transparent" }}
         >
             <Card
                 onClick={handleClick}
@@ -61,7 +62,7 @@ export default function PostTile({post}: Props) {
                 sx={{
                     width: "100%",
                     maxWidth: 600,
-                    bgcolor: "#282828",
+                    bgcolor: "#333", // Slightly lighter for better readability
                     borderRadius: 4,
                     cursor: "pointer",
                     p: 2,
@@ -70,6 +71,7 @@ export default function PostTile({post}: Props) {
                     transition: "transform 0.2s ease",
                     "&:hover": {
                         transform: "scale(1.01)",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                     },
                 }}
             >
@@ -91,14 +93,34 @@ export default function PostTile({post}: Props) {
                         {post.title}
                     </Typography>
 
-                    <Typography
-                        variant="body2"
-                        color="gray"
-                        sx={{whiteSpace: "pre-line"}}
-                    >
-                        {displayedContent}
-                        {shouldShowToggle && !expanded && "..."}
-                    </Typography>
+                    <Box sx={{ position: "relative" }}>
+                        <Typography
+                            variant="body2"
+                            color="gray"
+                            sx={{
+                                whiteSpace: "pre-line",
+                                display: "-webkit-box",
+                                WebkitLineClamp: expanded ? 'none' : 4,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                            }}
+                        >
+                            {displayedContent}
+                        </Typography>
+
+                        {!expanded && shouldShowToggle && (
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    height: 30,
+                                    background: "linear-gradient(to top, #282828, transparent)",
+                                }}
+                            />
+                        )}
+                    </Box>
 
                     {shouldShowToggle && (
                         <Button
@@ -157,11 +179,11 @@ export default function PostTile({post}: Props) {
                 >
                     <Tooltip title="Comments">
                         <IconButton
-                            aria-label="view comments"
+                            aria-label="View comments"
                             size="small"
-                            sx={{color: "#fff", mr: 0.5}}
+                            sx={{ color: "#fff", mr: 0.5 }}
                         >
-                            <Comment fontSize="small"/>
+                            <Comment fontSize="small" />
                         </IconButton>
                     </Tooltip>
                     <Typography variant="body2" color="gray">

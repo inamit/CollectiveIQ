@@ -24,10 +24,3 @@
 .count {
   color: grey;
 }
-.centered-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 24px;
-  overflow-y: auto;
-}
