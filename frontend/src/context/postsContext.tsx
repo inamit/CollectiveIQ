@@ -7,8 +7,8 @@ interface PostsContextProps {
     setSearchValue: (value: string) => void;
     filteredPosts: Post[];
     posts: Post[] | null;
+    reloadPosts: () => void;
 }
-
 const PostsContext = createContext<PostsContextProps | null>(null);
 
 export const usePostsContext = () => {
@@ -18,9 +18,9 @@ export const usePostsContext = () => {
 };
 
 export const PostsProvider = ({ children }: { children: React.ReactNode }) => {
-    const { posts } = usePosts();
-    const [searchValue, setSearchValue] = useState("");
 
+    const [searchValue, setSearchValue] = useState("");
+    const { posts, reloadPosts } = usePosts();
     const filteredPosts = useMemo(() => {
         if (!posts) return [];
         if (!searchValue.trim()) return posts;
@@ -32,7 +32,14 @@ export const PostsProvider = ({ children }: { children: React.ReactNode }) => {
     }, [searchValue, posts]);
 
     return (
-        <PostsContext.Provider value={{ posts, searchValue, setSearchValue, filteredPosts }}>
+
+        <PostsContext.Provider value={{
+            posts,
+            searchValue,
+            setSearchValue,
+            filteredPosts,
+            reloadPosts,
+        }}>
             {children}
         </PostsContext.Provider>
     );

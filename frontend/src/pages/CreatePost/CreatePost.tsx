@@ -8,6 +8,7 @@ import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
 import MarkdownEditor from "../../components/Markdown/MarkdownEditor/MarkdownEditor.tsx";
 import "./CreatePost.css";
 import { Button } from "@mui/material";
+import {usePostsContext} from "../../context/postsContext.tsx";
 
 const CreatePost = () => {
   const [title, setTitle] = useState("");
@@ -15,6 +16,7 @@ const CreatePost = () => {
   const [image, setImage] = useState<File | null>(null);
   const navigate = useNavigate();
   const { user, setUser } = useUser();
+  const { reloadPosts } = usePostsContext();
 
   const handleCancel = () => {
     setTitle("");
@@ -31,6 +33,7 @@ const CreatePost = () => {
 
     request
         .then((response) => {
+          reloadPosts();
           navigate(`${routes.POST}/${response.data._id}`);
         })
         .catch((err) => {
