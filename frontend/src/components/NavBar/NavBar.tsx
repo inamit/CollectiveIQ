@@ -48,9 +48,25 @@ export default function NavBar() {
                 input: {
                     startAdornment: (
                         <InputAdornment position="start">
-                            <SearchIcon/>
+                            <SearchIcon />
                         </InputAdornment>
                     ),
+                    endAdornment:
+                        searchValue ? (
+                            <InputAdornment position="end">
+                                <Button
+                                    size="small"
+                                    onClick={() => setSearchValue("")}
+                                    style={{
+                                        minWidth: 0,
+                                        padding: "4px",
+                                        marginRight: "-8px",
+                                    }}
+                                >
+                                    ❌
+                                </Button>
+                            </InputAdornment>
+                        ) : null,
                 },
             }}
         />
