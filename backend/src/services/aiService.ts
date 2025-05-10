@@ -1,4 +1,3 @@
-import {HfInference} from "@huggingface/inference";
 import fetch from "node-fetch";
 import {GoogleGenerativeAI} from "@google/generative-ai";
 import Comment from "../models/comments_model";

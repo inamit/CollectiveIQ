@@ -3,7 +3,6 @@ import {
     Box,
     Card,
     CardContent,
-    Avatar,
     IconButton,
     Skeleton,
     Tooltip,

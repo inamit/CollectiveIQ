@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { handleMongoQueryError } from "../db/db";
 import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
-import mongoose from "mongoose";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
 import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
 import {toggleReaction} from "./likes_controller";
