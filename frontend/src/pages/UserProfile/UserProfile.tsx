@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import { ImagePicker } from "../../components/ImagePicker/ImagePicker";
 import ChatBox from "../../components/Chat/ChatBox";
 import UserDetails from "../../components/UserAvatar/UserDetails";
+import LikedPostsPage from "../LikedPosts/LikedPostsPage.tsx";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -212,6 +213,7 @@ export default function UserProfile() {
             <Tabs value={selectedTab} onChange={handleTabChange}>
               <Tab label="Questions" />
               <Tab label="Answers" />
+              {(!userId || user?._id === userId) && <Tab label="Liked Posts" />}
               {user && userId && user._id !== userId && <Tab label="Chat" />}
             </Tabs>
           </Box>
@@ -229,11 +231,22 @@ export default function UserProfile() {
               loadingState={commentsLoadingState}
             />
           </CustomTabPanel>
-          {user && userId && user._id !== userId && (
-            <CustomTabPanel value={selectedTab} index={2}>
-              <ChatBox user={user} senderId={user._id} receiverId={userId} />
-            </CustomTabPanel>
+
+          {(!userId || user?._id === userId) && (
+              <CustomTabPanel value={selectedTab} index={2}>
+                <LikedPostsPage />
+              </CustomTabPanel>
           )}
+
+          {user && userId && user._id !== userId && (
+              <CustomTabPanel
+                  value={selectedTab}
+                  index={(!userId || user._id === userId) ? 3 : 2}
+              >
+                <ChatBox user={user} senderId={user._id} receiverId={userId} />
+              </CustomTabPanel>
+          )}
+
         </div>
       </div>
     </>

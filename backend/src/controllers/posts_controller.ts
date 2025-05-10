@@ -170,6 +170,16 @@ async function defineTagWithLLM(question: string, post_id: string) {
   }
 }
 
+const getLikedPosts= async (req: Request, res: Response): Promise<any> => {
+  try {
+    const userId = req.params.userId;
+    const likedPosts = await Post.find({ likes: userId }).exec();
+    res.json(likedPosts);
+  } catch (error) {
+    res.status(500).send("Error fetching liked posts");
+  }
+};
+
 export default {
   getPosts,
   saveNewPost,
@@ -179,4 +189,5 @@ export default {
   saveImage,
   likePost,
   dislikePost,
+  getLikedPosts
 };
