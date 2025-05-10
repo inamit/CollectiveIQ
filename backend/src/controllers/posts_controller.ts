@@ -48,8 +48,8 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
 
-    defineTagWithLLM(savedPost.content, String(savedPost._id))
-    triggerAIResponses(savedPost.content, String(savedPost._id));
+    await defineTagWithLLM(savedPost.content, String(savedPost._id))
+    await triggerAIResponses(savedPost.content, String(savedPost._id));
 
     return res.json(savedPost);
   } catch (err: any) {
