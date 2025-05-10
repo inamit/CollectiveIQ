@@ -349,4 +349,6 @@ router.post("/:itemId/like", authMiddleware, postsController.likePost);
  *              $ref: '#/components/schemas/Error'
  */
 router.post("/:itemId/dislike", authMiddleware, postsController.dislikePost);
+
+router.get("/:userId/liked-posts", authMiddleware, postsController.getLikedPosts);
 export default router;

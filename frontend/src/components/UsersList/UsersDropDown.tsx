@@ -72,8 +72,8 @@ const UserDropdown = ({
         slotProps={{
           paper: {
             sx: {
-              maxHeight: 400, // Set max height for the menu
-              overflowY: "auto", // Enable vertical scrolling
+              maxHeight: 400,
+              overflowY: "auto",
               backgroundColor: "#1e1e1e",
               color: "white",
               borderRadius: 1,
