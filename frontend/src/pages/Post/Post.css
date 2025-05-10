@@ -1,66 +1,73 @@
 .user-details {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .post-container {
-  background-color: #121212;
-  min-height: 100vh;
-  padding: 32px;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+    background-color: #121212;
+    min-height: 100vh;
+    padding: 32px;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: start;
 }
 
 .post-card {
-  max-width: 800px;
-  margin-top: 50px;
-  padding: 20px;
-  background-color: #333 !important;
-  color: #fff !important;
+    width: 55vw;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 32px;
+    background-color: #333 !important;
+    color: #fff !important;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .post-header {
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .post-title {
-  text-align: left;
+    text-align: left;
 }
 
 .post-actions {
-  display: flex;
-  gap: 8px;
+    display: flex;
+    gap: 8px;
 }
 
 .edit-button {
-  color: #fff !important;
+    color: #fff !important;
 }
+
 .edit-button:hover {
-  color: #5b6dc9 !important;
+    color: #5b6dc9 !important;
 }
 
 .delete-button {
-  color: #fff !important;
+    color: #fff !important;
 }
 
 .delete-button:hover {
-  color: #e57373 !important;
+    color: #e57373 !important;
 }
 
 .comments-container {
-  margin-top: 15px;
+    margin-top: 15px;
 }
 
 .comments-count {
-  text-align: left;
-  margin-bottom: 2px;
+    text-align: left;
+    margin-bottom: 2px;
 }
 
 .post-image {
-  width: 100%;
-  border-radius: 1px;
-  margin-top: 2px;
+    width: 100%;
+    border-radius: 1px;
+    margin-top: 2px;
 }

@@ -7,6 +7,11 @@ import {
     CardContent,
     Typography,
     Skeleton,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -41,10 +46,12 @@ const PostComponent = () => {
         refreshPost,
         refreshComments,
     } = usePost(postId);
+
     const [editablePost, setEditablePost] = useState<Partial<Post> | null>(post);
     const [image, setImage] = useState<File | null>(null);
     const [originalImage, setOriginalImage] = useState<File | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     useEffect(() => {
         setEditablePost(post);
@@ -60,9 +67,7 @@ const PostComponent = () => {
         const urlArray = imageUrl.split("/");
         let response = await fetch(imageUrl);
         let data = await response.blob();
-        let metadata = {
-            type: data.type,
-        };
+        let metadata = { type: data.type };
         return new File([data], urlArray[urlArray.length - 1], metadata);
     };
 
@@ -74,34 +79,23 @@ const PostComponent = () => {
         if (isEditing) {
             updatePost()
                 .then(() => {
-                    setIsEditing(!isEditing);
+                    setIsEditing(false);
                     refreshPost();
                 })
-                .catch((err) => {
-                    toast.error(err);
-                });
+                .catch((err) => toast.error(err));
         } else {
-            setIsEditing(!isEditing);
+            setIsEditing(true);
         }
     };
 
-    const addComment = (content: string) => {
-        const commentService = new CommentsService(user!, setUser);
-        const { request } = commentService.saveNewComment(content, postId!);
-
-        request
-            .then((response) => {
-                setComments([...comments, response.data]);
-            })
-            .catch((err) => {
-                console.error(err);
-                toast.error("Failed to add comment");
-            });
+    const confirmDeletePost = () => {
+        setDeleteDialogOpen(true);
     };
 
-    const deletePost = () => {
+    const handleDeleteConfirmed = () => {
         const { request } = new PostsService(user!, setUser).deletePost(postId!);
         request.then(() => {
+            setDeleteDialogOpen(false);
             navigate(routes.HOME);
         });
     };
@@ -120,15 +114,14 @@ const PostComponent = () => {
 
             const { request } = new PostsService(user!, setUser).updatePost(
                 postId!,
-                editablePost.title,
-                editablePost.content,
+                editablePost?.title,
+                editablePost?.content,
                 image !== originalImage ? image : null
             );
 
             request
                 .then((response) => {
                     setEditablePost(response.data);
-                    setIsEditing(false);
                     resolve("");
                 })
                 .catch((err) => {
@@ -138,56 +131,32 @@ const PostComponent = () => {
         });
     };
 
+    const addComment = (content: string) => {
+        const commentService = new CommentsService(user!, setUser);
+        const { request } = commentService.saveNewComment(content, postId!);
+
+        request
+            .then((response) => {
+                setComments([...comments, response.data]);
+            })
+            .catch((err) => {
+                console.error(err);
+                toast.error("Failed to add comment");
+            });
+    };
+
     const getEditButtons = () => {
         if (user?._id === post?.userId?._id) {
             return (
                 <Box className="post-actions">
-                    <IconButton
-                        size="small"
-                        onClick={toggleEditMode}
-                        className="edit-button"
-                    >
+                    <IconButton size="small" onClick={toggleEditMode}>
                         {isEditing ? <SaveIcon /> : <EditIcon />}
                     </IconButton>
-                    <IconButton
-                        size="small"
-                        onClick={deletePost}
-                        className="delete-button"
-                    >
+                    <IconButton size="small" onClick={confirmDeletePost}>
                         <DeleteIcon />
                     </IconButton>
                 </Box>
             );
-        }
-    };
-
-    const getCommentsComponents = () => {
-        switch (commentsLoadingState) {
-            case LoadingState.ERROR:
-                return <Typography>Error loading comments</Typography>;
-            case LoadingState.LOADED:
-                return (
-                    <Box className="comments-container">
-                        <Typography variant="body2" className="comments-count">
-                            {comments.length} Comment
-                            {comments.length !== 1 ? "s" : ""}
-                        </Typography>
-                        <CommentSection
-                            comments={comments}
-                            addComment={addComment}
-                            refreshComments={refreshComments}
-                            commentsLoadingState={commentsLoadingState}
-                        />
-                    </Box>
-                );
-            default:
-                return (
-                    <Skeleton
-                        variant="rectangular"
-                        height={100}
-                        className="comments-container"
-                    />
-                );
         }
     };
 
@@ -197,7 +166,7 @@ const PostComponent = () => {
                 return <></>;
             case LoadingState.LOADED:
                 return (
-                    <Box className="post-header">
+                    <div className="post-header">
                         {isEditing ? (
                             <AppTextField
                                 fullWidth
@@ -206,11 +175,11 @@ const PostComponent = () => {
                             />
                         ) : (
                             <Typography variant="h5" className="post-title">
-                                {editablePost?.title as string}
+                                {editablePost?.title}
                             </Typography>
                         )}
                         {getEditButtons()}
-                    </Box>
+                    </div>
                 );
             default:
                 return <Skeleton variant="text" height={100} />;
@@ -232,12 +201,7 @@ const PostComponent = () => {
                 return (
                     <Box display="flex" alignItems="center" mb={2}>
                         <Skeleton variant="circular" width={40} height={40} />
-                        <Box
-                            display="flex"
-                            alignItems="start"
-                            ml={2}
-                            flexDirection="column"
-                        >
+                        <Box ml={2}>
                             <Skeleton variant="text" width={100} />
                             <Skeleton variant="text" width={70} />
                         </Box>
@@ -264,15 +228,8 @@ const PostComponent = () => {
                                     src={post?.imageUrl}
                                     alt="Post"
                                     className="post-image"
-                                    sx={{
-                                        borderRadius: "10px",
-                                        maxWidth: "100%",
-                                        objectFit: "cover",
-                                        marginTop: "16px",
-                                    }}
                                 />
                             )}
-
                             {isEditing && (
                                 <ImagePicker
                                     image={image}
@@ -299,23 +256,64 @@ const PostComponent = () => {
         }
     };
 
+    const getCommentsComponents = () => {
+        switch (commentsLoadingState) {
+            case LoadingState.ERROR:
+                return <Typography>Error loading comments</Typography>;
+            case LoadingState.LOADED:
+                return (
+                    <Box className="comments-container">
+                        <Typography variant="body2" className="comments-count">
+                            {comments.length} Comment{comments.length !== 1 ? "s" : ""}
+                        </Typography>
+                        <CommentSection
+                            comments={comments}
+                            addComment={addComment}
+                            refreshComments={refreshComments}
+                            commentsLoadingState={commentsLoadingState}
+                        />
+                    </Box>
+                );
+            default:
+                return (
+                    <Skeleton
+                        variant="rectangular"
+                        height={100}
+                        className="comments-container"
+                    />
+                );
+        }
+    };
+
     return (
-        <Box className="post-container">
-            <Card
-                className="post-card"
-                sx={{
-                    borderRadius: "16px",
-                    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-                    overflow: "hidden",
-                    padding: "16px",
-                }}
-            >
-                {getHeader()}
-                {getUserDetails()}
-                {getPostContent()}
-                {getCommentsComponents()}
-            </Card>
-        </Box>
+        <>
+            <Box className="post-container">
+                <Card className="post-card">
+                    {getHeader()}
+                    {getUserDetails()}
+                    {getPostContent()}
+                    {getCommentsComponents()}
+                </Card>
+            </Box>
+
+            {/* Modern Delete Confirmation Dialog */}
+            <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+                <DialogTitle>Delete Post</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Are you sure you want to delete this post? This action cannot be undone.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialogOpen(false)} color="inherit">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleDeleteConfirmed} color="error" variant="contained">
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
     );
 };
 

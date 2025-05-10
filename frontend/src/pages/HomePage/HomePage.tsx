@@ -8,7 +8,7 @@ const HomePage = () => {
   return (
       <div className="homepage-container">
         <h1 className="homepage-title">CollectiveIQ</h1>
-        <PostsList posts={filteredPosts || []} maxPostsPerPage={5} />
+        <PostsList posts={filteredPosts || []} maxPostsPerPage={3} />
       </div>
   );
 };

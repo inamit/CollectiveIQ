@@ -217,7 +217,7 @@ export default function UserProfile() {
           </Box>
           <CustomTabPanel value={selectedTab} index={0}>
             <PostsList
-              maxPostsPerPage={5}
+              maxPostsPerPage={3}
               posts={posts ?? []}
               loadingState={postsLoadingState}
             />
