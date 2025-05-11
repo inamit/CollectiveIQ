@@ -1,14 +1,12 @@
 from sentence_transformers import SentenceTransformer
 import faiss
-
-model_name = "all-MiniLM-L6-v2"
-embedding_dim = 384
+from app.settings import settings
 
 
 class Model:
     def __init__(self):
-        self.model = SentenceTransformer(model_name)
-        self.index = faiss.IndexFlatL2(embedding_dim)
+        self.model = SentenceTransformer(settings.MODEL_NAME)
+        self.index = faiss.IndexFlatL2(settings.MODEL_EMBEDDING_DIM)
         self.posts = []
 
     def add_posts_to_index(self, posts):
