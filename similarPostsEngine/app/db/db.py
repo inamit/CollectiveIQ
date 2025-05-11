@@ -1,5 +1,4 @@
 import logging
-import os
 from pymongo import MongoClient
 
 from app.settings import settings
@@ -12,7 +11,7 @@ def get_mongo_client():
 
 
 def get_db():
-    logger.info(f"Connecting to MongoDB...")
+    logger.info("Connecting to MongoDB...")
     try:
         client = get_mongo_client()
         logger.info("Connected to DB")
