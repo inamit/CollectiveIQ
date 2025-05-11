@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { handleMongoQueryError } from "../db/db";
 import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
-import mongoose from "mongoose";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
 import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
 import {toggleReaction} from "./likes_controller";
@@ -48,8 +47,8 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
 
-    defineTagWithLLM(savedPost.content, String(savedPost._id))
-    triggerAIResponses(savedPost.content, String(savedPost._id));
+    await defineTagWithLLM(savedPost.content, String(savedPost._id))
+    await triggerAIResponses(savedPost.content, String(savedPost._id));
 
     return res.json(savedPost);
   } catch (err: any) {
@@ -171,6 +170,16 @@ async function defineTagWithLLM(question: string, post_id: string) {
   }
 }
 
+const getLikedPosts= async (req: Request, res: Response): Promise<any> => {
+  try {
+    const userId = req.params.userId;
+    const likedPosts = await Post.find({ likes: userId }).exec();
+    res.json(likedPosts);
+  } catch (error) {
+    res.status(500).send("Error fetching liked posts");
+  }
+};
+
 export default {
   getPosts,
   saveNewPost,
@@ -180,4 +189,5 @@ export default {
   saveImage,
   likePost,
   dislikePost,
+  getLikedPosts
 };
