@@ -1,12 +1,11 @@
-import { HfInference } from "@huggingface/inference";
 import fetch from "node-fetch";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import {GoogleGenerativeAI} from "@google/generative-ai";
 import Comment from "../models/comments_model";
 import Post from "../models/posts_model";
+
 require('dotenv').config();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-const hf = new HfInference(process.env.HUGGING_FACE_API_KEY);
+const model = genAI.getGenerativeModel({model: "gemini-1.5-flash"});
 
 const fetchHuggingFaceResponse = async (url: string, input: string): Promise<string> => {
     try {
@@ -36,7 +35,7 @@ const fetchHuggingFaceResponse = async (url: string, input: string): Promise<str
     }
 };
 
-const saveAIResponseAsComment = async (postId: string, content: string, modelId: string, parentCommentID: string): Promise<void> => {
+const saveAIResponseAsComment = async (postId: string, content: string, modelId: string, parentCommentID?: string): Promise<void> => {
     try {
         const postExists = await Post.exists({ _id: postId });
         if (!postExists) {
@@ -45,14 +44,14 @@ const saveAIResponseAsComment = async (postId: string, content: string, modelId:
 
         const comment = new Comment({
             postID: postId,
-            parentCommentID: parentCommentID,
             content,
+            parentCommentID: parentCommentID ?? null,
             userId: modelId,
             date: new Date(),
         });
 
         await comment.save();
-        console.log("Huggingface AI response saved as a comment.");
+        console.log("AI response saved as a comment.");
     } catch (error) {
         console.error("Error saving AI response as a comment:", error);
         throw error;
@@ -77,7 +76,7 @@ export const getGeminiResponse = async (input: string, postId?: string, parentCo
         const result = await model.generateContent(input);
         const response = result.response.text().trim();
         if (postId != null) {
-            await saveAIResponseAsComment(postId, response, process.env.GEMINI_USERID || "", parentCommentID || "");
+            await saveAIResponseAsComment(postId, response, process.env.GEMINI_USERID || "", parentCommentID);
         }
         return response;
     } catch (error) {

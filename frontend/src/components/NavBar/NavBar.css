@@ -1,55 +1,82 @@
 .navbarContainer {
-  border-bottom: 1px solid #e5e8eb;
+    border-bottom: 1px solid #e5e8eb;
 }
 
 .navbar {
-  display: flex;
-  padding: 12px 40px;
-  justify-content: space-between;
-  align-items: center;
-  align-self: stretch;
+    display: flex;
+    padding: 12px 40px;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
 }
 
 .navbarAppTitle {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
 }
 
 .appLabel {
-  color: #fafafa;
-  font-feature-settings: "dlig" on;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 23px; /* 127.778% */
+    color: #fafafa;
+    font-feature-settings: "dlig" on;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 23px;
 }
 
 .navbarActions {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  gap: 32px;
-  flex: 1 0 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 32px;
+    flex: 1 0 0;
 }
 
 .userActions,
 .guestActions {
-  display: flex;
-  gap: 16px;
+    display: flex;
+    gap: 16px;
 }
+
 .MuiMenu-paper {
-  background-color: #3D404A !important;
-  color: #FFFFFF !important;
+    background-color: #3D404A !important;
+    color: #FFFFFF !important;
 }
 
-/* Target the background color of each menu item */
 .MuiMenuItem-root {
-  background-color: #3D404A !important;
+    background-color: #3D404A !important;
 }
 
-/* Change the hover color for menu items */
 .MuiMenuItem-root:hover {
-  background-color: #242222 !important;
+    background-color: #242222 !important;
+}
+
+.userActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.searchWrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-60%);
+    width: 100%;
+    max-width: 600px;
+    padding: 0 16px;
+}
+
+.searchWrapper .MuiTextField-root {
+    width: 100%;
+}
+
+.rightActions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto;
 }
