@@ -4,11 +4,7 @@ import {
   Comment as CommentIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import {
-  Button,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
+import { Button, Typography, CircularProgress } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import Comment from "../../models/comment";
 import AppTextField from "../TextField/TextField";

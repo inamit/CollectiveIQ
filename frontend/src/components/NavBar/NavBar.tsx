@@ -1,3 +1,4 @@
+import React, {useState} from "react";
 import "./NavBar.css";
 import appIcon from "/appIcon.svg";
 import {
@@ -12,18 +13,16 @@ import User from "../../models/user";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import {useUser} from "../../context/userContext";
 import {routes} from "../../router/routes";
-import React from "react";
 import Logout from "../Logout/Logout";
 import AppTextField from "../TextField/TextField.tsx";
 import {usePostsContext} from "../../context/postsContext.tsx";
-
 export default function NavBar() {
     const navigate = useNavigate();
     const {user} = useUser();
-
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const menuOpen = Boolean(anchorEl);
-    const {searchValue, setSearchValue, filteredPosts} = usePostsContext();
+    const {searchValue, setSearchValue} = usePostsContext();
+
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -48,7 +47,7 @@ export default function NavBar() {
                 input: {
                     startAdornment: (
                         <InputAdornment position="start">
-                            <SearchIcon />
+                            <SearchIcon/>
                         </InputAdornment>
                     ),
                     endAdornment:
@@ -70,41 +69,42 @@ export default function NavBar() {
                 },
             }}
         />
+
     </div>
 
-    <div className="rightActions">
-        <Button
-            variant="contained"
-            color="primary"
-            style={{borderRadius: "12px"}}
-            onClick={() => {
-                navigate(routes.CREATE_POST);
-            }}
-        >
-            Ask a Question
-        </Button>
-        <Button onClick={handleClick}>
-            <UserAvatar user={user}/>
-        </Button>
-    </div>
+                <div className="rightActions">
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        style={{borderRadius: "12px"}}
+                        onClick={() => {
+                            navigate(routes.CREATE_POST);
+                        }}
+                    >
+                        Ask a Question
+                    </Button>
+                    <Button onClick={handleClick}>
+                        <UserAvatar user={user}/>
+                    </Button>
+                </div>
 
-    <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={menuOpen}
-        onClose={handleClose}
-        MenuListProps={{
-            "aria-labelledby": "basic-button",
-        }}
-    >
-        <MenuItem
-            onClick={() => {
-                handleClose();
-                navigate(routes.USER_PROFILE);
-            }}
-        >
-            Profile
-        </MenuItem>
+                <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={menuOpen}
+                    onClose={handleClose}
+                    MenuListProps={{
+                        "aria-labelledby": "basic-button",
+                    }}
+                >
+                    <MenuItem
+                        onClick={() => {
+                            handleClose();
+                            navigate(routes.USER_PROFILE);
+                        }}
+                    >
+                        Profile
+                    </MenuItem>
                     <Logout/>
                 </Menu>
             </span>
