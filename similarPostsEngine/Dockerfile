@@ -4,7 +4,7 @@ EXPOSE 8000
 WORKDIR /similarPostsEngine
 
 COPY ./requirements.txt /similarPostsEngine/requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /similarPostsEngine/requirements.txt
 
 COPY ./.env /similarPostsEngine/.env
 COPY ./app /similarPostsEngine/app

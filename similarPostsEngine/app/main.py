@@ -27,5 +27,5 @@ async def similar_posts(title: str = Query(...), content: str = Query(...), top_
 @app.post("/add-post")
 async def add_post(post_id: str = Query(...)):
     new_post = fetch_post_by_id(post_id)
-    model.add_posts_to_index(list(new_post))
+    model.add_posts_to_index([new_post])
     return {"message": "Post added successfully"}
