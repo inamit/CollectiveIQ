@@ -69,7 +69,7 @@ export const getPhiResponse = async (input: string, postId: string, parentCommen
 export const getMistralResponse = async (input: string, postId: string, parentCommentID?: string): Promise<string> => {
     const formattedInput = `# Question: ${input}\n# Answer:`;
     const response = await fetchHuggingFaceResponse(process.env.MISTRAL_API_URL || "", formattedInput);
-    await saveAIResponseAsComment(postId, response, process.env.MISTRAL_USERID || "", parentCommentID || "");
+    await saveAIResponseAsComment(postId, response, process.env.MISTRAL_USERID || "", parentCommentID || null);
     return response;
 };
 
@@ -78,7 +78,7 @@ export const getGeminiResponse = async (input: string, postId?: string, parentCo
         const result = await model.generateContent(input);
         const response = result.response.text().trim();
         if (postId != null) {
-            await saveAIResponseAsComment(postId, response, process.env.GEMINI_USERID || "", parentCommentID || "");
+            await saveAIResponseAsComment(postId, response, process.env.GEMINI_USERID || "", parentCommentID || null);
         }
         return response;
     } catch (error) {
