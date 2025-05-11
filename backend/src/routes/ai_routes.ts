@@ -64,7 +64,7 @@ router.post("/gemini-response", handleGeminiResponse);
 /**
  * @swagger
  * paths:
- *   /ai/Phi-response:
+ *   /ai/phi-response:
  *     post:
  *       tags:
  *         - AI
@@ -92,7 +92,7 @@ router.post("/gemini-response", handleGeminiResponse);
  *               schema:
  *                 $ref: '#/components/schemas/Error'
  */
-router.post("/Phi-response", handlePhiResponse);
+router.post("/phi-response", handlePhiResponse);
 
 /**
  * @swagger

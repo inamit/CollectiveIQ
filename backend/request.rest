@@ -98,7 +98,7 @@ Content-Type: application/json
 }
 
 ### Get response from Phi AI
-POST http://localhost:3000/ai/Phi-response?post_id=67f66c103aee1ed18a27f420
+POST http://localhost:3000/ai/phi-response?post_id=67f66c103aee1ed18a27f420
 Content-Type: application/json
 
 {
