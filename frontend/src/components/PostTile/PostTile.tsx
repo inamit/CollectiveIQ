@@ -62,7 +62,7 @@ export default function PostTile({ post }: Props) {
                 sx={{
                     width: "100%",
                     maxWidth: 600,
-                    bgcolor: "#333", // Slightly lighter for better readability
+                    bgcolor: "#333",
                     borderRadius: 4,
                     cursor: "pointer",
                     p: 2,
@@ -156,7 +156,7 @@ export default function PostTile({ post }: Props) {
 
                 <Box display="flex" alignItems="center" gap={1}>
                     <Tooltip title="Dislike">
-                        <IconButton size="small" sx={{ color: "#f44336" }}>
+                        <IconButton size="small" sx={{ color: "#f44336" }} aria-label="Dislike this post">
                             <ThumbDown fontSize="small" />
                         </IconButton>
                     </Tooltip>
@@ -166,15 +166,12 @@ export default function PostTile({ post }: Props) {
                 </Box>
 
                 <Box
-                    display="flex"
-                    alignItems="center"
                     sx={{
                         position: "absolute",
                         bottom: 10,
                         right: 10,
-                        backgroundColor: "#444",
-                        borderRadius: 20,
-                        padding: "4px 10px",
+                        display: "flex",
+                        alignItems: "center",
                     }}
                 >
                     <Tooltip title="Comments">

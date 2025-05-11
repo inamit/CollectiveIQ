@@ -32,7 +32,7 @@ import Markdown from "../../components/Markdown/Markdown.tsx";
 import { LoadingState } from "../../services/loadingState.ts";
 import UserDetails from "../../components/UserAvatar/UserDetails.tsx";
 import { LikesSection } from "../../components/LikesSection/LikesSection.tsx";
-
+import { Fab } from "@mui/material";
 const PostComponent = () => {
     const { postId } = useParams();
     const navigate = useNavigate();
@@ -114,14 +114,15 @@ const PostComponent = () => {
 
             const { request } = new PostsService(user!, setUser).updatePost(
                 postId!,
-                editablePost?.title,
-                editablePost?.content,
+                editablePost.title,
+                editablePost.content,
                 image !== originalImage ? image : null
             );
 
             request
                 .then((response) => {
                     setEditablePost(response.data);
+                    setIsEditing(false);
                     resolve("");
                 })
                 .catch((err) => {
@@ -149,10 +150,22 @@ const PostComponent = () => {
         if (user?._id === post?.userId?._id) {
             return (
                 <Box className="post-actions">
-                    <IconButton size="small" onClick={toggleEditMode}>
+                    <IconButton size="small" onClick={toggleEditMode}  sx={{
+                        '&:hover': {
+                            color: 'primary.main',
+                        },
+                    }}>
                         {isEditing ? <SaveIcon /> : <EditIcon />}
                     </IconButton>
-                    <IconButton size="small" onClick={confirmDeletePost}>
+                    <IconButton
+                        size="small"
+                        onClick={confirmDeletePost}
+                        sx={{
+                            '&:hover': {
+                                color: 'error.main',
+                            },
+                        }}
+                    >
                         <DeleteIcon />
                     </IconButton>
                 </Box>
