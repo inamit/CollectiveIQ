@@ -3,7 +3,7 @@ import { handleMongoQueryError } from "../db/db";
 import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 import mongoose from "mongoose";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
-import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
+import { getGeminiResponse, getPhiResponse, getMistralResponse } from "../services/aiService";
 import {toggleReaction} from "./likes_controller";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
@@ -24,7 +24,7 @@ const triggerAIResponses = async (content: string, postId: string): Promise<void
   try {
     await Promise.all([
       getGeminiResponse(content, postId),
-      getFalconResponse(content, postId),
+      getPhiResponse(content, postId),
       getMistralResponse(content, postId),
     ]);
     console.log("AI responses successfully triggered for post:", postId);

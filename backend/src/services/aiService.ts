@@ -36,7 +36,7 @@ const fetchHuggingFaceResponse = async (url: string, input: string): Promise<str
     }
 };
 
-const saveAIResponseAsComment = async (postId: string, content: string, modelId: string, parentCommentID: string): Promise<void> => {
+const saveAIResponseAsComment = async (postId: string, content: string, modelId: string, parentCommentID: string | null): Promise<void> => {
     try {
         const postExists = await Post.exists({ _id: postId });
         if (!postExists) {
@@ -59,9 +59,10 @@ const saveAIResponseAsComment = async (postId: string, content: string, modelId:
     }
 };
 
-export const getFalconResponse = async (input: string, postId: string, parentCommentID?: string): Promise<string> => {
-    const response = await fetchHuggingFaceResponse(process.env.FALCON_API_URL || "", input);
-    await saveAIResponseAsComment(postId, response, process.env.FALCON_USERID || "", parentCommentID || "");
+export const getPhiResponse = async (input: string, postId: string, parentCommentID?: string): Promise<string> => {
+    const formattedInput = `<|user|>${input}<|end|><|assistant|>`;
+    const response = await fetchHuggingFaceResponse(process.env.Phi_API_URL || "", formattedInput);
+    await saveAIResponseAsComment(postId, response, process.env.Phi_USERID || "", parentCommentID || null);
     return response;
 };
 

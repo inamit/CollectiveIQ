@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
+import { getGeminiResponse, getPhiResponse, getMistralResponse } from "../services/aiService";
 import Post, { IPost } from "../models/posts_model";
 
 const handleAIResponse = (getResponse: (input: string, postId: string, parentCommentID: string) => Promise<string>) => {
@@ -21,5 +21,5 @@ const handleAIResponse = (getResponse: (input: string, postId: string, parentCom
 };
 
 export const handleGeminiResponse = handleAIResponse(getGeminiResponse);
-export const handleFalconResponse = handleAIResponse(getFalconResponse);
+export const handlePhiResponse = handleAIResponse(getPhiResponse);
 export const handleMistralResponse = handleAIResponse(getMistralResponse);
