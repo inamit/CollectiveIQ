@@ -32,6 +32,7 @@ import Markdown from "../../components/Markdown/Markdown.tsx";
 import { LoadingState } from "../../services/loadingState.ts";
 import UserDetails from "../../components/UserAvatar/UserDetails.tsx";
 import { LikesSection } from "../../components/LikesSection/LikesSection.tsx";
+import {motion} from "framer-motion";
 
 const PostComponent = () => {
     const { postId } = useParams();
@@ -54,6 +55,7 @@ const PostComponent = () => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         setEditablePost(post);
         if (post?.imageUrl) {
             createFile(post.imageUrl).then((file) => {
@@ -150,24 +152,51 @@ const PostComponent = () => {
         if (user?._id === post?.userId?._id) {
             return (
                 <Box className="post-actions">
-                    <IconButton size="small" onClick={toggleEditMode}  sx={{
-                        '&:hover': {
-                            color: 'primary.main',
-                        },
-                    }}>
-                        {isEditing ? <SaveIcon /> : <EditIcon />}
-                    </IconButton>
-                    <IconButton
-                        size="small"
-                        onClick={confirmDeletePost}
-                        sx={{
-                            '&:hover': {
-                                color: 'error.main',
-                            },
-                        }}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.3 }}
                     >
-                        <DeleteIcon />
-                    </IconButton>
+                        <IconButton
+                            onClick={toggleEditMode}
+                            sx={{
+                                color: "primary.main",
+                                "&:hover": {
+                                    backgroundColor: "secondary.main", // Light red background on hover
+                                },
+                                "& svg": {
+                                    fontSize: "1.5rem", // Icon size
+                                },
+                            }}
+                        >
+                            {isEditing ? null : <EditIcon />}
+                        </IconButton>
+                    </motion.div>
+
+
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <IconButton
+                            onClick={confirmDeletePost}
+                            sx={{
+                                color: "error.main", // Red color for the delete icon
+                                "&:hover": {
+                                    backgroundColor: "#ffcccc", // Light red background on hover
+                                },
+                                "& svg": {
+                                    fontSize: "1.5rem", // Icon size
+                                },
+                            }}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </motion.div>
                 </Box>
             );
         }
@@ -244,11 +273,22 @@ const PostComponent = () => {
                                 />
                             )}
                             {isEditing && (
-                                <ImagePicker
-                                    image={image}
-                                    setImage={setImage}
-                                    required={!!editablePost?.imageUrl}
-                                />
+                                <Box display="flex" alignItems="center" justifyContent="space-between" mt={2}>
+                                    <ImagePicker
+                                        image={image}
+                                        setImage={setImage}
+                                        required={!!editablePost?.imageUrl}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<SaveIcon />}
+                                        onClick={toggleEditMode}
+                                        sx={{ ml: 2 }}
+                                    >
+                                        Save
+                                    </Button>
+                                </Box>
                             )}
                         </CardContent>
 
@@ -302,10 +342,10 @@ const PostComponent = () => {
         <>
             <Box className="post-container">
                 <Card className="post-card">
-                    {getHeader()}
                     {getUserDetails()}
+                    {getHeader()}
                     {getPostContent()}
-                    {getCommentsComponents()}
+                    {!isEditing && getCommentsComponents()}
                 </Card>
             </Box>
 
