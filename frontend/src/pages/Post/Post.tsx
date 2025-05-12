@@ -32,7 +32,7 @@ import Markdown from "../../components/Markdown/Markdown.tsx";
 import { LoadingState } from "../../services/loadingState.ts";
 import UserDetails from "../../components/UserAvatar/UserDetails.tsx";
 import { LikesSection } from "../../components/LikesSection/LikesSection.tsx";
-import {motion} from "framer-motion";
+import { motion } from "framer-motion";
 
 const PostComponent = () => {
     const { postId } = useParams();
@@ -148,64 +148,10 @@ const PostComponent = () => {
             });
     };
 
-    const getEditButtons = () => {
-        if (user?._id === post?.userId?._id) {
-            return (
-                <Box className="post-actions">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <IconButton
-                            onClick={toggleEditMode}
-                            sx={{
-                                color: "primary.main",
-                                "&:hover": {
-                                    backgroundColor: "secondary.main", // Light red background on hover
-                                },
-                                "& svg": {
-                                    fontSize: "1.5rem", // Icon size
-                                },
-                            }}
-                        >
-                            {isEditing ? null : <EditIcon />}
-                        </IconButton>
-                    </motion.div>
-
-
-
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <IconButton
-                            onClick={confirmDeletePost}
-                            sx={{
-                                color: "error.main", // Red color for the delete icon
-                                "&:hover": {
-                                    backgroundColor: "#ffcccc", // Light red background on hover
-                                },
-                                "& svg": {
-                                    fontSize: "1.5rem", // Icon size
-                                },
-                            }}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </motion.div>
-                </Box>
-            );
-        }
-    };
-
     const getHeader = () => {
         switch (postLoadingState) {
             case LoadingState.ERROR:
-                return <></>;
+                return null;
             case LoadingState.LOADED:
                 return (
                     <div className="post-header">
@@ -220,7 +166,6 @@ const PostComponent = () => {
                                 {editablePost?.title}
                             </Typography>
                         )}
-                        {getEditButtons()}
                     </div>
                 );
             default:
@@ -234,18 +179,70 @@ const PostComponent = () => {
                 return <></>;
             case LoadingState.LOADED:
                 return (
-                    <UserDetails
-                        user={post?.userId}
-                        description={formatDate(post?.date)}
-                    />
+                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                        <UserDetails
+                            user={post?.userId}
+                            description={formatDate(post?.date)}
+                        />
+                        {user?._id === post?.userId?._id && !isEditing && (
+                            <Box display="flex" gap={1} >
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.8 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                <IconButton
+                                    size="small"
+                                    onClick={toggleEditMode}
+                                    sx={{
+                                        color: "primary.main",
+                                        "&:hover": {
+                                            backgroundColor: "secondary.main",
+                                        },
+                                        "& svg": {
+                                            fontSize: "1.5rem",
+                                        },
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                                </motion.div>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.8 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                <IconButton
+                                    size="small"
+                                    onClick={confirmDeletePost}
+                                    sx={{
+                                        color: "error.main",
+                                        "&:hover": {
+                                            backgroundColor: "#ffcccc",
+                                        },
+                                        "& svg": {
+                                            fontSize: "1.5rem",
+                                        },
+                                    }}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                                </motion.div>
+                            </Box>
+                        )}
+                    </Box>
                 );
             default:
                 return (
-                    <Box display="flex" alignItems="center" mb={2}>
-                        <Skeleton variant="circular" width={40} height={40} />
-                        <Box ml={2}>
-                            <Skeleton variant="text" width={100} />
-                            <Skeleton variant="text" width={70} />
+                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                        <Box display="flex" alignItems="center">
+                            <Skeleton variant="circular" width={40} height={40} />
+                            <Box ml={2}>
+                                <Skeleton variant="text" width={100} />
+                                <Skeleton variant="text" width={70} />
+                            </Box>
                         </Box>
                     </Box>
                 );
@@ -349,7 +346,6 @@ const PostComponent = () => {
                 </Card>
             </Box>
 
-            {/* Modern Delete Confirmation Dialog */}
             <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
                 <DialogTitle>Delete Post</DialogTitle>
                 <DialogContent>
