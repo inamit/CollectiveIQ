@@ -12,6 +12,7 @@ import {
     DialogContent,
     DialogActions,
     Button,
+    Chip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -299,6 +300,12 @@ const PostComponent = () => {
                                 likeableService={new PostsService(user!, setUser)}
                                 refresh={refreshPost}
                             />
+                            <Chip
+                                label={post?.tag}
+                                color="primary"
+                                variant="outlined"
+                                sx={{ marginLeft: 'auto' }} >
+                            </Chip>
                         </Box>
                     </>
                 );

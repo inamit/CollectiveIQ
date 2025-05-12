@@ -3,7 +3,7 @@ import { handleMongoQueryError } from "../db/db";
 import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
 import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
-import {toggleReaction} from "./likes_controller";
+import { toggleReaction } from "./likes_controller";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -23,8 +23,8 @@ const triggerAIResponses = async (content: string, postId: string): Promise<void
   try {
     await Promise.all([
       getGeminiResponse(content, postId),
-      getFalconResponse(content, postId),
-      getMistralResponse(content, postId),
+      //getFalconResponse(content, postId),
+      //getMistralResponse(content, postId),
     ]);
     console.log("AI responses successfully triggered for post:", postId);
   } catch (error) {
@@ -170,7 +170,7 @@ async function defineTagWithLLM(question: string, post_id: string) {
   }
 }
 
-const getLikedPosts= async (req: Request, res: Response): Promise<any> => {
+const getLikedPosts = async (req: Request, res: Response): Promise<any> => {
   try {
     const userId = req.params.userId;
     const likedPosts = await Post.find({ likes: userId }).exec();

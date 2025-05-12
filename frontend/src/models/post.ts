@@ -8,5 +8,6 @@ export default interface Post extends Likeable {
   imageUrl?: string;
   userId: User;
   date: string;
+  tag: string;
   comments: Comment[];
 }
