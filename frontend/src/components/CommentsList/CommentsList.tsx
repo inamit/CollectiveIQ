@@ -10,6 +10,7 @@ import {routes} from "../../router/routes";
 import {CommentComponent} from "../Comment/Comment";
 import Comment from "../../models/comment";
 import {motion} from "framer-motion";
+import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 
 interface CommentProps {
     comments: Comment[];
@@ -53,7 +54,16 @@ export default function CommentsList({
 
     return (
         <div style={{paddingLeft: `${level * 20}px`}}>
-            {paginatedComments.length === 0 && <div>No comments yet</div>}
+            {paginatedComments.length === 0 && (<motion.div
+                className="no-posts"
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{duration: 0.5}}
+            >
+                <SentimentDissatisfiedIcon style={{fontSize: 60, color: "#888"}}/>
+                <h3>No Answers found</h3>
+
+            </motion.div>)}
             <List className="comments-list">
                 {paginatedComments[currentPage - 1]?.map((comment, index) => (
                     <motion.div
