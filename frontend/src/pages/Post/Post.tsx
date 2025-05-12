@@ -32,7 +32,7 @@ import Markdown from "../../components/Markdown/Markdown.tsx";
 import { LoadingState } from "../../services/loadingState.ts";
 import UserDetails from "../../components/UserAvatar/UserDetails.tsx";
 import { LikesSection } from "../../components/LikesSection/LikesSection.tsx";
-import { Fab } from "@mui/material";
+
 const PostComponent = () => {
     const { postId } = useParams();
     const navigate = useNavigate();
