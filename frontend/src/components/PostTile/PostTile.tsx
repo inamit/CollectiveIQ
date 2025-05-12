@@ -89,7 +89,21 @@ export default function PostTile({ post }: Props) {
                 </Box>
 
                 <CardContent>
-                    <Typography variant="h6" color="white" gutterBottom>
+                    <Typography
+                        variant="h6"
+                        color="white"
+                        gutterBottom
+                        sx={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            whiteSpace: "normal",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                        }}
+                    >
                         {post.title}
                     </Typography>
 
