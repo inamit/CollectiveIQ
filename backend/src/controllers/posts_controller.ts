@@ -4,6 +4,7 @@ import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
 import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
 import { toggleReaction } from "./likes_controller";
+import { deleteCommentsByPostId } from "../controllers/comments_controller"
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -71,7 +72,7 @@ const deletePostById = async (req: Request, res: Response): Promise<any> => {
     }
 
     await Post.findByIdAndDelete(post_id);
-
+    deleteCommentsByPostId(post_id)
     return res.json({ message: "Post deleted successfully" });
   } catch (err: any) {
     console.warn("Error deleting post:", err);
