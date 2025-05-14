@@ -5,6 +5,7 @@ import { saveFile } from "../middleware/file-storage/file-storage-middleware";
 import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
 import { toggleReaction } from "./likes_controller";
 import { deleteCommentsByPostId } from "../controllers/comments_controller"
+import { incNumberOfPosts } from "./tags_controller";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -48,7 +49,7 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
 
-    await defineTagWithLLM(savedPost.content, String(savedPost._id))
+    await defineTagWithLLM(savedPost.content, String(savedPost._id));
     await triggerAIResponses(savedPost.content, String(savedPost._id));
 
     return res.json(savedPost);
@@ -166,6 +167,7 @@ async function defineTagWithLLM(question: string, post_id: string) {
       },
       { new: true, runValidators: true }
     );
+    await incNumberOfPosts(aiResponse);
   } catch (error) {
     console.warn("Error defineTagWithLLM in post:", error);
   }

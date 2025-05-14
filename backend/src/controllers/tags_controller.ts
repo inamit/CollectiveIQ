@@ -29,11 +29,22 @@ const createTagsFromEnv = async (req: Request, res: Response): Promise<any> => {
         const createdTags = await Tag.insertMany(tagDocs, { ordered: false });
         return res.status(201).json({ message: `${createdTags.length} tags created.`, tags: createdTags });
     } catch (error: any) {
-        console.error("Error creating tags:", error);
-        return res.status(500).json({ error: error.message || "Internal server error" });
+        console.warn("Error creating tags:", error);
+        return handleMongoQueryError(res, error);
     }
 };
 
+export const incNumberOfPosts = async (tag: string | undefined) => {
+    try {
+        const tagName = tag?.toLowerCase()
+        const result = await Tag.updateOne(
+            { name: tagName },
+            { $inc: { numOfPosts: 1 } }
+        );
+    } catch (error) {
+        console.error('Error updating the item:', error);
+    }
+}
 export default {
     getAllTags,
     createTagsFromEnv,
