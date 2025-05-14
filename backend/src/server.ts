@@ -7,6 +7,7 @@ import commentsRoute from "./routes/comments_route";
 import usersRoute from "./routes/users_route";
 import chatRoute from "./routes/chats_route";
 import aiRoute from "./routes/ai_routes";
+import tagsRoute from "./routes/tags_route";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 
@@ -51,7 +52,7 @@ app.use("/comments", commentsRoute);
 app.use("/users", usersRoute);
 app.use("/chats", chatRoute);
 app.use("/ai", aiRoute);
-
+app.use("/tags", tagsRoute);
 const initApp = async (): Promise<Express> => {
   try {
     await connectDB();
