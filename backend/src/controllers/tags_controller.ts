@@ -45,6 +45,7 @@ export const incNumberOfPosts = async (tag: string | undefined) => {
         console.error('Error updating the item:', error);
     }
 }
+
 export default {
     getAllTags,
     createTagsFromEnv,

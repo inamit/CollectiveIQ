@@ -4,7 +4,7 @@ import { usePostsContext } from "../../context/postsContext";
 
 const HomePage = () => {
   const { filteredPosts } = usePostsContext();
-
+  
   return (
       <div className="homepage-container">
         <h1 className="homepage-title">CollectiveIQ</h1>

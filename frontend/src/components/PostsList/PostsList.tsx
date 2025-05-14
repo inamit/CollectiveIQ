@@ -10,6 +10,7 @@ import {useNavigate} from "react-router";
 import {routes} from "../../router/routes";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 import {motion} from "framer-motion";
+import TagsList from "../TagsList/TagsList";
 
 interface Props {
     posts: Post[];
@@ -58,28 +59,31 @@ export default function PostsList({posts, maxPostsPerPage, loadingState}: Props)
                     <p>Try adjusting your search or check back later.</p>
                 </motion.div>
             )}
-
-            <List className="postsList">
-                {paginatedPosts[currentPage - 1]?.map((post, index) => (
-                    <motion.div
-                        key={post._id}
-                        initial={{opacity: 0, y: 20}}
-                        animate={{opacity: 1, y: 0}}
-                        transition={{
-                            delay: index * 0.1,
-                            duration: 0.5,
-                        }}
-                    >
-                        <ListItem
-                            style={{cursor: "pointer"}}
-                            onClick={() => navigate(`${routes.POST}/${post._id}`)}
+            <div className="container">
+                <List className="postsList">
+                    {paginatedPosts[currentPage - 1]?.map((post, index) => (
+                        <motion.div
+                            key={post._id}
+                            initial={{opacity: 0, y: 20}}
+                            animate={{opacity: 1, y: 0}}
+                            transition={{
+                                delay: index * 0.1,
+                                duration: 0.5,
+                            }}
                         >
-                            <PostTile post={post}/>
-                        </ListItem>
-                    </motion.div>
-                ))}
-            </List>
-
+                            <ListItem
+                                style={{cursor: "pointer"}}
+                                onClick={() => navigate(`${routes.POST}/${post._id}`)}
+                            >
+                                <PostTile post={post}/>
+                            </ListItem>
+                        </motion.div>
+                    ))}
+                </List>
+                <div className="top-right-div">
+                    <TagsList maxTagsPerPage={10}></TagsList>
+                </div>
+            </div>    
             {paginatedPosts.length > 1 && (
                 <div className="pagination">
                     <Pagination
