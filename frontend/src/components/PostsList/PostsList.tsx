@@ -6,7 +6,6 @@ import React, {useState, useEffect} from "react";
 import {paginate} from "../../utils/pagination";
 import {LoadingState} from "../../services/loadingState";
 import _ from "lodash";
-import {useNavigate} from "react-router";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 import {motion} from "framer-motion";
 
