@@ -56,14 +56,17 @@ const PostComponent = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        setEditablePost(post);
-        if (post?.imageUrl) {
-            createFile(post.imageUrl).then((file) => {
-                setImage(file);
-                setOriginalImage(file);
-            });
+        if (post) {
+            setEditablePost(post);
+            if (post.imageUrl) {
+                createFile(post.imageUrl).then((file) => {
+                    setImage(file);
+                    setOriginalImage(file);
+                });
+            }
         }
     }, [post]);
+
 
     const createFile = async (imageUrl: string) => {
         const urlArray = imageUrl.split("/");
@@ -148,6 +151,59 @@ const PostComponent = () => {
             });
     };
 
+    const getEditButtons = () => {
+        return (<div>
+            {user?._id === post?.userId?._id && !isEditing && (
+                <Box display="flex" gap={1} >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <IconButton
+                            size="small"
+                            onClick={toggleEditMode}
+                            sx={{
+                                color: "primary.main",
+                                "&:hover": {
+                                    backgroundColor: "secondary.main",
+                                },
+                                "& svg": {
+                                    fontSize: "1.5rem",
+                                },
+                            }}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <IconButton
+                            size="small"
+                            onClick={confirmDeletePost}
+                            sx={{
+                                color: "error.main",
+                                "&:hover": {
+                                    backgroundColor: "#ffcccc",
+                                },
+                                "& svg": {
+                                    fontSize: "1.5rem",
+                                },
+                            }}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </motion.div>
+                </Box>
+            )}
+        </div>)
+    }
+
     const getHeader = () => {
         switch (postLoadingState) {
             case LoadingState.ERROR:
@@ -184,70 +240,23 @@ const PostComponent = () => {
                             user={post?.userId}
                             description={formatDate(post?.date)}
                         />
-                        {user?._id === post?.userId?._id && !isEditing && (
-                            <Box display="flex" gap={1} >
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.8 }}
-                                    transition={{ duration: 0.3 }}
-                                >
-                                <IconButton
-                                    size="small"
-                                    onClick={toggleEditMode}
-                                    sx={{
-                                        color: "primary.main",
-                                        "&:hover": {
-                                            backgroundColor: "secondary.main",
-                                        },
-                                        "& svg": {
-                                            fontSize: "1.5rem",
-                                        },
-                                    }}
-                                >
-                                    <EditIcon />
-                                </IconButton>
-                                </motion.div>
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.8 }}
-                                    transition={{ duration: 0.3 }}
-                                >
-                                <IconButton
-                                    size="small"
-                                    onClick={confirmDeletePost}
-                                    sx={{
-                                        color: "error.main",
-                                        "&:hover": {
-                                            backgroundColor: "#ffcccc",
-                                        },
-                                        "& svg": {
-                                            fontSize: "1.5rem",
-                                        },
-                                    }}
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-                                </motion.div>
-                            </Box>
-                        )}
+                        {getEditButtons()}
                     </Box>
-                );
+                )
             default:
                 return (
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                         <Box display="flex" alignItems="center">
-                            <Skeleton variant="circular" width={40} height={40} />
+                            <Skeleton variant="circular" width={40} height={40}/>
                             <Box ml={2}>
-                                <Skeleton variant="text" width={100} />
-                                <Skeleton variant="text" width={70} />
+                                <Skeleton variant="text" width={100}/>
+                                <Skeleton variant="text" width={70}/>
                             </Box>
                         </Box>
                     </Box>
                 );
-        }
-    };
+
+        }}
 
     const getPostContent = () => {
         switch (postLoadingState) {
