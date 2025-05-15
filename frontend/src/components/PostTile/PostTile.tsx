@@ -170,7 +170,7 @@ export default function PostTile({ post }: Props) {
 
                 <Box display="flex" alignItems="center" gap={1}>
                     <Tooltip title="Dislike">
-                        <IconButton size="small" sx={{ color: "#f44336" }} aria-label="Dislike this post">
+                        <IconButton size="small" sx={{ color: "#f44336" }}>
                             <ThumbDown fontSize="small" />
                         </IconButton>
                     </Tooltip>
@@ -190,7 +190,6 @@ export default function PostTile({ post }: Props) {
                 >
                     <Tooltip title="Comments">
                         <IconButton
-                            aria-label="View comments"
                             size="small"
                             sx={{ color: "#fff", mr: 0.5 }}
                         >
