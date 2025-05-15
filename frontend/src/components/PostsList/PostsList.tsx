@@ -7,7 +7,6 @@ import {paginate} from "../../utils/pagination";
 import {LoadingState} from "../../services/loadingState";
 import _ from "lodash";
 import {useNavigate} from "react-router";
-import {routes} from "../../router/routes";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 import {motion} from "framer-motion";
 
@@ -19,7 +18,6 @@ interface Props {
 
 export default function PostsList({posts, maxPostsPerPage, loadingState}: Props) {
     const [currentPage, setCurrentPage] = useState(1);
-    const navigate = useNavigate();
 
     const paginatedPosts: Post[][] = paginate(posts, maxPostsPerPage);
 
