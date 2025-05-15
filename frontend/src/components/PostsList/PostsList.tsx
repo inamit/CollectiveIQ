@@ -71,8 +71,6 @@ export default function PostsList({posts, maxPostsPerPage, loadingState}: Props)
                         }}
                     >
                         <ListItem
-                            style={{cursor: "pointer"}}
-                            onClick={() => navigate(`${routes.POST}/${post._id}`)}
                         >
                             <PostTile post={post}/>
                         </ListItem>
