@@ -1,0 +1,23 @@
+name: Build Project Components
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Backend
+        run: |
+          cd backend
+          npm install
+          npm run build:prod
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build

@@ -32,7 +32,10 @@ const ChatComponent = () => {
 
     const handleSelectUser = (selectedUser: User) => {
         setSelectedUser(selectedUser);
-        setMessages([]);
+        useEffect(() => {
+            setMessages([]);
+        }, [messages]);
+
     };
 
     return (
@@ -40,7 +43,6 @@ const ChatComponent = () => {
             {user && (<UserDropdown users={users} onSelectUser={handleSelectUser}/>)}
             {selectedUser && user && (
                 <ChatBoxComponent
-                    open={Boolean(selectedUser)}
                     onClose={() => setSelectedUser(null)}
                     user={user}
                     senderId={user._id}

@@ -1,24 +1,35 @@
 services:
   backend:
-    build:
-      context: ./backend
-      target: production
+    image: inamit323colman/collectiveiq-backend:latest
+    container_name: collectiveiq-backend
     ports:
       - 4000:3000
     environment:
       - NODE_ENV=production
-      - DB_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@172.18.0.1:21771/collectiveIQ
+      - DB_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${DB_URL}:${DB_PORT}/${DB_NAME}
       - ACCESS_TOKEN_EXPIRATION='1d'
       - REFRESH_TOKEN_EXPIRATION='2d'
       - TOKEN_SECRET=${TOKEN_SECRET}
       - FILE_SIZE_LIMIT=5242880
       - BASE_URL=https://node13.cs.colman.ac.il:4000/
       - SSL_PASSPHRASE=${SSL_PASSPHRASE}
+      - TAG_STRING="try to attempt the best tag to the follow string from the existed ones"
+      - TAG_LIST = "(javascript, python, java, c#, cooking, health, fitness, travel, photography, food, finance, business, politics, gaming, art, literature, music, sports, education, parenting, relationships, mental-health, science, psychology, philosophy, economics, design, self-improvement, entertainment, diy, gardening, pets, history, education, astrology, marketing, books, writing, programming, web-development, fashion, beauty, travel-tips, food-recipes, architecture, language, cooking-tips, makeup, nutrition, sleep, technology, meditation, cryptocurrency, environment, sustainability, yoga, mindfulness, law, photography-tips, holidays, crafts, social-media, startups, investments, real-estate, engineering, home-improvement, product-design, leadership, career-advice, teaching, relationships-advice, comedy, movies, nature, hiking, volunteering, self-care, happiness, music-production, graphic-design, web-design, acting, productivity, life-hacks, public-speaking, writing-tips, fashion-design, animal-welfare, charity, mindfulness-meditation, mental-wellbeing, spirituality, conflict-resolution, sociology, childhood-education, language-learning, travel-photography, personal-finance, sustainable-living)"
+      - HUGGING_FACE_API_KEY=${HUGGING_FACE_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - MISTARL_API_URL="https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
+      - FALCON_API_URL="https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct"
+      - GEMINI_USERID=681a2c65415bd74f3bc7ee70
+      - MISTRAL_USERID=681a2d45415bd74f3bc7eec4
+      - FALCON_USERID=681a2d04415bd74f3bc7eea1
+    volumes:
+      - ./backend/uploads:/app/uploads
     networks:
       - my-network
 
   frontend:
-    build: ./frontend
+    image: inamit323colman/collectiveiq-frontend:latest
+    container_name: collectiveiq-frontend
     environment:
       - NODE_ENV=production
     ports:

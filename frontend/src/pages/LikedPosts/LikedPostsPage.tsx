@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {useUser} from "../../context/userContext";
 import {PostsService} from "../../services/postsService.ts";
 import PostsList from "../../components/PostsList/PostsList.tsx";
+import Post from "../../models/post";
 
 const LikedPostsPage = () => {
     const {user, setUser} = useUser();
-    const [likedPosts, setLikedPosts] = useState([]);
+    const [likedPosts, setLikedPosts] = useState<Post[]>([]);
     useEffect(() => {
         if (user) {
             const postService: PostsService = new PostsService(user!, setUser);
