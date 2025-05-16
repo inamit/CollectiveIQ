@@ -71,4 +71,6 @@ router.get("/", tagsController.getAllTags);
 router.post("/init", authMiddleware, tagsController.createTagsFromEnv);
 
 router.post("/update-best-ai", authMiddleware, tagsController.updateBestAiForAllTags);
+
+router.get("/get-tag", tagsController.getTagByName);
 export default router;

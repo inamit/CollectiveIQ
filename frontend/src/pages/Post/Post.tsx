@@ -34,11 +34,14 @@ import { LoadingState } from "../../services/loadingState.ts";
 import UserDetails from "../../components/UserAvatar/UserDetails.tsx";
 import { LikesSection } from "../../components/LikesSection/LikesSection.tsx";
 import {motion} from "framer-motion";
+import Tag from "../../models/tag.ts";
+import { TagsService } from "../../services/tagsService.ts";
 
 const PostComponent = () => {
     const { postId } = useParams();
     const navigate = useNavigate();
     const { user, setUser } = useUser();
+    const [tag, setTag] = useState<Tag | null>(null);
     const {
         post,
         postLoadingState,
@@ -55,16 +58,30 @@ const PostComponent = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-        setEditablePost(post);
-        if (post?.imageUrl) {
-            createFile(post.imageUrl).then((file) => {
-                setImage(file);
-                setOriginalImage(file);
+   useEffect(() => {
+    window.scrollTo(0, 0);
+    setEditablePost(post);
+    
+    if (post?.imageUrl) {
+        createFile(post.imageUrl).then((file) => {
+            setImage(file);
+            setOriginalImage(file);
+        });
+    }
+
+    if (post?.tag) {
+        const tagsService = new TagsService();
+        const { request } = tagsService.getTagbyName(post.tag);
+
+        request
+            .then((response) => {
+                setTag(response.data)
+            })
+            .catch((err) => {
+                console.error("Failed to fetch tag:", err);
             });
-        }
-    }, [post]);
+    }
+}, [post]);
 
     const createFile = async (imageUrl: string) => {
         const urlArray = imageUrl.split("/");
@@ -300,12 +317,6 @@ const PostComponent = () => {
                                 likeableService={new PostsService(user!, setUser)}
                                 refresh={refreshPost}
                             />
-                            <Chip
-                                label={post?.tag}
-                                color="primary"
-                                variant="outlined"
-                                sx={{ marginLeft: 'auto' }} >
-                            </Chip>
                         </Box>
                     </>
                 );
@@ -331,6 +342,7 @@ const PostComponent = () => {
                             addComment={addComment}
                             refreshComments={refreshComments}
                             commentsLoadingState={commentsLoadingState}
+                            bestAiComment={tag?.bestAi}
                         />
                     </Box>
                 );

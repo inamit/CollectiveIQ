@@ -17,6 +17,7 @@ interface CommentProps {
   level?: number;
   showDividers?: boolean;
   refreshComments?: () => void;
+  bestAiComment?: string
 }
 
 export default function CommentsList({
@@ -26,6 +27,7 @@ export default function CommentsList({
   level = 0,
   showDividers = true,
   refreshComments = () => {},
+  bestAiComment
 }: CommentProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
@@ -62,6 +64,7 @@ export default function CommentsList({
                 key={comment._id}
                 comment={comment}
                 refreshComments={refreshComments}
+                bestAiComment={bestAiComment ?? ""}
               />
             </ListItem>
             {showDividers && <Divider />}

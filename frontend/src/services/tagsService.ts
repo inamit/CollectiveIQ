@@ -17,4 +17,13 @@ export class TagsService {
 
         return { request, cancel: () => controller.abort() };
     }
+
+    getTagbyName(tagName: string) {
+        const controller = new AbortController();
+        const request = this.httpClient.get<Tag>(`${config.backendURL}/tags/get-tag?tagName=${tagName}`, {
+            signal: controller.signal,
+        });
+
+        return { request, cancel: () => controller.abort() };
+    }
 }

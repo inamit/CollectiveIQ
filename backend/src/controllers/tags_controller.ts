@@ -15,6 +15,20 @@ const getAllTags = async (req: Request, res: Response): Promise<any> => {
     }
 };
 
+const getTagByName = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { tagName }: { tagName?: string } = req.query;
+        const tag: ITag[] | null = await Tag.findOne({ name: tagName });
+        if (!tag) {
+            return res.status(400).json({ error: "Tag is not found!" });
+        }
+        return res.json(tag);
+    } catch (err: any) {
+        console.warn("Error fetching tag:", err);
+        return handleMongoQueryError(res, err);
+    }
+};
+
 const createTagsFromEnv = async (req: Request, res: Response): Promise<any> => {
     try {
         const tagsString = process.env.TAG_LIST;
@@ -81,10 +95,10 @@ const updateBestAiForAllTags = async (req: Request, res: Response): Promise<void
             console.log(`the result for ${tag.name} is - ${result.length}`);
             if (result.length > 0) {
                 const bestAiUserId = result[0]._id.toString(); // Convert ObjectId to string
-                const bestAiName = await User.findById(bestAiUserId)
-                await Tag.updateOne({ _id: tag._id }, { $set: { bestAi: bestAiName?.username } });
+                //const bestAiName = await User.findById(bestAiUserId)
+                await Tag.updateOne({ _id: tag._id }, { $set: { bestAi: bestAiUserId } });
             } else {
-                //console.log(`No AI comments found for tag '${tag.name}'`);
+                console.log(`No AI comments found for tag '${tag.name}'`);
             }
         }
 
@@ -99,5 +113,6 @@ const updateBestAiForAllTags = async (req: Request, res: Response): Promise<void
 export default {
     getAllTags,
     createTagsFromEnv,
-    updateBestAiForAllTags
+    updateBestAiForAllTags,
+    getTagByName
 };
