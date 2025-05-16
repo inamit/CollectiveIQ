@@ -76,6 +76,7 @@ export default function CommentsList({
                 level={level + 1}
                 showDividers={showDividers}
                 refreshComments={refreshComments}
+                bestAiComment={bestAiComment}
               />
             )}
           </div>

@@ -317,6 +317,12 @@ const PostComponent = () => {
                                 likeableService={new PostsService(user!, setUser)}
                                 refresh={refreshPost}
                             />
+                            <Chip
+                                label={post?.tag}
+                                color="primary"
+                                variant="outlined"
+                                sx={{ marginLeft: 'auto' }} >
+                            </Chip>
                         </Box>
                     </>
                 );

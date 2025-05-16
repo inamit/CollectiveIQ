@@ -170,7 +170,7 @@ export const CommentComponent = ({
                                                 },
                                             }}
                                         >
-                                            {model.label}
+                                            {model.label === comment.userId.username && comment.userId._id === bestAiComment ? `${model.label} - Best` : model.label}
                                         </Button>
                                     ))}
                                 </motion.div>
