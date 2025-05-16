@@ -97,8 +97,8 @@ Content-Type: application/json
   "input": "Madrid is in England."
 }
 
-### Get response from Falcon AI
-POST http://localhost:3000/ai/falcon-response?post_id=67f66c103aee1ed18a27f420
+### Get response from Phi AI
+POST http://localhost:3000/ai/phi-response?post_id=67f66c103aee1ed18a27f420
 Content-Type: application/json
 
 {

@@ -61,7 +61,10 @@ const PostComponent = () => {
                 setOriginalImage(file);
             });
         }
-    }, [post]);
+        if (postId) {
+        refreshComments();
+    }
+  }, [post, postId, refreshComments]);
 
     const createFile = async (imageUrl: string) => {
         const urlArray = imageUrl.split("/");
