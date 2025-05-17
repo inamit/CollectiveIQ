@@ -3,6 +3,7 @@ import logging
 from fastapi import FastAPI, Query, Body
 from contextlib import asynccontextmanager
 
+from app.db.db import MongoDBConnection
 from app.input.addPostInput import AddPostInput
 from app.ml.model import model
 from app.db.postsService import fetch_posts_from_db, fetch_post_by_id
@@ -16,6 +17,7 @@ async def lifespan(app: FastAPI):
     posts = fetch_posts_from_db()
     model.add_posts_to_index(posts)
     yield
+    MongoDBConnection.instance().close_connection()
 
 
 app = FastAPI(lifespan=lifespan)
