@@ -16,7 +16,7 @@ interface Props {
   openInNewTab?: boolean;
 }
 
-export default function PostsList({posts, maxPostsPerPage, loadingState}: Props) {
+export default function PostsList({posts, maxPostsPerPage, loadingState, openInNewTab}: Props) {
     const [currentPage, setCurrentPage] = useState(1);
 
   const paginatedPosts: Post[][] = paginate(posts, maxPostsPerPage);
@@ -70,7 +70,7 @@ export default function PostsList({posts, maxPostsPerPage, loadingState}: Props)
                     >
                         <ListItem
                         >
-                            <PostTile post={post}/>
+                            <PostTile post={post} openInNewTab={openInNewTab} />
                         </ListItem>
                     </motion.div>
                 ))}
