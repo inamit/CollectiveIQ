@@ -6,8 +6,6 @@ import React, { useState, useEffect } from "react";
 import { paginate } from "../../utils/pagination";
 import { LoadingState } from "../../services/loadingState";
 import _ from "lodash";
-import { useNavigate } from "react-router";
-import { routes } from "../../router/routes";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 import { motion } from "framer-motion";
 
@@ -18,14 +16,8 @@ interface Props {
   openInNewTab?: boolean;
 }
 
-export default function PostsList({
-  posts,
-  maxPostsPerPage,
-  loadingState,
-  openInNewTab,
-}: Props) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const navigate = useNavigate();
+export default function PostsList({posts, maxPostsPerPage, loadingState}: Props) {
+    const [currentPage, setCurrentPage] = useState(1);
 
   const paginatedPosts: Post[][] = paginate(posts, maxPostsPerPage);
 
@@ -65,33 +57,24 @@ export default function PostsList({
         </motion.div>
       )}
 
-      <List className="postsList">
-        {paginatedPosts[currentPage - 1]?.map((post, index) => (
-          <motion.div
-            key={post._id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: index * 0.1,
-              duration: 0.5,
-            }}
-          >
-            <ListItem
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                const postUrl = `${routes.POST}/${post._id}`;
-                if (openInNewTab) {
-                  window.open(postUrl, "_blank");
-                } else {
-                  navigate(postUrl);
-                }
-              }}
-            >
-              <PostTile post={post} />
-            </ListItem>
-          </motion.div>
-        ))}
-      </List>
+            <List className="postsList">
+                {paginatedPosts[currentPage - 1]?.map((post, index) => (
+                    <motion.div
+                        key={post._id}
+                        initial={{opacity: 0, y: 20}}
+                        animate={{opacity: 1, y: 0}}
+                        transition={{
+                            delay: index * 0.1,
+                            duration: 0.5,
+                        }}
+                    >
+                        <ListItem
+                        >
+                            <PostTile post={post}/>
+                        </ListItem>
+                    </motion.div>
+                ))}
+            </List>
 
       {paginatedPosts.length > 1 && (
         <div className="pagination">
