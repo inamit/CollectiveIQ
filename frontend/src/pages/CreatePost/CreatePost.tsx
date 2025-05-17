@@ -11,6 +11,7 @@ import { Button } from "@mui/material";
 import { usePostsContext } from "../../context/postsContext.tsx";
 import Post from "../../models/post.ts";
 import PostsList from "../../components/PostsList/PostsList.tsx";
+import { motion } from "framer-motion";
 
 const CreatePost = () => {
   const [title, setTitle] = useState("");
@@ -111,9 +112,19 @@ const CreatePost = () => {
 
         {similarPosts.length > 0 && (
           <div className="similar-posts">
-            <h3>
-              Take a look at these similar posts before asking your question
-            </h3>
+            <motion.div
+              key="SimilarPostsLabel"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 0.1,
+                duration: 0.5,
+              }}
+            >
+              <h3>
+                Take a look at these similar posts before asking your question
+              </h3>
+            </motion.div>
             <PostsList
               posts={similarPosts || []}
               maxPostsPerPage={5}
