@@ -2,8 +2,14 @@ import { Request, Response } from "express";
 import { handleMongoQueryError } from "../db/db";
 import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
-import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
-import {toggleReaction} from "./likes_controller";
+import {
+  getGeminiResponse,
+  getFalconResponse,
+  getMistralResponse,
+} from "../services/ai_service";
+import { toggleReaction } from "./likes_controller";
+import { addPostToAlgorithm } from "../services/similar_posts_service";
+import { getSimilarPosts } from "../services/similar_posts_service";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -19,7 +25,10 @@ const getPosts = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
-const triggerAIResponses = async (content: string, postId: string): Promise<void> => {
+const triggerAIResponses = async (
+  content: string,
+  postId: string
+): Promise<void> => {
   try {
     await Promise.all([
       getGeminiResponse(content, postId),
@@ -47,8 +56,9 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
 
-    await defineTagWithLLM(savedPost.content, String(savedPost._id))
+    await defineTagWithLLM(savedPost.content, String(savedPost._id));
     await triggerAIResponses(savedPost.content, String(savedPost._id));
+    await addPostToAlgorithm(savedPost._id.toString());
 
     return res.json(savedPost);
   } catch (err: any) {
@@ -156,12 +166,12 @@ const dislikePost = async (req: Request, res: Response): Promise<any> => {
 
 async function defineTagWithLLM(question: string, post_id: string) {
   try {
-    const input = `${process.env.TAG_STRING}  ${process.env.TAG_LIST} the question: ${question}`
-    const aiResponse = await getGeminiResponse(input)
+    const input = `${process.env.TAG_STRING}  ${process.env.TAG_LIST} the question: ${question}`;
+    const aiResponse = await getGeminiResponse(input);
     const updatedPost: IPost | null = await Post.findByIdAndUpdate(
       post_id,
       {
-        tag: aiResponse
+        tag: aiResponse,
       },
       { new: true, runValidators: true }
     );
@@ -170,13 +180,24 @@ async function defineTagWithLLM(question: string, post_id: string) {
   }
 }
 
-const getLikedPosts= async (req: Request, res: Response): Promise<any> => {
+const getLikedPosts = async (req: Request, res: Response): Promise<any> => {
   try {
     const userId = req.params.userId;
     const likedPosts = await Post.find({ likes: userId }).exec();
     res.json(likedPosts);
   } catch (error) {
     res.status(500).send("Error fetching liked posts");
+  }
+};
+
+const similarPosts = async (req: Request, res: Response): Promise<any> => {
+  const params = req.params;
+
+  try {
+    const similarPosts = await getSimilarPosts(params.title, params.content);
+    res.json(similarPosts);
+  } catch (error) {
+    res.status(500).send("Error fetching similar posts");
   }
 };
 
@@ -189,5 +210,6 @@ export default {
   saveImage,
   likePost,
   dislikePost,
-  getLikedPosts
+  getLikedPosts,
+  similarPosts,
 };

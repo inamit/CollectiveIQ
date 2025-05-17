@@ -9,6 +9,8 @@ import chatRoute from "./routes/chats_route";
 import aiRoute from "./routes/ai_routes";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
+import posts_controller from "./controllers/posts_controller";
+import authMiddleware from "./middleware/auth/authMiddleware";
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
@@ -51,6 +53,45 @@ app.use("/comments", commentsRoute);
 app.use("/users", usersRoute);
 app.use("/chats", chatRoute);
 app.use("/ai", aiRoute);
+
+/**
+ * @swagger
+ * paths:
+ *  /similar-posts:
+ *   get:
+ *     summary: Get similar posts
+ *     tags:
+ *      - Post
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *      - name: title
+ *        in: query
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: content
+ *        in: query
+ *        required: true
+ *        schema:
+ *          type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved similar posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Post'
+ *       500:
+ *         description: Failed to retrieve similar posts
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ */
+app.get("/similar-posts", authMiddleware, posts_controller.similarPosts);
 
 const initApp = async (): Promise<Express> => {
   try {
