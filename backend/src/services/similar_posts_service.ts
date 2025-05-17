@@ -1,4 +1,4 @@
-const algorithmUrl = process.env.ALGORITHM_URL || "http://localhost:8000";
+const algorithmUrl = process.env.SIMILAR_POSTS_URL || "http://localhost:8000";
 
 export const addPostToAlgorithm = async (postId: string) => {
   try {
@@ -30,6 +30,7 @@ export const getSimilarPosts = async (title: string, content: string) => {
     const queryParams = new URLSearchParams({
       title: encodeURIComponent(title),
       content: encodeURIComponent(content),
+      top_k: process.env.SIMILAR_POSTS_TOP_K || "5",
     });
 
     const response = await fetch(
