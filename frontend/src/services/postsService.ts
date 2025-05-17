@@ -113,7 +113,7 @@ export class PostsService extends AbsLikeableService {
     return { data, cancel: () => controller.abort() };
   };
 
-  getSimilarPosts = async (title: string, content: string) => {
+  getSimilarPosts = (title: string, content: string) => {
     const controller = new AbortController();
     const request = this.httpClient.get<Post[]>(
       `${config.backendURL}/similar-posts`,
@@ -122,7 +122,7 @@ export class PostsService extends AbsLikeableService {
         signal: controller.signal,
       }
     );
-    const data = request.then((response) => response.data);
-    return { data, cancel: () => controller.abort() };
+
+    return { request, cancel: () => controller.abort() };
   };
 }

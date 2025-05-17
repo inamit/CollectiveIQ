@@ -9,11 +9,14 @@ import MarkdownEditor from "../../components/Markdown/MarkdownEditor/MarkdownEdi
 import "./CreatePost.css";
 import { Button } from "@mui/material";
 import { usePostsContext } from "../../context/postsContext.tsx";
+import Post from "../../models/post.ts";
+import PostsList from "../../components/PostsList/PostsList.tsx";
 
 const CreatePost = () => {
   const [title, setTitle] = useState("");
   const [question, setQuestion] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const [similarPosts, setSimilarPosts] = useState<Post[]>([]);
   const navigate = useNavigate();
   const { user, setUser } = useUser();
   const { reloadPosts } = usePostsContext();
@@ -26,15 +29,34 @@ const CreatePost = () => {
   };
 
   useEffect(() => {
+    let cancelRequest: () => void;
+
     const timeout = setTimeout(() => {
       if (title || question) {
         const postService = new PostsService(user!, setUser);
-        postService.getSimilarPosts(title, question);
+        const { request, cancel } = postService.getSimilarPosts(
+          title,
+          question
+        );
+
+        cancelRequest = cancel;
+        request
+          .then((response) => {
+            setSimilarPosts(response.data);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      } else if (similarPosts.length > 0) {
+        setSimilarPosts([]);
       }
     }, 500);
 
     return () => {
       clearTimeout(timeout);
+      if (cancelRequest) {
+        cancelRequest();
+      }
     };
   }, [title, question]);
 
@@ -86,6 +108,15 @@ const CreatePost = () => {
         </div>
 
         <ImagePicker image={image} setImage={setImage} required={false} />
+
+        {similarPosts.length > 0 && (
+          <div className="similar-posts">
+            <h3>
+              Take a look at these similar posts before asking your question
+            </h3>
+            <PostsList posts={similarPosts || []} maxPostsPerPage={5} />
+          </div>
+        )}
         <div className="button-container">
           <Button
             type="submit"
