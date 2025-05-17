@@ -1,7 +1,10 @@
+import logging
 from sentence_transformers import SentenceTransformer
 import faiss
 from app.settings import settings
 
+
+logger = logging.getLogger('uvicorn.error')
 
 class Model:
     def __init__(self):
@@ -14,6 +17,7 @@ class Model:
         embeddings = self.model.encode(texts, convert_to_numpy=True)
         self.index.add(embeddings)
         self.posts.extend(posts)
+        logger.info(f"Added {len(posts)} posts to the index")
 
 
 model = Model()

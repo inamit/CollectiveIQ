@@ -1,5 +1,6 @@
 import logging
 from app.db.db import get_db
+from bson.objectid import ObjectId
 
 logger = logging.getLogger('uvicorn.error')
 
@@ -12,5 +13,8 @@ def fetch_posts_from_db():
 
 
 def fetch_post_by_id(post_id: str):
+    logger.info(f"Loading post {post_id} from DB")
     db = get_db()
-    return db["posts"].find_one({"_id": post_id})
+    post = db["posts"].find_one(ObjectId(post_id))
+    logger.info(f"Loaded post. Post: {post}")
+    return post
