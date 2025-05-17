@@ -34,6 +34,8 @@ services:
       - GEMINI_USERID=681a2c65415bd74f3bc7ee70
       - MISTRAL_USERID=681a2d45415bd74f3bc7eec4
       - FALCON_USERID=681a2d04415bd74f3bc7eea1
+      - SIMILAR_POSTS_URL=http://127.0.0.1:8000
+      - SIMILAR_POSTS_TOP_K=5
     volumes:
       - ./backend/uploads:/app/uploads
     networks:
