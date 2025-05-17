@@ -8,6 +8,7 @@ import {
   getMistralResponse,
 } from "../services/ai_service";
 import { toggleReaction } from "./likes_controller";
+import { addPostToAlgorithm } from "../services/similar_posts_service";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -56,6 +57,7 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
 
     await defineTagWithLLM(savedPost.content, String(savedPost._id));
     await triggerAIResponses(savedPost.content, String(savedPost._id));
+    await addPostToAlgorithm(savedPost._id.toString());
 
     return res.json(savedPost);
   } catch (err: any) {
