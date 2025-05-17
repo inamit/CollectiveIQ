@@ -1,4 +1,6 @@
 import logging
+from idlelib.query import Query
+
 from fastapi import FastAPI, Body
 from contextlib import asynccontextmanager
 
@@ -22,7 +24,7 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/similar-posts")
-async def similar_posts(body: SimilarPostsInput = Body(...)):
+async def similar_posts(body: SimilarPostsInput = Query(...)):
     query_text = f"{body.title} {body.content}"
     return find_similar_posts(query_text, body.top_k)
 
