@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { routes } from "../../router/routes.ts";
 import { PostsService } from "../../services/postsService.ts";
@@ -8,7 +8,7 @@ import { ImagePicker } from "../../components/ImagePicker/ImagePicker.tsx";
 import MarkdownEditor from "../../components/Markdown/MarkdownEditor/MarkdownEditor.tsx";
 import "./CreatePost.css";
 import { Button } from "@mui/material";
-import {usePostsContext} from "../../context/postsContext.tsx";
+import { usePostsContext } from "../../context/postsContext.tsx";
 
 const CreatePost = () => {
   const [title, setTitle] = useState("");
@@ -25,6 +25,19 @@ const CreatePost = () => {
     navigate(routes.HOME);
   };
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (title || question) {
+        const postService = new PostsService(user!, setUser);
+        postService.getSimilarPosts(title, question);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [title, question]);
+
   const handleAddPost = async (e: any) => {
     e.preventDefault();
     const postService = new PostsService(user!, setUser);
@@ -32,68 +45,68 @@ const CreatePost = () => {
     const { request } = postService.saveNewPost(title, question, image);
 
     request
-        .then((response) => {
-          reloadPosts();
-          navigate(`${routes.POST}/${response.data._id}`);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      .then((response) => {
+        reloadPosts();
+        navigate(`${routes.POST}/${response.data._id}`);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
   return (
-      <div className="question-container">
-        <h2>Ask a question</h2>
-        <p className="description">
-          Ask a question, or share your knowledge with others
-        </p>
-        <form>
-          <div className="field-container">
-            <label htmlFor="title" className="field-label">
-              Title
-            </label>
-            <AppTextField
-                id="title"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                fullWidth
-                placeholder="Enter a title"
-            />
-          </div>
+    <div className="question-container">
+      <h2>Ask a question</h2>
+      <p className="description">
+        Ask a question, or share your knowledge with others
+      </p>
+      <form>
+        <div className="field-container">
+          <label htmlFor="title" className="field-label">
+            Title
+          </label>
+          <AppTextField
+            id="title"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            fullWidth
+            placeholder="Enter a title"
+          />
+        </div>
 
-          <div className="field-container">
-            <label htmlFor="question" className="field-label">
-              What's your question?
-            </label>
+        <div className="field-container">
+          <label htmlFor="question" className="field-label">
+            What's your question?
+          </label>
 
-            <MarkdownEditor
-                content={question}
-                handleInputChange={(_, content) => setQuestion(content)}
-            />
-          </div>
+          <MarkdownEditor
+            content={question}
+            handleInputChange={(_, content) => setQuestion(content)}
+          />
+        </div>
 
-          <ImagePicker image={image} setImage={setImage} required={false} />
-          <div className="button-container">
-            <Button
-                type="submit"
-                onClick={handleAddPost}
-                className="submit-button"
-                color="primary"
-                variant="contained"
-            >
-              Ask
-            </Button>
-            <Button
-                type="button"
-                onClick={handleCancel}
-                color="secondary"
-                variant="contained"
-            >
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </div>
+        <ImagePicker image={image} setImage={setImage} required={false} />
+        <div className="button-container">
+          <Button
+            type="submit"
+            onClick={handleAddPost}
+            className="submit-button"
+            color="primary"
+            variant="contained"
+          >
+            Ask
+          </Button>
+          <Button
+            type="button"
+            onClick={handleCancel}
+            color="secondary"
+            variant="contained"
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 };
 
