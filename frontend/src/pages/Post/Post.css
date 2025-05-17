@@ -34,6 +34,12 @@
 
 .post-title {
     text-align: left;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .post-actions {
