@@ -17,7 +17,7 @@
     max-width: 600px;
     margin: 50px auto;
     padding: 32px;
-    background-color: #333 !important;
+    background-color: #1f1f1f !important;
     color: #fff !important;
     border-radius: 16px;
     display: flex;
@@ -34,6 +34,12 @@
 
 .post-title {
     text-align: left;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .post-actions {
