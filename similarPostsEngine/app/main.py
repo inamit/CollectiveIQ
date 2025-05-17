@@ -24,9 +24,9 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/similar-posts")
-async def similar_posts(body: SimilarPostsInput = Query(...)):
-    query_text = f"{body.title} {body.content}"
-    return find_similar_posts(query_text, body.top_k)
+async def similar_posts(params: SimilarPostsInput = Query(...)):
+    query_text = f"{params.title} {params.content}"
+    return find_similar_posts(query_text, params.top_k)
 
 
 @app.post("/add-post")
