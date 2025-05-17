@@ -32,6 +32,7 @@ import Markdown from "../../components/Markdown/Markdown.tsx";
 import { LoadingState } from "../../services/loadingState.ts";
 import UserDetails from "../../components/UserAvatar/UserDetails.tsx";
 import { LikesSection } from "../../components/LikesSection/LikesSection.tsx";
+import { motion } from "framer-motion";
 
 const PostComponent = () => {
     const { postId } = useParams();
@@ -54,17 +55,21 @@ const PostComponent = () => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     useEffect(() => {
-        setEditablePost(post);
-        if (post?.imageUrl) {
-            createFile(post.imageUrl).then((file) => {
-                setImage(file);
-                setOriginalImage(file);
-            });
+        window.scrollTo(0, 0);
+        if (post) {
+            setEditablePost(post);
+            if (post.imageUrl) {
+                createFile(post.imageUrl).then((file) => {
+                    setImage(file);
+                    setOriginalImage(file);
+                });
+            }
         }
         if (postId) {
         refreshComments();
     }
   }, [post, postId, refreshComments]);
+
 
     const createFile = async (imageUrl: string) => {
         const urlArray = imageUrl.split("/");
@@ -117,14 +122,15 @@ const PostComponent = () => {
 
             const { request } = new PostsService(user!, setUser).updatePost(
                 postId!,
-                editablePost?.title,
-                editablePost?.content,
+                editablePost.title,
+                editablePost.content,
                 image !== originalImage ? image : null
             );
 
             request
                 .then((response) => {
                     setEditablePost(response.data);
+                    setIsEditing(false);
                     resolve("");
                 })
                 .catch((err) => {
@@ -149,24 +155,62 @@ const PostComponent = () => {
     };
 
     const getEditButtons = () => {
-        if (user?._id === post?.userId?._id) {
-            return (
-                <Box className="post-actions">
-                    <IconButton size="small" onClick={toggleEditMode}>
-                        {isEditing ? <SaveIcon /> : <EditIcon />}
-                    </IconButton>
-                    <IconButton size="small" onClick={confirmDeletePost}>
-                        <DeleteIcon />
-                    </IconButton>
+        return (<div>
+            {user?._id === post?.userId?._id && !isEditing && (
+                <Box display="flex" gap={1} >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <IconButton
+                            size="small"
+                            onClick={toggleEditMode}
+                            sx={{
+                                color: "primary.main",
+                                "&:hover": {
+                                    backgroundColor: "secondary.main",
+                                },
+                                "& svg": {
+                                    fontSize: "1.5rem",
+                                },
+                            }}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <IconButton
+                            size="small"
+                            onClick={confirmDeletePost}
+                            sx={{
+                                color: "error.main",
+                                "&:hover": {
+                                    backgroundColor: "#ffcccc",
+                                },
+                                "& svg": {
+                                    fontSize: "1.5rem",
+                                },
+                            }}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </motion.div>
                 </Box>
-            );
-        }
-    };
+            )}
+        </div>)
+    }
 
     const getHeader = () => {
         switch (postLoadingState) {
             case LoadingState.ERROR:
-                return <></>;
+                return null;
             case LoadingState.LOADED:
                 return (
                     <div className="post-header">
@@ -181,7 +225,6 @@ const PostComponent = () => {
                                 {editablePost?.title}
                             </Typography>
                         )}
-                        {getEditButtons()}
                     </div>
                 );
             default:
@@ -195,23 +238,28 @@ const PostComponent = () => {
                 return <></>;
             case LoadingState.LOADED:
                 return (
-                    <UserDetails
-                        user={post?.userId}
-                        description={formatDate(post?.date)}
-                    />
-                );
+                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                        <UserDetails
+                            user={post?.userId}
+                            description={formatDate(post?.date)}
+                        />
+                        {getEditButtons()}
+                    </Box>
+                )
             default:
                 return (
-                    <Box display="flex" alignItems="center" mb={2}>
-                        <Skeleton variant="circular" width={40} height={40} />
-                        <Box ml={2}>
-                            <Skeleton variant="text" width={100} />
-                            <Skeleton variant="text" width={70} />
+                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                        <Box display="flex" alignItems="center">
+                            <Skeleton variant="circular" width={40} height={40}/>
+                            <Box ml={2}>
+                                <Skeleton variant="text" width={100}/>
+                                <Skeleton variant="text" width={70}/>
+                            </Box>
                         </Box>
                     </Box>
                 );
-        }
-    };
+
+        }}
 
     const getPostContent = () => {
         switch (postLoadingState) {
@@ -234,11 +282,22 @@ const PostComponent = () => {
                                 />
                             )}
                             {isEditing && (
-                                <ImagePicker
-                                    image={image}
-                                    setImage={setImage}
-                                    required={!!editablePost?.imageUrl}
-                                />
+                                <Box display="flex" alignItems="center" justifyContent="space-between" mt={2}>
+                                    <ImagePicker
+                                        image={image}
+                                        setImage={setImage}
+                                        required={!!editablePost?.imageUrl}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<SaveIcon />}
+                                        onClick={toggleEditMode}
+                                        sx={{ ml: 2 }}
+                                    >
+                                        Save
+                                    </Button>
+                                </Box>
                             )}
                         </CardContent>
 
@@ -292,14 +351,13 @@ const PostComponent = () => {
         <>
             <Box className="post-container">
                 <Card className="post-card">
-                    {getHeader()}
                     {getUserDetails()}
+                    {getHeader()}
                     {getPostContent()}
-                    {getCommentsComponents()}
+                    {!isEditing && getCommentsComponents()}
                 </Card>
             </Box>
 
-            {/* Modern Delete Confirmation Dialog */}
             <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
                 <DialogTitle>Delete Post</DialogTitle>
                 <DialogContent>

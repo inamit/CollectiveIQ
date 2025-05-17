@@ -18,10 +18,10 @@ services:
       - HUGGING_FACE_API_KEY=${HUGGING_FACE_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - MISTARL_API_URL="https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
-      - FALCON_API_URL="https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct"
+      - PHI_API_URL="https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct"
       - GEMINI_USERID=681a2c65415bd74f3bc7ee70
       - MISTRAL_USERID=681a2d45415bd74f3bc7eec4
-      - FALCON_USERID=681a2d04415bd74f3bc7eea1
+      - PHI_USERID=681a2d04415bd74f3bc7eea1
     volumes:
       - ./backend/uploads:/app/uploads
     networks:
