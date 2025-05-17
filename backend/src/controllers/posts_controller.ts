@@ -9,6 +9,7 @@ import {
 } from "../services/ai_service";
 import { toggleReaction } from "./likes_controller";
 import { addPostToAlgorithm } from "../services/similar_posts_service";
+import { getSimilarPosts } from "../services/similar_posts_service";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -189,6 +190,17 @@ const getLikedPosts = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
+const similarPosts = async (req: Request, res: Response): Promise<any> => {
+  const params = req.params;
+
+  try {
+    const similarPosts = await getSimilarPosts(params.title, params.content);
+    res.json(similarPosts);
+  } catch (error) {
+    res.status(500).send("Error fetching similar posts");
+  }
+};
+
 export default {
   getPosts,
   saveNewPost,
@@ -199,4 +211,5 @@ export default {
   likePost,
   dislikePost,
   getLikedPosts,
+  similarPosts,
 };

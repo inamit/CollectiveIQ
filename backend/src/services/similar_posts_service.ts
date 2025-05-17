@@ -24,3 +24,29 @@ export const addPostToAlgorithm = async (postId: string) => {
     console.error("Error adding post to algorithm:", error);
   }
 };
+
+export const getSimilarPosts = async (title: string, content: string) => {
+  try {
+    const queryParams = new URLSearchParams({
+      title: encodeURIComponent(title),
+      content: encodeURIComponent(content),
+    });
+
+    const response = await fetch(
+      `${algorithmUrl}/similar-posts?${queryParams.toString()}`
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to get similar posts. Response: ${JSON.stringify(response)}`
+      );
+    }
+
+    const data = await response.json();
+    console.log("Similar posts:", data);
+
+    return data;
+  } catch (error) {
+    console.error("Error getting similar posts:", error);
+  }
+};
