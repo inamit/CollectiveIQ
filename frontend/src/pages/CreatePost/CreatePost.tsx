@@ -114,7 +114,11 @@ const CreatePost = () => {
             <h3>
               Take a look at these similar posts before asking your question
             </h3>
-            <PostsList posts={similarPosts || []} maxPostsPerPage={5} />
+            <PostsList
+              posts={similarPosts || []}
+              maxPostsPerPage={5}
+              openInNewTab={true}
+            />
           </div>
         )}
         <div className="button-container">
