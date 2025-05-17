@@ -1,4 +1,5 @@
 from app.ml.model import model
+from app.db.postsService import fetch_post_by_id
 
 
 def find_similar_posts(query_text: str, top_k: int = 5):
@@ -11,13 +12,10 @@ def find_similar_posts(query_text: str, top_k: int = 5):
         if post_index < len(model.posts):
             post_id = str(model.posts[post_index]["_id"])
             if post_id not in added_post_ids:
-                results.append({
-                    "id": post_id,
-                    "title": model.posts[post_index]["title"],
-                    "content": model.posts[post_index]["content"],
-                    "score": float(score)
-                })
+                post = fetch_post_by_id(post_id)
+                post["score"] = float(score)
+                results.append(post)
                 added_post_ids.add(post_id)
 
     results.sort(key=lambda x: x["score"], reverse=True)
-    return results
+    return list(results)
