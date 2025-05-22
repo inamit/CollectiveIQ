@@ -6,8 +6,10 @@ import {
   getGeminiResponse,
   getFalconResponse,
   getMistralResponse,
-} from "../services/ai_service";
+} from "../services/aiService";
 import { toggleReaction } from "./likes_controller";
+import { deleteCommentsByPostId } from "../controllers/comments_controller";
+import { updateNumberOfPosts } from "./tags_controller";
 import { addPostToAlgorithm } from "../services/similar_posts_service";
 import { getSimilarPosts } from "../services/similar_posts_service";
 
@@ -81,7 +83,7 @@ const deletePostById = async (req: Request, res: Response): Promise<any> => {
     }
 
     await Post.findByIdAndDelete(post_id);
-
+    deleteCommentsByPostId(post_id);
     return res.json({ message: "Post deleted successfully" });
   } catch (err: any) {
     console.warn("Error deleting post:", err);
@@ -175,6 +177,7 @@ async function defineTagWithLLM(question: string, post_id: string) {
       },
       { new: true, runValidators: true }
     );
+    await updateNumberOfPosts(aiResponse);
   } catch (error) {
     console.warn("Error defineTagWithLLM in post:", error);
   }

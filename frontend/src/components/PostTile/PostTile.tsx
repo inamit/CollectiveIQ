@@ -8,6 +8,7 @@ import {
     Skeleton,
     Tooltip,
     Button,
+    Chip,
 } from "@mui/material";
 import Post from "../../models/post";
 import { formatDate } from "../../utils/formatDate";
@@ -92,6 +93,12 @@ export default function PostTile({ post, openInNewTab }: Props) {
                             Asked {formatDate(post.date)}
                         </Typography>
                     </Box>
+                    <Chip
+                        label={post.tag}
+                        color="primary"
+                        variant="outlined"
+                        sx={{ marginLeft: 'auto' }} >
+                    </Chip>
                 </Box>
 
                 <CardContent>
