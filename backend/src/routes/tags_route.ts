@@ -68,9 +68,9 @@ import authMiddleware from "../middleware/auth/authMiddleware";
  */
 router.get("/", tagsController.getAllTags);
 
-router.post("/init", authMiddleware, tagsController.createTagsFromEnv);
+router.post("/init", authMiddleware, tagsController.initTagsList);
 
-router.post("/update-best-ai", authMiddleware, tagsController.updateBestAiForAllTags);
+router.post("/updateBestAi", authMiddleware, tagsController.aggragateBestAiModelPerTag);
 
-router.get("/get-tag", tagsController.getTagByName);
+router.get("/getTag", tagsController.getTagByName);
 export default router;

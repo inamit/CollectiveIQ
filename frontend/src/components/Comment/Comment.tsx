@@ -57,11 +57,11 @@ export const CommentComponent = ({
         request
             .then(() => {
                 refreshComments();
-                setOpenDeleteDialog(false); // Close the dialog on success
+                setOpenDeleteDialog(false); 
             })
             .catch((err) => {
                 console.error(err);
-                setOpenDeleteDialog(false); // Close the dialog if there's an error
+                setOpenDeleteDialog(false); 
             });
     };
 
@@ -100,7 +100,7 @@ export const CommentComponent = ({
                     description={formatDate(comment?.date)}
                 />
                 {bestAiComment == comment.userId._id && <Chip
-                    label={`best Answers for this tag by ${comment.userId.username}`}
+                    label={`Top pick by our Users - ${comment.userId.username}`}
                     color="success"
                     variant="outlined"
                     sx={{ marginLeft: 'auto' }}
@@ -125,8 +125,8 @@ export const CommentComponent = ({
                             position: "relative",
                             display: "flex",
                             flexDirection: "row",
-                            gap: "8px", // Space between the Challenge and Delete icon
-                            alignItems: "center", // Align the items horizontally
+                            gap: "8px", 
+                            alignItems: "center",
                             justifyContent: "flex-end",
                         }}
                     >

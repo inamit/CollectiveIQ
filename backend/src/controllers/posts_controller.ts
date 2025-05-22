@@ -5,7 +5,7 @@ import { saveFile } from "../middleware/file-storage/file-storage-middleware";
 import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
 import { toggleReaction } from "./likes_controller";
 import { deleteCommentsByPostId } from "../controllers/comments_controller"
-import { incNumberOfPosts } from "./tags_controller";
+import { updateNumberOfPosts } from "./tags_controller";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -25,8 +25,8 @@ const triggerAIResponses = async (content: string, postId: string): Promise<void
   try {
     await Promise.all([
       getGeminiResponse(content, postId),
-      //getFalconResponse(content, postId),
-      //getMistralResponse(content, postId),
+      getFalconResponse(content, postId),
+      getMistralResponse(content, postId),
     ]);
     console.log("AI responses successfully triggered for post:", postId);
   } catch (error) {
@@ -73,7 +73,7 @@ const deletePostById = async (req: Request, res: Response): Promise<any> => {
     }
 
     await Post.findByIdAndDelete(post_id);
-    deleteCommentsByPostId(post_id)
+    deleteCommentsByPostId(post_id);
     return res.json({ message: "Post deleted successfully" });
   } catch (err: any) {
     console.warn("Error deleting post:", err);
@@ -167,7 +167,7 @@ async function defineTagWithLLM(question: string, post_id: string) {
       },
       { new: true, runValidators: true }
     );
-    await incNumberOfPosts(aiResponse);
+    await updateNumberOfPosts(aiResponse);
   } catch (error) {
     console.warn("Error defineTagWithLLM in post:", error);
   }

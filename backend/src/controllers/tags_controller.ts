@@ -29,21 +29,19 @@ const getTagByName = async (req: Request, res: Response): Promise<any> => {
     }
 };
 
-const createTagsFromEnv = async (req: Request, res: Response): Promise<any> => {
+const initTagsList = async (req: Request, res: Response): Promise<any> => {
     try {
         const tagsString = process.env.TAG_LIST;
         if (!tagsString) {
             return res.status(400).json({ error: "TAGS environment variable is not set." });
         }
 
-        const tagNames = tagsString.split(",").map(name => name.trim()).filter(name => name);
-        const tagDocs = tagNames.map(name => ({
-            name,
-            bestAi: "",
-            numOfPosts: 0,
+        const tagsNames = tagsString.split(",").map(tag => tag.trim()).filter(tag => tag);
+        const tagDocs = tagsNames.map(tag => ({
+            tag,
         }));
 
-        const createdTags = await Tag.insertMany(tagDocs, { ordered: false });
+        const createdTags = await Tag.insertMany(tagDocs);
         return res.status(201).json({ message: `${createdTags.length} tags created.`, tags: createdTags });
     } catch (error: any) {
         console.warn("Error creating tags:", error);
@@ -51,9 +49,9 @@ const createTagsFromEnv = async (req: Request, res: Response): Promise<any> => {
     }
 };
 
-export const incNumberOfPosts = async (tag: string | undefined) => {
+export const updateNumberOfPosts = async (tag: string | undefined) => {
     try {
-        const tagName = tag?.toLowerCase()
+        const tagName = tag?.toLowerCase();
         const result = await Tag.updateOne(
             { name: tagName },
             { $inc: { numOfPosts: 1 } }
@@ -63,7 +61,7 @@ export const incNumberOfPosts = async (tag: string | undefined) => {
     }
 }
 
-const updateBestAiForAllTags = async (req: Request, res: Response): Promise<void> => {
+const aggragateBestAiModelPerTag = async (req: Request, res: Response): Promise<void> => {
     try {
         const tags = await Tag.find();
 
@@ -80,13 +78,13 @@ const updateBestAiForAllTags = async (req: Request, res: Response): Promise<void
                 { $unwind: "$post" },
                 {
                     $match: {
-                        "post.tag": tag.name // Match tag string on the post
+                        "post.tag": tag.name
                     }
                 },
                 {
                     $group: {
-                        _id: "$userId", // Treat userId as AI identifier
-                        totalLikes: { $sum: { $size: "$likes" } } // Count likes array size
+                        _id: "$userId",
+                        totalLikes: { $sum: { $size: "$likes" } }
                     }
                 },
                 { $sort: { totalLikes: -1 } },
@@ -94,8 +92,7 @@ const updateBestAiForAllTags = async (req: Request, res: Response): Promise<void
             ]);
             console.log(`the result for ${tag.name} is - ${result.length}`);
             if (result.length > 0) {
-                const bestAiUserId = result[0]._id.toString(); // Convert ObjectId to string
-                //const bestAiName = await User.findById(bestAiUserId)
+                const bestAiUserId = result[0]._id.toString();
                 await Tag.updateOne({ _id: tag._id }, { $set: { bestAi: bestAiUserId } });
             } else {
                 console.log(`No AI comments found for tag '${tag.name}'`);
@@ -112,7 +109,7 @@ const updateBestAiForAllTags = async (req: Request, res: Response): Promise<void
 
 export default {
     getAllTags,
-    createTagsFromEnv,
-    updateBestAiForAllTags,
+    initTagsList,
+    aggragateBestAiModelPerTag,
     getTagByName
 };

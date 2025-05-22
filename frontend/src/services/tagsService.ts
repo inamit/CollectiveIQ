@@ -20,7 +20,7 @@ export class TagsService {
 
     getTagbyName(tagName: string) {
         const controller = new AbortController();
-        const request = this.httpClient.get<Tag>(`${config.backendURL}/tags/get-tag?tagName=${tagName}`, {
+        const request = this.httpClient.get<Tag>(`${config.backendURL}/tags/getTag?tagName=${tagName}`, {
             signal: controller.signal,
         });
 
