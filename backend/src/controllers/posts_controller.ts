@@ -6,7 +6,7 @@ import {
   getGeminiResponse,
   getFalconResponse,
   getMistralResponse,
-} from "../services/aiService";
+} from "../services/ai_service";
 import { toggleReaction } from "./likes_controller";
 import { deleteCommentsByPostId } from "../controllers/comments_controller";
 import { updateNumberOfPosts } from "./tags_controller";
