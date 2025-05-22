@@ -66,30 +66,7 @@ const aggragateBestAiModelPerTag = async (req: Request, res: Response): Promise<
         const tags = await Tag.find();
 
         for (const tag of tags) {
-            const result = await Comment.aggregate([
-                {
-                    $lookup: {
-                        from: "posts",
-                        localField: "postID",
-                        foreignField: "_id",
-                        as: "post"
-                    }
-                },
-                { $unwind: "$post" },
-                {
-                    $match: {
-                        "post.tag": tag.name
-                    }
-                },
-                {
-                    $group: {
-                        _id: "$userId",
-                        totalLikes: { $sum: { $size: "$likes" } }
-                    }
-                },
-                { $sort: { totalLikes: -1 } },
-                { $limit: 1 }
-            ]);
+            const result = await aggragateTag(tag);
             console.log(`the result for ${tag.name} is - ${result.length}`);
             if (result.length > 0) {
                 const bestAiUserId = result[0]._id.toString();
@@ -106,7 +83,32 @@ const aggragateBestAiModelPerTag = async (req: Request, res: Response): Promise<
     }
 };
 
-
+const aggragateTag = async (tag: ITag): Promise<any[]> => {
+    return await Comment.aggregate([
+        {
+            $lookup: {
+                from: "posts",
+                localField: "postID",
+                foreignField: "_id",
+                as: "post"
+            }
+        },
+        { $unwind: "$post" },
+        {
+            $match: {
+                "post.tag": tag.name
+            }
+        },
+        {
+            $group: {
+                _id: "$userId",
+                totalLikes: { $sum: { $size: "$likes" } }
+            }
+        },
+        { $sort: { totalLikes: -1 } },
+        { $limit: 1 }
+    ])
+}
 export default {
     getAllTags,
     initTagsList,

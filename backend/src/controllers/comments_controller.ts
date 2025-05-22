@@ -123,8 +123,7 @@ const deleteCommentById = async (req: Request, res: Response): Promise<any> => {
 
 export const deleteCommentsByPostId = async (post_Id: string) => {
   try {
-    const result = await Comment.deleteMany({ postID: post_Id });
-    return result
+    return await Comment.deleteMany({ postID: post_Id });
   } catch (err: any) {
     console.warn("Error deleting comment:", err);
   }
