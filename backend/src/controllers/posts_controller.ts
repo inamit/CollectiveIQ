@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { handleMongoQueryError } from "../db/db";
 import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
-import { getGeminiResponse, getFalconResponse, getMistralResponse } from "../services/aiService";
+import { getGeminiResponse, getPhiResponse, getMistralResponse } from "../services/aiService";
 import { toggleReaction } from "./likes_controller";
 import { deleteCommentsByPostId } from "../controllers/comments_controller"
 import { updateNumberOfPosts } from "./tags_controller";
@@ -25,7 +25,7 @@ const triggerAIResponses = async (content: string, postId: string): Promise<void
   try {
     await Promise.all([
       getGeminiResponse(content, postId),
-      getFalconResponse(content, postId),
+      getPhiResponse(content, postId),
       getMistralResponse(content, postId),
     ]);
     console.log("AI responses successfully triggered for post:", postId);
