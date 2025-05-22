@@ -13,25 +13,26 @@ import {motion} from "framer-motion";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 
 interface CommentProps {
-    comments: Comment[];
-    maxCommentsPerPage: number;
-    loadingState?: LoadingState;
-    level?: number;
-    showDividers?: boolean;
-    refreshComments?: () => void;
+  comments: Comment[];
+  maxCommentsPerPage: number;
+  loadingState?: LoadingState;
+  level?: number;
+  showDividers?: boolean;
+  refreshComments?: () => void;
+  bestAiComment?: string
 }
 
 export default function CommentsList({
-                                         comments,
-                                         maxCommentsPerPage,
-                                         loadingState,
-                                         level = 0,
-                                         showDividers = true,
-                                         refreshComments = () => {
-                                         },
-                                     }: CommentProps) {
-    const [currentPage, setCurrentPage] = useState(1);
-    const navigate = useNavigate();
+  comments,
+  maxCommentsPerPage,
+  loadingState,
+  level = 0,
+  showDividers = true,
+  refreshComments = () => {},
+  bestAiComment
+}: CommentProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
     const paginatedComments: Comment[][] = paginate(comments, maxCommentsPerPage);
 
@@ -83,6 +84,7 @@ export default function CommentsList({
                                     key={comment._id}
                                     comment={comment}
                                     refreshComments={refreshComments}
+                                    bestAiComment={bestAiComment ?? ""}
                                 />
                             </ListItem>
 
@@ -95,6 +97,7 @@ export default function CommentsList({
                                     level={level + 1}
                                     showDividers={showDividers}
                                     refreshComments={refreshComments}
+                                    bestAiComment={bestAiComment ?? ""}
                                 />
                             )}
                         </div>
