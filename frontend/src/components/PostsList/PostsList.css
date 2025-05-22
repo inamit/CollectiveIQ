@@ -6,15 +6,18 @@
   display: flex;
   align-items: center;
 }
+
 .no-posts {
   text-align: center;
   margin-top: 50px;
   color: #666;
 }
+
 .no-posts h3 {
   margin-top: 10px;
   font-size: 1.5rem;
 }
+
 .no-posts p {
   margin: 5px 0 15px;
 }

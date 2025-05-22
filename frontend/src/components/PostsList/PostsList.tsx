@@ -55,7 +55,6 @@ export default function PostsList({posts, maxPostsPerPage, loadingState}: Props)
                     <p>Try adjusting your search or check back later.</p>
                 </motion.div>
             )}
-
             <List className="postsList">
                 {paginatedPosts[currentPage - 1]?.map((post, index) => (
                     <motion.div
@@ -74,7 +73,6 @@ export default function PostsList({posts, maxPostsPerPage, loadingState}: Props)
                     </motion.div>
                 ))}
             </List>
-
             {paginatedPosts.length > 1 && (
                 <div className="pagination">
                     <Pagination

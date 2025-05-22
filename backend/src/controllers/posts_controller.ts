@@ -3,7 +3,9 @@ import { handleMongoQueryError } from "../db/db";
 import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
 import { getGeminiResponse, getPhiResponse, getMistralResponse } from "../services/aiService";
-import {toggleReaction} from "./likes_controller";
+import { toggleReaction } from "./likes_controller";
+import { deleteCommentsByPostId } from "../controllers/comments_controller"
+import { updateNumberOfPosts } from "./tags_controller";
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -47,7 +49,7 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
     });
     const savedPost: IPost = await (await post.save()).populate("userId");
 
-    await defineTagWithLLM(savedPost.content, String(savedPost._id))
+    await defineTagWithLLM(savedPost.content, String(savedPost._id));
     await triggerAIResponses(savedPost.content, String(savedPost._id));
 
     return res.json(savedPost);
@@ -71,7 +73,7 @@ const deletePostById = async (req: Request, res: Response): Promise<any> => {
     }
 
     await Post.findByIdAndDelete(post_id);
-
+    deleteCommentsByPostId(post_id);
     return res.json({ message: "Post deleted successfully" });
   } catch (err: any) {
     console.warn("Error deleting post:", err);
@@ -165,12 +167,13 @@ async function defineTagWithLLM(question: string, post_id: string) {
       },
       { new: true, runValidators: true }
     );
+    await updateNumberOfPosts(aiResponse);
   } catch (error) {
     console.warn("Error defineTagWithLLM in post:", error);
   }
 }
 
-const getLikedPosts= async (req: Request, res: Response): Promise<any> => {
+const getLikedPosts = async (req: Request, res: Response): Promise<any> => {
   try {
     const userId = req.params.userId;
     const likedPosts = await Post.find({ likes: userId }).exec();

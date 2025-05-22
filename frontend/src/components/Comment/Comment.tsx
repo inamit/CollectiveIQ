@@ -11,7 +11,8 @@ import {
     DialogContent,
     DialogTitle,
     Dialog,
-    IconButton
+    IconButton,
+    Chip
 } from "@mui/material";
 import {motion, AnimatePresence} from "framer-motion";
 import Comment from "../../models/comment";
@@ -29,11 +30,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 interface CommentProps {
     comment: Comment;
     refreshComments: () => void;
+    bestAiComment?: string
 }
 
 export const CommentComponent = ({
                                      comment,
                                      refreshComments,
+                                     bestAiComment,
                                  }: CommentProps) => {
     const {user, setUser} = useUser();
     const [showAIDropdown, setShowAIDropdown] = useState(false);
@@ -54,11 +57,11 @@ export const CommentComponent = ({
         request
             .then(() => {
                 refreshComments();
-                setOpenDeleteDialog(false); // Close the dialog on success
+                setOpenDeleteDialog(false); 
             })
             .catch((err) => {
                 console.error(err);
-                setOpenDeleteDialog(false); // Close the dialog if there's an error
+                setOpenDeleteDialog(false); 
             });
     };
 
@@ -96,6 +99,12 @@ export const CommentComponent = ({
                     user={comment.userId}
                     description={formatDate(comment?.date)}
                 />
+                {bestAiComment == comment.userId._id && <Chip
+                    label={`Top pick by our Users - ${comment.userId.username}`}
+                    color="success"
+                    variant="outlined"
+                    sx={{ marginLeft: 'auto' }}
+                />}
             </div>
             <div className="comment-content">
                 <Typography variant="body2" sx={{mb: 2}} className="comment-text">
@@ -116,8 +125,8 @@ export const CommentComponent = ({
                             position: "relative",
                             display: "flex",
                             flexDirection: "row",
-                            gap: "8px", // Space between the Challenge and Delete icon
-                            alignItems: "center", // Align the items horizontally
+                            gap: "8px", 
+                            alignItems: "center",
                             justifyContent: "flex-end",
                         }}
                     >
@@ -161,7 +170,7 @@ export const CommentComponent = ({
                                                 },
                                             }}
                                         >
-                                            {model.label}
+                                            {model.label === comment.userId.username && comment.userId._id === bestAiComment ? `${model.label} - Best` : model.label}
                                         </Button>
                                     ))}
                                 </motion.div>
@@ -239,6 +248,7 @@ interface CommentSectionProps {
     commentsLoadingState?: LoadingState;
     addComment: (content: string) => void;
     refreshComments: () => void;
+    bestAiComment?: string
 }
 
 const CommentSection = ({
@@ -246,6 +256,7 @@ const CommentSection = ({
                             addComment,
                             refreshComments,
                             commentsLoadingState,
+                            bestAiComment,
                         }: CommentSectionProps) => {
     const [commentText, setCommentText] = useState("");
     const {user} = useUser();
@@ -289,6 +300,7 @@ const CommentSection = ({
           loadingState={commentsLoadingState}
           showDividers={false}
           refreshComments={refreshComments}
+          bestAiComment={bestAiComment ?? ""}
         />
       </div>
     </div>

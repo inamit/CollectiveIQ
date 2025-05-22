@@ -12,6 +12,7 @@ import {
     DialogContent,
     DialogActions,
     Button,
+    Chip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -33,11 +34,14 @@ import { LoadingState } from "../../services/loadingState.ts";
 import UserDetails from "../../components/UserAvatar/UserDetails.tsx";
 import { LikesSection } from "../../components/LikesSection/LikesSection.tsx";
 import { motion } from "framer-motion";
+import { TagsService } from "../../services/tagsService.ts";
+import Tag from "../../models/tag.ts";
 
 const PostComponent = () => {
     const { postId } = useParams();
     const navigate = useNavigate();
     const { user, setUser } = useUser();
+    const [tag, setTag] = useState<Tag | null>(null);
     const {
         post,
         postLoadingState,
@@ -62,6 +66,16 @@ const PostComponent = () => {
                 createFile(post.imageUrl).then((file) => {
                     setImage(file);
                     setOriginalImage(file);
+                });
+            }
+            if (post?.tag) {
+                const tagsService = new TagsService();
+                const { request } = tagsService.getTagbyName(post.tag);
+                request.then((response) => {
+                        setTag(response.data)
+                    })
+                    .catch((err) => {
+                        console.error("Failed to fetch tag:", err);
                 });
             }
         }
@@ -308,6 +322,12 @@ const PostComponent = () => {
                                 likeableService={new PostsService(user!, setUser)}
                                 refresh={refreshPost}
                             />
+                            <Chip
+                                label={post?.tag}
+                                color="primary"
+                                variant="outlined"
+                                sx={{ marginLeft: 'auto' }} >
+                            </Chip>
                         </Box>
                     </>
                 );
@@ -333,6 +353,7 @@ const PostComponent = () => {
                             addComment={addComment}
                             refreshComments={refreshComments}
                             commentsLoadingState={commentsLoadingState}
+                            bestAiComment={tag?.bestAi}
                         />
                     </Box>
                 );
