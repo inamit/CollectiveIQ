@@ -21,19 +21,25 @@ import UserAvatar from "../UserAvatar/UserAvatar.tsx";
 
 interface Props {
     post: Post;
+    openInNewTab?: boolean;
 }
 
 function pluralize(count: number, singular: string, plural: string) {
     return `${count} ${count === 1 ? singular : plural}`;
 }
 
-export default function PostTile({ post }: Props) {
+export default function PostTile({ post, openInNewTab }: Props) {
     const { comments } = usePost(post._id);
     const navigate = useNavigate();
     const [expanded, setExpanded] = useState(false);
 
     const handleClick = () => {
-        navigate(`${routes.POST}/${post._id}`);
+        const postUrl = `${routes.POST}/${post._id}`;
+        if (openInNewTab) {
+            window.open(postUrl, "_blank");
+        } else {
+            navigate(postUrl);
+        }
     };
 
     if (!post) {
