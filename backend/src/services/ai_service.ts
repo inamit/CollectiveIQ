@@ -58,16 +58,17 @@ const saveAIResponseAsComment = async (postId: string, content: string, modelId:
     }
 };
 
-export const getFalconResponse = async (input: string, postId: string, parentCommentID?: string): Promise<string> => {
-    const response = await fetchHuggingFaceResponse(process.env.FALCON_API_URL || "", input);
-    await saveAIResponseAsComment(postId, response, process.env.FALCON_USERID || "", parentCommentID || "");
+export const getPhiResponse = async (input: string, postId: string, parentCommentID?: string): Promise<string> => {
+    const formattedInput = `<|user|>${input}<|end|><|assistant|>`;
+    const response = await fetchHuggingFaceResponse(process.env.Phi_API_URL || "", formattedInput);
+    await saveAIResponseAsComment(postId, response, process.env.Phi_USERID || "", parentCommentID);
     return response;
 };
 
 export const getMistralResponse = async (input: string, postId: string, parentCommentID?: string): Promise<string> => {
     const formattedInput = `# Question: ${input}\n# Answer:`;
     const response = await fetchHuggingFaceResponse(process.env.MISTRAL_API_URL || "", formattedInput);
-    await saveAIResponseAsComment(postId, response, process.env.MISTRAL_USERID || "", parentCommentID || "");
+    await saveAIResponseAsComment(postId, response, process.env.MISTRAL_USERID || "", parentCommentID);
     return response;
 };
 

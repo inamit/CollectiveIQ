@@ -4,7 +4,7 @@ import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
 import {
   getGeminiResponse,
-  getFalconResponse,
+  getPhiResponse,
   getMistralResponse,
 } from "../services/ai_service";
 import { toggleReaction } from "./likes_controller";
@@ -34,7 +34,7 @@ const triggerAIResponses = async (
   try {
     await Promise.all([
       getGeminiResponse(content, postId),
-      getFalconResponse(content, postId),
+      getPhiResponse(content, postId),
       getMistralResponse(content, postId),
     ]);
     console.log("AI responses successfully triggered for post:", postId);

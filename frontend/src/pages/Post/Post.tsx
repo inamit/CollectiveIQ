@@ -79,7 +79,10 @@ const PostComponent = () => {
                 });
             }
         }
-    }, [post]);
+        if (postId) {
+        refreshComments();
+    }
+  }, [post, postId, refreshComments]);
 
 
     const createFile = async (imageUrl: string) => {

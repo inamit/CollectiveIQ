@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleGeminiResponse, handleFalconResponse, handleMistralResponse } from "../controllers/ai_controller";
+import { handleGeminiResponse, handlePhiResponse, handleMistralResponse } from "../controllers/ai_controller";
 
 const router: Router = Router();
 
@@ -64,13 +64,13 @@ router.post("/gemini-response", handleGeminiResponse);
 /**
  * @swagger
  * paths:
- *   /ai/falcon-response:
+ *   /ai/phi-response:
  *     post:
  *       tags:
  *         - AI
- *       summary: Get response from Falcon AI
- *       description: Fetches a response from the Falcon AI model
- *       operationId: getFalconResponse
+ *       summary: Get response from Phi AI
+ *       description: Fetches a response from the Phi AI model
+ *       operationId: getPhiResponse
  *       requestBody:
  *         description: Input for the AI model
  *         content:
@@ -92,7 +92,7 @@ router.post("/gemini-response", handleGeminiResponse);
  *               schema:
  *                 $ref: '#/components/schemas/Error'
  */
-router.post("/falcon-response", handleFalconResponse);
+router.post("/phi-response", handlePhiResponse);
 
 /**
  * @swagger

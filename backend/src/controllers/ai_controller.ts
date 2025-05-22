@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import {
   getGeminiResponse,
-  getFalconResponse,
+  getPhiResponse,
   getMistralResponse,
 } from "../services/ai_service";
 import Post, { IPost } from "../models/posts_model";
@@ -37,5 +37,5 @@ const handleAIResponse = (
 };
 
 export const handleGeminiResponse = handleAIResponse(getGeminiResponse);
-export const handleFalconResponse = handleAIResponse(getFalconResponse);
+export const handlePhiResponse = handleAIResponse(getPhiResponse);
 export const handleMistralResponse = handleAIResponse(getMistralResponse);

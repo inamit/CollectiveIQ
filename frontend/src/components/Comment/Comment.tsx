@@ -151,7 +151,7 @@ export const CommentComponent = ({
                                 >
                                     {[
                                         {label: "Gemini", value: "gemini-response"},
-                                        {label: "Falcon", value: "falcon-response"},
+                                        {label: "Phi", value: "phi-response"},
                                         {label: "Mistral", value: "mistral-response"},
                                     ].map((model) => (
                                         <Button
