@@ -1,3 +1,4 @@
+import { AI_PROMPTS, formatPrompt } from "../config/aiPropmtsConfig";
 import fetch from "node-fetch";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Comment from "../models/comments_model";
@@ -5,7 +6,7 @@ import Post from "../models/posts_model";
 require("dotenv").config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const fetchHuggingFaceResponse = async (url: string, input: string): Promise<string> => {
     try {
@@ -58,30 +59,40 @@ const saveAIResponseAsComment = async (postId: string, content: string, modelId:
     }
 };
 
-export const getPhiResponse = async (input: string, postId: string, parentCommentID?: string): Promise<string> => {
-    const formattedInput = `<|user|>${input}<|end|><|assistant|>`;
-    const response = await fetchHuggingFaceResponse(process.env.Phi_API_URL || "", formattedInput);
-    await saveAIResponseAsComment(postId, response, process.env.Phi_USERID || "", parentCommentID);
-    return response;
-};
+export const getAIResponse = async (
+  model: string,
+  question: string,
+  answer: string,
+  postId: string,
+  parentCommentID?: string
+): Promise<string> => {
+  const prompts = AI_PROMPTS[model];
+  if (!prompts) throw new Error("Unknown AI model");
 
-export const getMistralResponse = async (input: string, postId: string, parentCommentID?: string): Promise<string> => {
-    const formattedInput = `# Question: ${input}\n# Answer:`;
-    const response = await fetchHuggingFaceResponse(process.env.MISTRAL_API_URL || "", formattedInput);
-    await saveAIResponseAsComment(postId, response, process.env.MISTRAL_USERID || "", parentCommentID);
-    return response;
-};
+  const formattedInput =
+    formatPrompt(prompts.question, { question }) +
+    " " +
+    formatPrompt(prompts.answer, { answer });
 
-export const getGeminiResponse = async (input: string, postId?: string, parentCommentID?: string): Promise<string> => {
-    try {
-        const result = await model.generateContent(input);
-        const response = result.response.text().trim();
-        if (postId != null) {
-            await saveAIResponseAsComment(postId, response, process.env.GEMINI_USERID || "", parentCommentID);
-        }
-        return response;
-    } catch (error) {
-        console.error("Error fetching AI response:", error);
-        throw error;
-    }
+  let response: string;
+  if (model === "gemini") {
+    const result = await geminiModel.generateContent(formattedInput);
+    response = result.response.text().trim();
+  } else {
+    const url =
+      model === "phi"
+        ? process.env.PHI_API_URL
+        : model === "mistral"
+        ? process.env.MISTRAL_API_URL
+        : "";
+    response = await fetchHuggingFaceResponse(url || "", formattedInput);
+  }
+
+  await saveAIResponseAsComment(
+    postId,
+    response,
+    process.env[`${model.toUpperCase()}_USERID`] || "",
+    parentCommentID
+  );
+  return response;
 };
