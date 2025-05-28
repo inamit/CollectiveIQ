@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleGeminiResponse, handlePhiResponse, handleMistralResponse } from "../controllers/ai_controller";
+import { handleAIResponse } from "../controllers/ai_controller";
 
 const router: Router = Router();
 
@@ -18,33 +18,55 @@ const router: Router = Router();
  *       type: object
  *       required:
  *         - input
+ *         - model
  *       properties:
  *         input:
  *           type: string
+ *           description: The user input or answer for the AI model
+ *         model:
+ *           type: string
+ *           description: The AI model to use (e.g. gemini, phi, mistral)
+ *         parentCommentID:
+ *           type: string
+ *           description: (Optional) Parent comment ID for threading
  *     AIResponse:
  *       type: object
  *       properties:
  *         response:
  *           type: string
+ *           description: The AI's response
+ *     Error:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *           description: Error message
  */
 
 /**
  * @swagger
  * paths:
- *   /ai/gemini-response:
+ *   /ai/response:
  *     post:
  *       tags:
  *         - AI
- *       summary: Get response from Gemini AI
- *       description: Fetches a response from the Gemini AI model
- *       operationId: getGeminiResponse
+ *       summary: Get response from a configurable AI model
+ *       description: Fetches a response from the specified AI model (Gemini, Phi, Mistral, etc.)
+ *       operationId: getAIResponse
  *       requestBody:
  *         description: Input for the AI model
+ *         required: true
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AIInput'
- *         required: true
+ *       parameters:
+ *         - in: query
+ *           name: post_id
+ *           schema:
+ *             type: string
+ *           required: true
+ *           description: The ID of the post to associate the AI response with
  *       responses:
  *         '200':
  *           description: Successful operation
@@ -52,6 +74,12 @@ const router: Router = Router();
  *             application/json:
  *               schema:
  *                 $ref: '#/components/schemas/AIResponse'
+ *         '404':
+ *           description: Post not found
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/Error'
  *         '500':
  *           description: An unexpected error occurred
  *           content:
@@ -59,72 +87,6 @@ const router: Router = Router();
  *               schema:
  *                 $ref: '#/components/schemas/Error'
  */
-router.post("/gemini-response", handleGeminiResponse);
-
-/**
- * @swagger
- * paths:
- *   /ai/phi-response:
- *     post:
- *       tags:
- *         - AI
- *       summary: Get response from Phi AI
- *       description: Fetches a response from the Phi AI model
- *       operationId: getPhiResponse
- *       requestBody:
- *         description: Input for the AI model
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AIInput'
- *         required: true
- *       responses:
- *         '200':
- *           description: Successful operation
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/AIResponse'
- *         '500':
- *           description: An unexpected error occurred
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/Error'
- */
-router.post("/phi-response", handlePhiResponse);
-
-/**
- * @swagger
- * paths:
- *   /ai/mistral-response:
- *     post:
- *       tags:
- *         - AI
- *       summary: Get response from Mistral AI
- *       description: Fetches a response from the Mistral AI model
- *       operationId: getMistralResponse
- *       requestBody:
- *         description: Input for the AI model
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AIInput'
- *         required: true
- *       responses:
- *         '200':
- *           description: Successful operation
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/AIResponse'
- *         '500':
- *           description: An unexpected error occurred
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/Error'
- */
-router.post("/mistral-response", handleMistralResponse);
+router.post("/response", handleAIResponse);
 
 export default router;
