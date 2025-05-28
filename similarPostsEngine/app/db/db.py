@@ -1,5 +1,6 @@
 import logging
 from pymongo import MongoClient
+from urllib.parse import quote_plus
 
 from app.settings import settings
 
@@ -15,7 +16,8 @@ class MongoDBConnection:
         else:
             try:
                 logger.info("Connecting to MongoDB...")
-                self.client = MongoClient(settings.DB_URL)
+                mongouri = f"mongodb://{quote_plus(settings.DB_USERNAME)}:{quote_plus(settings.DB_PASSWORD)}@{settings.DB_HOST}:{settings.DB_PORT}"
+                self.client = MongoClient(mongouri)
                 self.db = self.client[settings.DB_NAME]
                 logger.info("Connected to DB")
                 MongoDBConnection._instance = self

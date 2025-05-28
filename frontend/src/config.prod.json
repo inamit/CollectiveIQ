@@ -1,5 +1,5 @@
 {
-  "backendURL": "https://node13.cs.colman.ac.il:4000",
+  "backendURL": "https://collectiveiq.cs.colman.ac.il:3000",
   "signupUrl": "/users",
   "signinUrl": "/users/login",
   "signoutUrl": "/users/logout",
