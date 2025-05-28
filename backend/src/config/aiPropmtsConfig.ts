@@ -9,7 +9,7 @@ export const AI_PROMPTS: Record<string, AIPromptConfig> = {
     answer: "This is the answer: {answer}. Give your opinion on the answer.",
   },
   phi: {
-    question: "<|user|>{question}<|end|>",
+    question: "<|user|>{question}. Give your opinion about this<|end|>",
     answer: "<|assistant|>{answer}",
   },
   mistral: {
