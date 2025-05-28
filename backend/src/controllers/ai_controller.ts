@@ -3,7 +3,7 @@ import Post from "../models/posts_model";
 import { Request, Response } from "express";
 
 
-export const handleAIResponse = async (req: Request, res: Response) => {
+export const handleAIResponse = async (req: Request, res: Response): Promise<any> => {
   const { input, parentCommentID, model } = req.body;
   const { post_id } = req.query;
 
