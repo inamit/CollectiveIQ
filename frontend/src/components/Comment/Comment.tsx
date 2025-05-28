@@ -72,9 +72,10 @@ export const CommentComponent = ({
 
         try {
             await commentService.httpClient.post(
-                `${config.backendURL}/ai/${selectedModel}`,
+                `${config.backendURL}/ai`,
                 {
                     input: comment.content,
+                    model: selectedModel,
                     parentCommentID: comment._id,
                 },
                 {
