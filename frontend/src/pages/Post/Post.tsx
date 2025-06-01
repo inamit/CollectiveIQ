@@ -1,5 +1,5 @@
 import "./Post.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef  } from "react";
 import {
     IconButton,
     Box,
@@ -41,6 +41,7 @@ const PostComponent = () => {
     const { postId } = useParams();
     const navigate = useNavigate();
     const { user, setUser } = useUser();
+    const scrollContainerRef = useRef<HTMLDivElement | null>(null);
     const [tag, setTag] = useState<Tag | null>(null);
     const {
         post,
@@ -59,7 +60,12 @@ const PostComponent = () => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     useEffect(() => {
+        if (scrollContainerRef.current) {
+            window.scrollTo(0, 0);
+        }
+    }, [postId]);
 
+    useEffect(() => {
         if (post) {
             setEditablePost(post);
             if (post.imageUrl) {
@@ -370,7 +376,7 @@ const PostComponent = () => {
 
     return (
         <>
-            <Box className="post-container">
+            <Box className="post-container" ref={scrollContainerRef}>
                 <Card className="post-card">
                     {getUserDetails()}
                     {getHeader()}
