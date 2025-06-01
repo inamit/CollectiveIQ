@@ -59,7 +59,7 @@ const PostComponent = () => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     useEffect(() => {
-        window.scrollTo(0, 0);
+
         if (post) {
             setEditablePost(post);
             if (post.imageUrl) {
