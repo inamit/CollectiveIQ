@@ -165,7 +165,6 @@ const dislikePost = async (req: Request, res: Response): Promise<any> => {
 async function defineTagWithLLM(question: string, post_id: string) {
   try {
     const input = `${process.env.TAG_STRING}  ${process.env.TAG_LIST} the question: ${question}`;
-    // Use Gemini for tag definition
     const aiResponse = await getAIResponse("gemini", input, "", post_id);
     const updatedPost: IPost | null = await Post.findByIdAndUpdate(
       post_id,
