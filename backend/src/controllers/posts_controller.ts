@@ -8,6 +8,7 @@ import { deleteCommentsByPostId } from "../controllers/comments_controller";
 import { updateNumberOfPosts } from "./tags_controller";
 import { addPostToAlgorithm } from "../services/similar_posts_service";
 import { getSimilarPosts } from "../services/similar_posts_service";
+import { AIModel } from '../enums/AIModels'
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -28,11 +29,11 @@ const triggerAIResponses = async (
   postId: string
 ): Promise<void> => {
   try {
-    await Promise.all([
-      getAIResponse("gemini", content, "", postId),
-      getAIResponse("phi", content, "", postId),
-      getAIResponse("mistral", content, "", postId),
-    ]);
+    await Promise.all(
+      Object.values(AIModel).map((model) =>
+        getAIResponse(model, content, "", postId)
+      )
+    );
     console.log("AI responses successfully triggered for post:", postId);
   } catch (error) {
     console.error("Error triggering AI responses for post:", postId, error);
