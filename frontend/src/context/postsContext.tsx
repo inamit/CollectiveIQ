@@ -27,14 +27,11 @@ export const PostsProvider = ({children}: { children: React.ReactNode }) => {
         if (!searchValue.trim()) return posts;
         return posts.filter(
             (post) =>
-                isIncluded(post.title) || isIncluded(post.content)
-                || isIncluded(post.tag)
+                post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+                post.content.toLowerCase().includes(searchValue.toLowerCase()) ||
+                post.tag.toLowerCase().includes(searchValue.toLowerCase())
         );
     }, [searchValue, posts]);
-
-    const isIncluded = (searchString: string) => {
-        return searchString.toLowerCase().includes(searchValue.toLowerCase())
-    }
 
     return (
 
