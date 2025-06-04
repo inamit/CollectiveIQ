@@ -35,7 +35,7 @@ const ChatComponent = () => {
         <div>
             {user && (
                 <UserDropdown
-                    users={users}
+                    users={users.filter(receiver => receiver._id !== user._id)}
                     onSelectUser={handleSelectUser}
                 />
             )}
