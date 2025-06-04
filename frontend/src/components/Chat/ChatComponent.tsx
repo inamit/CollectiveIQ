@@ -26,7 +26,9 @@ const ChatComponent = () => {
     }, [user]);
 
     const handleSelectUser = (selectedUser: User) => {
-        navigate(`${routes.USER_PROFILE}/${selectedUser._id}`);
+        navigate(`${routes.USER_PROFILE}/${selectedUser._id}`, {
+            state: { tab: "chat" }
+        });
     };
 
     return (
