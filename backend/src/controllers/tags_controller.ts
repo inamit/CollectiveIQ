@@ -29,23 +29,25 @@ const getTagByName = async (req: Request, res: Response): Promise<any> => {
     }
 };
 
-const initTagsList = async (req: Request, res: Response): Promise<any> => {
+export const initTagsList = async () => {
     try {
         const tagsString = process.env.TAG_LIST;
         if (!tagsString) {
-            return res.status(400).json({ error: "TAGS environment variable is not set." });
+            console.warn("TAGS environment variable is not set.")
+        } else {
+            const existedTags = await Tag.find();
+            const existedTagNames = existedTags.map(tag => tag.name);
+
+            const allTags = tagsString.split(',')
+                .map(tag => tag.trim())
+                .filter(tag => tag);
+            const newTagNames = allTags.filter(tag => !existedTagNames.includes(tag));
+
+            const tagDocs = newTagNames.map(name => ({ name }));
+            const createdTags = await Tag.insertMany(tagDocs);
         }
-
-        const tagsNames = tagsString.split(",").map(tag => tag.trim()).filter(tag => tag);
-        const tagDocs = tagsNames.map(tag => ({
-            tag,
-        }));
-
-        const createdTags = await Tag.insertMany(tagDocs);
-        return res.status(201).json({ message: `${createdTags.length} tags created.`, tags: createdTags });
     } catch (error: any) {
         console.warn("Error creating tags:", error);
-        return handleMongoQueryError(res, error);
     }
 };
 
@@ -111,7 +113,6 @@ const aggragateTag = async (tag: ITag): Promise<any[]> => {
 }
 export default {
     getAllTags,
-    initTagsList,
     aggragateBestAiModelPerTag,
     getTagByName
 };

@@ -71,34 +71,6 @@ router.get("/", tagsController.getAllTags);
 /**
  * @swagger
  * paths:
- *  /tags/init:
- *   post:
- *     tags:
- *       - tag
- *     security:
- *       - bearerAuth: []
- *     summary: init the tag list
- *     description: create all the tags from .env
- *     operationId: initTags
- *     responses:
- *       '200':
- *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/tag'
- *       '500':
- *         description: An unexpected error occurred
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UnexpectedError'
- */
-router.post("/init", authMiddleware, tagsController.initTagsList);
-
-/**
- * @swagger
- * paths:
  *  /tags/updateBestAi:
  *   post:
  *     tags:
