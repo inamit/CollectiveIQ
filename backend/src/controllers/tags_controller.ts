@@ -1,9 +1,13 @@
 import { Request, Response } from "express";
 import { handleMongoQueryError } from "../db/db";
 import Tag, { ITag } from "../models/tags_model";
-import Post from "../models/posts_model";
 import Comment from "../models/comments_model";
-import User from "../models/users_model";
+import cron from 'node-cron';
+
+cron.schedule('0 0 * * *', () => {
+    console.log('Running recalcuation of the best AI');
+    aggragateBestAiModelPerTag();
+});
 
 const getAllTags = async (req: Request, res: Response): Promise<any> => {
     try {
@@ -63,25 +67,18 @@ export const updateNumberOfPosts = async (tag: string | undefined) => {
     }
 }
 
-const aggragateBestAiModelPerTag = async (req: Request, res: Response): Promise<void> => {
+const aggragateBestAiModelPerTag = async () => {
     try {
         const tags = await Tag.find();
-
         for (const tag of tags) {
             const result = await aggragateTag(tag);
-            console.log(`the result for ${tag.name} is - ${result.length}`);
-            if (result.length > 0) {
+            if (result[0]) {
                 const bestAiUserId = result[0]._id.toString();
                 await Tag.updateOne({ _id: tag._id }, { $set: { bestAi: bestAiUserId } });
-            } else {
-                console.log(`No AI comments found for tag '${tag.name}'`);
             }
         }
-
-        res.status(200).json({ message: "Best AI updated for all tags." });
     } catch (error) {
         console.error("Error updating best AI for all tags:", error);
-        res.status(500).json({ error: "Failed to update best AI for tags." });
     }
 };
 
@@ -113,6 +110,5 @@ const aggragateTag = async (tag: ITag): Promise<any[]> => {
 }
 export default {
     getAllTags,
-    aggragateBestAiModelPerTag,
     getTagByName
 };

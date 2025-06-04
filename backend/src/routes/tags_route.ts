@@ -1,8 +1,6 @@
 import express from "express";
-
 const router = express.Router();
 import tagsController from "../controllers/tags_controller";
-import authMiddleware from "../middleware/auth/authMiddleware";
 
 /**
  * @swagger
@@ -67,34 +65,6 @@ import authMiddleware from "../middleware/auth/authMiddleware";
  *               $ref: '#/components/schemas/UnexpectedError'
  */
 router.get("/", tagsController.getAllTags);
-
-/**
- * @swagger
- * paths:
- *  /tags/updateBestAi:
- *   post:
- *     tags:
- *       - tag
- *     security:
- *       - bearerAuth: []
- *     summary: update TheBestAi for every tag
- *     description: aggregate by the amount of likes on commets who is the best answers
- *     operationId: updateBestAi
- *     responses:
- *       '200':
- *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/tag'
- *       '500':
- *         description: An unexpected error occurred
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UnexpectedError'
- */
-router.post("/updateBestAi", authMiddleware, tagsController.aggragateBestAiModelPerTag);
 
 /**
  * @swagger
