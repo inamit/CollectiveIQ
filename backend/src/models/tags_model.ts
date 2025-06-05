@@ -16,7 +16,7 @@ const tagSchema = new Schema<ITag>({
     bestAi: {
         type: Schema.Types.ObjectId,
         ref: USER_RESOURCE_NAME,
-        default: '6820f41716104a8ad0f36362'
+        default: '67f53a54331547e7685515b8'
     },
     numOfPosts: {
         type: Number,
