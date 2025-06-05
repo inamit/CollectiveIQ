@@ -15,6 +15,7 @@ import { ImagePicker } from "../../components/ImagePicker/ImagePicker";
 import ChatBox from "../../components/Chat/ChatBox";
 import UserDetails from "../../components/UserAvatar/UserDetails";
 import LikedPostsPage from "../LikedPosts/LikedPostsPage.tsx";
+import { useLocation } from "react-router";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -82,15 +83,24 @@ export default function UserProfile() {
   const [image, setImage] = useState<File | null>(null);
   const { posts, postsLoadingState } = usePosts(selectedUser);
   const { comments, commentsLoadingState } = useComments(selectedUser);
+  const location = useLocation();
+
+    useEffect(() => {
+        getSelectedUser(user, setUser, isUserLoaded, userId).then(
+            ({ selectedUser }) => {
+                setSelectedUser(selectedUser);
+                setUsername(selectedUser?.username);
+            }
+        );
+    }, [user, isUserLoaded, userId])
 
   useEffect(() => {
-    getSelectedUser(user, setUser, isUserLoaded, userId).then(
-      ({ selectedUser }) => {
-        setSelectedUser(selectedUser);
-        setUsername(selectedUser?.username);
-      }
-    );
-  }, [user, isUserLoaded]);
+    if (location.state?.tab === "chat") {
+      setSelectedTab(
+          (!userId || user?._id === userId) ? 3 : 2 // Match the logic for the Chat tab index
+      );
+    }
+  }, [location.state, user, userId]);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
