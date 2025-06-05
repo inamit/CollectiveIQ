@@ -100,7 +100,7 @@ export const CommentComponent = ({
                     description={formatDate(comment?.date)}
                 />
                 {bestAiComment == comment.userId._id && <Chip
-                    label={`Top pick by our Users - ${comment.userId.username}`}
+                    label={'Our Users Best Pick'}
                     color="success"
                     variant="outlined"
                     sx={{ marginLeft: 'auto' }}
