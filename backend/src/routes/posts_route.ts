@@ -351,4 +351,40 @@ router.post("/:itemId/like", authMiddleware, postsController.likePost);
 router.post("/:itemId/dislike", authMiddleware, postsController.dislikePost);
 
 router.get("/:userId/liked-posts", authMiddleware, postsController.getLikedPosts);
+
+/**
+ * @swagger
+ * paths:
+ *  /posts/close:
+ *   post:
+ *     summary: close post 
+ *     tags:
+ *      - Post
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *      content:
+ *        multipart/form-data:
+ *          schema:
+ *            allOf:
+ *              - $ref: '#/components/schemas/PostInput'
+ *              - required:
+ *                  - postId
+ *                  - answerId
+ *              - properties:
+ *                  postId:
+ *                    type: string
+ *                  answerId:
+ *                    type: string
+ *     responses:
+ *       200:
+ *         description: dislike to a post uploaded successfully
+ *       500:
+ *         description: failed to upload
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ */
+router.post("/close", authMiddleware, postsController.closePost);
 export default router;

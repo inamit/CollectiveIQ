@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { handleMongoQueryError } from "../db/db";
-import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
+import Post, { IPost, POST_RESOURCE_NAME, QuestionStatus } from "../models/posts_model";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
 import {
   getGeminiResponse,
@@ -204,6 +204,24 @@ const similarPosts = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
+const closePost = async (req: Request, res: Response): Promise<any> => {
+  const postId = req.body.post_id;
+  const answerId = req.body.answerId;
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      {
+        status: QuestionStatus.Closed,
+        bestAnswer: answerId
+      },
+      { new: true, runValidators: true }
+    );
+    res.json(updatedPost);
+  } catch (error) {
+    res.status(500).send("Error update post`s status");
+  }
+};
+
 export default {
   getPosts,
   saveNewPost,
@@ -215,4 +233,5 @@ export default {
   dislikePost,
   getLikedPosts,
   similarPosts,
+  closePost,
 };
