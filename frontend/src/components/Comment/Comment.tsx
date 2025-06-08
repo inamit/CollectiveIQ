@@ -72,7 +72,7 @@ export const CommentComponent = ({
 
         try {
             await commentService.httpClient.post(
-                `${config.backendURL}/ai`,
+                `${config.backendURL}/ai/response`,
                 {
                     input: comment.content,
                     model: selectedModel,
@@ -151,9 +151,9 @@ export const CommentComponent = ({
                                     }}
                                 >
                                     {[
-                                        {label: "Gemini", value: "gemini-response"},
-                                        {label: "Phi", value: "phi-response"},
-                                        {label: "Mistral", value: "mistral-response"},
+                                        {label: "Gemini", value: "gemini"},
+                                        {label: "Phi", value: "phi"},
+                                        {label: "Mistral", value: "mistral"},
                                     ].map((model) => (
                                         <Button
                                             key={model.value}
