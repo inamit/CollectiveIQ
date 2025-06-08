@@ -84,7 +84,7 @@ export const getAIResponse = async (
       model === "phi"
         ? process.env.PHI_API_URL
         : model === "mistral"
-        ? "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3"
+        ? process.env.MISTRAL_API_URL
         : "";
     response = await fetchHuggingFaceResponse(url || "", formattedInput);
   }
