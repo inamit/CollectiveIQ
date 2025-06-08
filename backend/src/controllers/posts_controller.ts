@@ -31,7 +31,7 @@ const triggerAIResponses = async (
   try {
     await Promise.all(
       Object.values(AIModel).map((model) =>
-        getAIResponse(model, content, "", postId)
+        getAIResponse(model, content, "", postId, true)
       )
     );
     console.log("AI responses successfully triggered for post:", postId);
@@ -166,7 +166,7 @@ const dislikePost = async (req: Request, res: Response): Promise<any> => {
 async function defineTagWithLLM(question: string, post_id: string) {
   try {
     const input = `${process.env.TAG_STRING}  ${process.env.TAG_LIST} the question: ${question}`;
-    const aiResponse = await getAIResponse("gemini", input, "", post_id);
+    const aiResponse = await getAIResponse("gemini", input, "", post_id, false);
     const updatedPost: IPost | null = await Post.findByIdAndUpdate(
       post_id,
       {

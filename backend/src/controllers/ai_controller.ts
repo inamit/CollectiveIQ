@@ -16,6 +16,7 @@ export const handleAIResponse = async (req: Request, res: Response): Promise<any
       post.content,
       input,
       post_id as string,
+      true,
       parentCommentID
     );
     res.json({ response });
