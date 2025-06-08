@@ -17,6 +17,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CheckIcon from '@mui/icons-material/Check';
 import CommentSection from "../../components/Comment/Comment.tsx";
 import { useNavigate, useParams } from "react-router";
 import { useUser } from "../../context/userContext.tsx";
@@ -58,6 +59,7 @@ const PostComponent = () => {
     const [originalImage, setOriginalImage] = useState<File | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isClosing, setIsCloseing] = useState(false);
 
     useEffect(() => {
         if (scrollContainerRef.current) {
@@ -116,6 +118,15 @@ const PostComponent = () => {
         }
     };
 
+    const toggleCloseMode = () => {
+        if (isEditing) {
+            setIsCloseing(false);
+            refreshPost();
+        } else {
+            setIsCloseing(true);
+        }
+    };  
+
     const confirmDeletePost = () => {
         setDeleteDialogOpen(true);
     };
@@ -126,6 +137,14 @@ const PostComponent = () => {
             setDeleteDialogOpen(false);
             navigate(routes.HOME);
         });
+    };
+
+    const handleClosingConfirmed = () => {
+        /*const { request } = new PostsService(user!, setUser).ClosePost(postId!);
+        request.then(() => {
+            setIsCloseing(false);
+            navigate(routes.HOME);
+        });*/
     };
 
     const updatePost = () => {
@@ -178,6 +197,28 @@ const PostComponent = () => {
         return (<div>
             {user?._id === post?.userId?._id && !isEditing && (
                 <Box display="flex" gap={1} >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <IconButton
+                            size="small"
+                            onClick={toggleCloseMode}
+                            sx={{
+                                color: "success.main",
+                                "&:hover": {
+                                    backgroundColor: "secondary.main",
+                                },
+                                "& svg": {
+                                    fontSize: "1.5rem",
+                                },
+                            }}
+                        >
+                            <CheckIcon/>
+                        </IconButton>
+                    </motion.div>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -384,6 +425,26 @@ const PostComponent = () => {
                     {!isEditing && getCommentsComponents()}
                 </Card>
             </Box>
+
+            <Dialog open={isClosing} onClose={() => setIsCloseing(false)}  className="custom-dialog">
+                <DialogTitle color="white">Close Post</DialogTitle>
+                <DialogContent>
+                    <Typography color="white">
+                        Are you sure that you want to Close this question?
+                    </Typography>
+                    <Card className="close-card">
+                        {getCommentsComponents()}
+                    </Card>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setIsCloseing(false)} color="error">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleClosingConfirmed} color="primary" variant="contained">
+                        Submit
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
                 <DialogTitle>Delete Post</DialogTitle>

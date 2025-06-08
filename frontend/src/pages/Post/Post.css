@@ -77,3 +77,21 @@
     border-radius: 1px;
     margin-top: 2px;
 }
+
+.custom-dialog .MuiDialog-paper {
+    width: 1500px;
+    height: 1150px;
+    background-color: #1f1f1f;
+}
+
+.close-card {
+    background-color: #2a2a2a;
+    color: #1f1f1f;
+    padding: 16px;
+    margin-top: 20px;
+    border-radius: 8px;
+    max-height: 600px;
+    overflow-y: auto;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid #3a3a3a;
+}
