@@ -12,6 +12,7 @@ import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 import posts_controller from "./controllers/posts_controller";
 import authMiddleware from "./middleware/auth/authMiddleware";
+import { initTagsList } from "./controllers/tags_controller";
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
@@ -55,7 +56,7 @@ app.use("/users", usersRoute);
 app.use("/chats", chatRoute);
 app.use("/ai", aiRoute);
 app.use("/tags", tagsRoute);
-
+initTagsList()
 /**
  * @swagger
  * paths:

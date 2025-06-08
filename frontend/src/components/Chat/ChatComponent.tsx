@@ -1,25 +1,20 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import UserDropdown from "../UsersList/UsersDropDown.tsx";
 import User from "../../models/user.ts";
-import {useUser} from "../../context/userContext.tsx";
-import {UsersService} from "../../services/usersService.ts";
-import ChatBoxComponent from "./ChatBoxComponent.tsx";
+import { useUser } from "../../context/userContext.tsx";
+import { UsersService } from "../../services/usersService.ts";
+import { useNavigate } from "react-router";
+import { routes } from "../../router/routes.ts";
 
-interface IMessage {
-    senderId: string;
-    message: string;
-}
 const ChatComponent = () => {
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
-    const [messages, setMessages] = useState<IMessage[]>([]);
     const [users, setUsers] = useState<User[]>([]);
-    const {user, setUser} = useUser();
-
+    const { user, setUser } = useUser();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (user) {
-            const usersService = new UsersService(user!, setUser);
-            const {request} = usersService.getAllUsers();
+            const usersService = new UsersService(user, setUser);
+            const { request } = usersService.getAllUsers();
             request
                 .then((response) => {
                     setUsers(response.data);
@@ -31,22 +26,17 @@ const ChatComponent = () => {
     }, [user]);
 
     const handleSelectUser = (selectedUser: User) => {
-        setSelectedUser(selectedUser);
-        useEffect(() => {
-            setMessages([]);
-        }, [messages]);
-
+        navigate(`${routes.USER_PROFILE}/${selectedUser._id}`, {
+            state: { tab: "chat" }
+        });
     };
 
     return (
         <div>
-            {user && (<UserDropdown users={users} onSelectUser={handleSelectUser}/>)}
-            {selectedUser && user && (
-                <ChatBoxComponent
-                    onClose={() => setSelectedUser(null)}
-                    user={user}
-                    senderId={user._id}
-                    receiverId={selectedUser._id}
+            {user && (
+                <UserDropdown
+                    users={users.filter(receiver => receiver._id !== user._id)}
+                    onSelectUser={handleSelectUser}
                 />
             )}
         </div>

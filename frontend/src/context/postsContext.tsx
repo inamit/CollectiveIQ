@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo } from "react";
+import React, {createContext, useContext, useState, useMemo} from "react";
 import usePosts from "../hooks/usePosts";
 import Post from "../models/post";
 
@@ -9,6 +9,7 @@ interface PostsContextProps {
     posts: Post[] | null;
     reloadPosts: () => void;
 }
+
 const PostsContext = createContext<PostsContextProps | null>(null);
 
 export const usePostsContext = () => {
@@ -17,17 +18,18 @@ export const usePostsContext = () => {
     return context;
 };
 
-export const PostsProvider = ({ children }: { children: React.ReactNode }) => {
+export const PostsProvider = ({children}: { children: React.ReactNode }) => {
 
     const [searchValue, setSearchValue] = useState("");
-    const { posts, reloadPosts } = usePosts();
+    const {posts, reloadPosts} = usePosts();
     const filteredPosts = useMemo(() => {
         if (!posts) return [];
         if (!searchValue.trim()) return posts;
         return posts.filter(
             (post) =>
                 post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-                post.content.toLowerCase().includes(searchValue.toLowerCase())
+                post.content.toLowerCase().includes(searchValue.toLowerCase()) ||
+                post.tag.toLowerCase().includes(searchValue.toLowerCase())
         );
     }, [searchValue, posts]);
 
