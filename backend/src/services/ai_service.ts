@@ -64,6 +64,7 @@ export const getAIResponse = async (
   question: string,
   answer: string,
   postId: string,
+  addComment: boolean,
   parentCommentID?: string
 ): Promise<string> => {
   const prompts = AI_PROMPTS[model];
@@ -83,16 +84,18 @@ export const getAIResponse = async (
       model === "phi"
         ? process.env.PHI_API_URL
         : model === "mistral"
-        ? process.env.MISTRAL_API_URL
+        ? "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3"
         : "";
     response = await fetchHuggingFaceResponse(url || "", formattedInput);
   }
 
-  await saveAIResponseAsComment(
-    postId,
-    response,
-    process.env[`${model.toUpperCase()}_USERID`] || "",
-    parentCommentID
-  );
+  if (addComment) {
+    await saveAIResponseAsComment(
+      postId,
+      response,
+      process.env[`${model.toUpperCase()}_USERID`] || "",
+      parentCommentID
+    );
+  }
   return response;
 };
