@@ -20,6 +20,7 @@ interface CommentProps {
   showDividers?: boolean;
   refreshComments?: () => void;
   bestAiComment?: string
+  highlightedCommentId?: string | null;
 }
 
 export default function CommentsList({
@@ -29,7 +30,8 @@ export default function CommentsList({
   level = 0,
   showDividers = true,
   refreshComments = () => {},
-  bestAiComment
+  bestAiComment,
+ highlightedCommentId
 }: CommentProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
@@ -85,6 +87,7 @@ export default function CommentsList({
                                     comment={comment}
                                     refreshComments={refreshComments}
                                     bestAiComment={bestAiComment ?? ""}
+                                    shouldScroll={comment._id === highlightedCommentId} // optional auto-scroll
                                 />
                             </ListItem>
 

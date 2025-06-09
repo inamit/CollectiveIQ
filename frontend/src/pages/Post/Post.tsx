@@ -60,6 +60,7 @@ const PostComponent = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isClosing, setIsCloseing] = useState(false);
+    const [highlightedCommentId, setHighlightedCommentId] = useState<string | null>(null);
 
     useEffect(() => {
         if (scrollContainerRef.current) {
@@ -145,6 +146,7 @@ const PostComponent = () => {
             setIsCloseing(false);
             navigate(routes.HOME);
         });*/
+         setHighlightedCommentId(highlightedCommentId??null);
     };
 
     const updatePost = () => {
@@ -432,12 +434,19 @@ const PostComponent = () => {
                     <Typography color="white">
                         Are you sure that you want to Close this question?
                     </Typography>
-                    <Card className="close-card">
-                        {getCommentsComponents()}
+                    <Card sx={{ backgroundColor: '#1e1e1e', color: 'white' }}>
+                       <CommentSection
+                            comments={comments}
+                            refreshComments={refreshComments}
+                            commentsLoadingState={commentsLoadingState}
+                            bestAiComment={tag?.bestAi}
+                            hideAddComment={true}  
+                            highlightedCommentId={highlightedCommentId}
+                        />
                     </Card>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setIsCloseing(false)} color="error">
+                    <Button onClick={() => setIsCloseing(false)} color="error" variant="contained">
                         Cancel
                     </Button>
                     <Button onClick={handleClosingConfirmed} color="primary" variant="contained">

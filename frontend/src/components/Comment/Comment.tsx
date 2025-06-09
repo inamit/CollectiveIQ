@@ -246,9 +246,10 @@ export const CommentComponent = ({
 interface CommentSectionProps {
     comments: Comment[] | undefined;
     commentsLoadingState?: LoadingState;
-    addComment: (content: string) => void;
+    addComment?: (content: string) => void;
     refreshComments: () => void;
-    bestAiComment?: string
+    bestAiComment?: string;
+    hideAddComment?: boolean;        
 }
 
 const CommentSection = ({
@@ -257,12 +258,13 @@ const CommentSection = ({
                             refreshComments,
                             commentsLoadingState,
                             bestAiComment,
+                            hideAddComment = false
                         }: CommentSectionProps) => {
     const [commentText, setCommentText] = useState("");
     const {user} = useUser();
 
     const handleAddComment = () => {
-        if (commentText.trim()) {
+        if (commentText.trim() && addComment) {
             addComment(commentText);
             setCommentText("");
         }
@@ -270,7 +272,7 @@ const CommentSection = ({
 
     return (
         <div className="comment-section">
-            {user && (
+            {!hideAddComment && user && (
                 <div className="add-comment">
                     <AppTextField
                         multiline
@@ -294,15 +296,15 @@ const CommentSection = ({
             )}
 
       <div className="comments-list">
-        <CommentsList
-          maxCommentsPerPage={5}
-          comments={buildCommentTree(comments ?? [])}
-          loadingState={commentsLoadingState}
-          showDividers={false}
-          refreshComments={refreshComments}
-          bestAiComment={bestAiComment ?? ""}
-        />
-      </div>
+                <CommentsList
+                    maxCommentsPerPage={5}
+                    comments={buildCommentTree(comments ?? [])}
+                    loadingState={commentsLoadingState}
+                    showDividers={false}
+                    refreshComments={refreshComments}
+                    bestAiComment={bestAiComment ?? ""}
+                />
+            </div>
     </div>
   );
 
