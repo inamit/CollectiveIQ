@@ -151,7 +151,6 @@ const PostComponent = () => {
     };
 
     const handleCommentClick = (id: string) => {
-        console.log(id);
         setSelectedCommentId(prevId => prevId === id ? null : id);
     };
 
