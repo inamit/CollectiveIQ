@@ -22,8 +22,8 @@ services:
     environment:
       - NODE_ENV=production
       - DB_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${DB_URL}:${DB_PORT}/${DB_NAME}
-      - ACCESS_TOKEN_EXPIRATION='1d'
-      - REFRESH_TOKEN_EXPIRATION='2d'
+      - ACCESS_TOKEN_EXPIRATION=1d
+      - REFRESH_TOKEN_EXPIRATION=2d
       - TOKEN_SECRET=${TOKEN_SECRET}
       - FILE_SIZE_LIMIT=5242880
       - BASE_URL=https://collectiveiq.cs.colman.ac.il:3000/
@@ -34,9 +34,9 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - MISTARL_API_URL="https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3"
       - PHI_API_URL="https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct"
-      - GEMINI_USERID=681a2c65415bd74f3bc7ee70
-      - MISTRAL_USERID=681a2d45415bd74f3bc7eec4
-      - PHI_USERID=681a2d04415bd74f3bc7eea1
+      - GEMINI_USERID=684754652edbac2fbd17d541
+      - MISTRAL_USERID=684755392edbac2fbd17f25f
+      - PHI_USERID=684755532edbac2fbd17f280
       - SIMILAR_POSTS_URL=http://127.0.0.1:8000
       - SIMILAR_POSTS_TOP_K=5
     volumes:
