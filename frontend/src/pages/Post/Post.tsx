@@ -447,7 +447,7 @@ const PostComponent = () => {
                 <DialogTitle color="white">Close Post</DialogTitle>
                 <DialogContent>
                     <Typography color="white">
-                        Are you sure that you want to Close this question?
+                        Select the most helpful answer
                     </Typography>
                     <Card sx={{ backgroundColor: '#1e1e1e', color: 'white' }}>
                        <CommentSection

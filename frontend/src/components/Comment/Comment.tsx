@@ -105,7 +105,14 @@ export const CommentComponent = ({
     };
     const isSelected = selectedCommentId === comment._id;
     return (
-        <div className="comment-container"  onClick={onClick} ref={containerRef}
+        <motion.div className="comment-container"  onClick={onClick} ref={containerRef}
+                    animate={{
+                        boxShadow: isSelected
+                            ? '0 0 8px 3px #617AFA'
+                            : 'none',
+                        scale: isSelected ? 1.03 : 1,
+                        borderColor: isSelected ? "#617AFA" : "transparent",
+                    }}
             style={{
                 border: isSelected ? ' 2px solid #617AFA ' : 'transparent',
                 borderRadius: '18px',
@@ -113,9 +120,6 @@ export const CommentComponent = ({
                 marginBottom: '12px',
                 transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
                 cursor: 'pointer',
-                boxShadow: isSelected
-                ? '0 0 8px 3px #617AFA'
-                : 'none',
                 boxSizing: 'border-box'
             }}>
             <div className="comment-header">
@@ -134,8 +138,8 @@ export const CommentComponent = ({
                         color="success"
                         sx={{
                             position: 'absolute',
-                            top: 8,
-                            right: 8,
+                            top: -8,
+                            right: -8,
                             fontSize: '28px',
                             backgroundColor: 'white',
                             borderRadius: '50%',
@@ -146,8 +150,9 @@ export const CommentComponent = ({
                     />
                 )}
             </div>
+
             <div className="comment-content">
-                <Typography variant="body2" sx={{mb: 2}} className="comment-text">
+                <Typography variant="body2" sx={{ mb: 2 }} className="comment-text">
                     {comment.content}
                 </Typography>
                 <div className="comment-footer">
@@ -159,13 +164,14 @@ export const CommentComponent = ({
                             refresh={refreshComments}
                         />
                     </div>
+
                     <div
                         className="right-actions"
                         style={{
                             position: "relative",
                             display: "flex",
                             flexDirection: "row",
-                            gap: "8px", 
+                            gap: "8px",
                             alignItems: "center",
                             justifyContent: "flex-end",
                         }}
@@ -173,10 +179,10 @@ export const CommentComponent = ({
                         <AnimatePresence>
                             {showAIDropdown && (
                                 <motion.div
-                                    initial={{opacity: 0, y: 10}}
-                                    animate={{opacity: 1, y: 0}}
-                                    exit={{opacity: 0, y: 10}}
-                                    transition={{duration: 0.2}}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    transition={{ duration: 0.2 }}
                                     style={{
                                         position: "absolute",
                                         bottom: "100%",
@@ -190,9 +196,9 @@ export const CommentComponent = ({
                                     }}
                                 >
                                     {[
-                                        {label: "Gemini", value: "gemini-response"},
-                                        {label: "Phi", value: "phi-response"},
-                                        {label: "Mistral", value: "mistral-response"},
+                                        { label: "Gemini", value: "gemini-response" },
+                                        { label: "Phi", value: "phi-response" },
+                                        { label: "Mistral", value: "mistral-response" },
                                     ].map((model) => (
                                         <Button
                                             key={model.value}
@@ -279,7 +285,8 @@ export const CommentComponent = ({
                     </div>
                 </div>
             </div>
-        </div>
+
+</motion.div>
     );
 };
 
