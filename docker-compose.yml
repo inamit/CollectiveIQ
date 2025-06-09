@@ -32,7 +32,7 @@ services:
       - TAG_LIST = "(javascript, python, java, c#, cooking, health, fitness, travel, photography, food, finance, business, politics, gaming, art, literature, music, sports, education, parenting, relationships, mental-health, science, psychology, philosophy, economics, design, self-improvement, entertainment, diy, gardening, pets, history, education, astrology, marketing, books, writing, programming, web-development, fashion, beauty, travel-tips, food-recipes, architecture, language, cooking-tips, makeup, nutrition, sleep, technology, meditation, cryptocurrency, environment, sustainability, yoga, mindfulness, law, photography-tips, holidays, crafts, social-media, startups, investments, real-estate, engineering, home-improvement, product-design, leadership, career-advice, teaching, relationships-advice, comedy, movies, nature, hiking, volunteering, self-care, happiness, music-production, graphic-design, web-design, acting, productivity, life-hacks, public-speaking, writing-tips, fashion-design, animal-welfare, charity, mindfulness-meditation, mental-wellbeing, spirituality, conflict-resolution, sociology, childhood-education, language-learning, travel-photography, personal-finance, sustainable-living)"
       - HUGGING_FACE_API_KEY=${HUGGING_FACE_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - MISTARL_API_URL="https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
+      - MISTARL_API_URL="https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3"
       - PHI_API_URL="https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct"
       - GEMINI_USERID=681a2c65415bd74f3bc7ee70
       - MISTRAL_USERID=681a2d45415bd74f3bc7eec4
