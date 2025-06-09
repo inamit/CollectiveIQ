@@ -19,8 +19,9 @@ interface CommentProps {
   level?: number;
   showDividers?: boolean;
   refreshComments?: () => void;
-  bestAiComment?: string
-  highlightedCommentId?: string | null;
+  bestAiComment?: string,
+  selectedCommentId?: string | null;
+  onCommentClick?: (commentId: string) => void;
 }
 
 export default function CommentsList({
@@ -31,12 +32,16 @@ export default function CommentsList({
   showDividers = true,
   refreshComments = () => {},
   bestAiComment,
- highlightedCommentId
+  selectedCommentId,
+  onCommentClick
 }: CommentProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
-    const paginatedComments: Comment[][] = paginate(comments, maxCommentsPerPage);
+    const reorderedComments = selectedCommentId
+    ? [comments.find((comment) => comment._id === selectedCommentId), ...comments.filter((comment) => comment._id !== selectedCommentId)]
+    : comments;
+    const paginatedComments: Comment[][] = paginate(reorderedComments, maxCommentsPerPage);
 
     if (loadingState === LoadingState.LOADING) {
         const commentsSkeletons: React.JSX.Element[] = [];
@@ -87,7 +92,8 @@ export default function CommentsList({
                                     comment={comment}
                                     refreshComments={refreshComments}
                                     bestAiComment={bestAiComment ?? ""}
-                                    shouldScroll={comment._id === highlightedCommentId} // optional auto-scroll
+                                    selectedCommentId={selectedCommentId}
+                                    onClick={() => onCommentClick?.(comment._id)}
                                 />
                             </ListItem>
 
@@ -121,6 +127,5 @@ export default function CommentsList({
             )
             }
         </div>
-    )
-        ;
+    );
 }

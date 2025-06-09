@@ -4,7 +4,7 @@ import Tag, { ITag } from "../models/tags_model";
 import Comment from "../models/comments_model";
 import cron from 'node-cron';
 
-cron.schedule('*/5 * * * *', () => {
+cron.schedule('0 0 * * *', () => { //*/5 * * * *
     console.log('Running recalcuation of the best AI');
     aggragateBestAiModelPerTag();
 });

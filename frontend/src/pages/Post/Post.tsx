@@ -60,7 +60,8 @@ const PostComponent = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isClosing, setIsCloseing] = useState(false);
-    const [highlightedCommentId, setHighlightedCommentId] = useState<string | null>(null);
+    const [selectedCommentId, setSelectedCommentId] = useState<string | null>(null);
+    const [commentsLoaded, setCommentsLoaded] = useState(false);
 
     useEffect(() => {
         if (scrollContainerRef.current) {
@@ -77,7 +78,7 @@ const PostComponent = () => {
                     setOriginalImage(file);
                 });
             }
-            if (post?.tag) {
+            if (post?.tag && !tag) {
                 const tagsService = new TagsService();
                 const { request } = tagsService.getTagbyName(post.tag);
                 request.then((response) => {
@@ -88,11 +89,20 @@ const PostComponent = () => {
                 });
             }
         }
-        if (postId) {
-        refreshComments();
-    }
-  }, [post, postId, refreshComments]);
+  }, [post, postId]);
+  
+  // Fetch comments when postId changes, but only if they haven't been loaded already
+    useEffect(() => {
+        if (postId && !commentsLoaded) {
+            refreshComments();
+            setCommentsLoaded(true);
+        }
+    }, [postId, refreshComments, commentsLoaded]);
 
+    // Reset commentsLoaded flag when postId changes
+    useEffect(() => {
+        setCommentsLoaded(false);  // Reset commentsLoaded flag when postId changes
+    }, [postId]);
 
     const createFile = async (imageUrl: string) => {
         const urlArray = imageUrl.split("/");
@@ -140,13 +150,18 @@ const PostComponent = () => {
         });
     };
 
+    const handleCommentClick = (id: string) => {
+        console.log(id);
+        setSelectedCommentId(prevId => prevId === id ? null : id);
+    };
+
     const handleClosingConfirmed = () => {
-        /*const { request } = new PostsService(user!, setUser).ClosePost(postId!);
+        const { request } = new PostsService(user!, setUser).closePost(postId!, selectedCommentId!);
         request.then(() => {
             setIsCloseing(false);
-            navigate(routes.HOME);
-        });*/
-         setHighlightedCommentId(highlightedCommentId??null);
+            navigate(`${routes.POST}/${postId}`);
+        });
+        setIsCloseing(true);
     };
 
     const updatePost = () => {
@@ -403,6 +418,7 @@ const PostComponent = () => {
                             refreshComments={refreshComments}
                             commentsLoadingState={commentsLoadingState}
                             bestAiComment={tag?.bestAi}
+                            selectedCommentId={post?.bestAnswer ?? undefined}
                         />
                     </Box>
                 );
@@ -441,7 +457,8 @@ const PostComponent = () => {
                             commentsLoadingState={commentsLoadingState}
                             bestAiComment={tag?.bestAi}
                             hideAddComment={true}  
-                            highlightedCommentId={highlightedCommentId}
+                            selectedCommentId={selectedCommentId}
+                            onCommentClick={handleCommentClick}
                         />
                     </Card>
                 </DialogContent>

@@ -205,9 +205,10 @@ const similarPosts = async (req: Request, res: Response): Promise<any> => {
 };
 
 const closePost = async (req: Request, res: Response): Promise<any> => {
-  const postId = req.body.post_id;
+  const postId = req.body.postId;
   const answerId = req.body.answerId;
   try {
+    console.log('fetched', postId, answerId)
     const updatedPost = await Post.findByIdAndUpdate(
       postId,
       {

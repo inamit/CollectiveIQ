@@ -14,6 +14,7 @@ import {
     IconButton,
     Chip
 } from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
 import {motion, AnimatePresence} from "framer-motion";
 import Comment from "../../models/comment";
 import AppTextField from "../TextField/TextField";
@@ -26,22 +27,33 @@ import {LoadingState} from "../../services/loadingState.ts";
 import UserDetails from "../UserAvatar/UserDetails.tsx";
 import {LikesSection} from "../LikesSection/LikesSection.tsx";
 import DeleteIcon from "@mui/icons-material/Delete";
-
+import { useRef,useEffect } from "react";
 interface CommentProps {
     comment: Comment;
     refreshComments: () => void;
     bestAiComment?: string
+    selectedCommentId?: string | null;
+    onClick?: () => void;
 }
 
 export const CommentComponent = ({
                                      comment,
                                      refreshComments,
                                      bestAiComment,
+                                     selectedCommentId,
+                                     onClick
                                  }: CommentProps) => {
     const {user, setUser} = useUser();
     const [showAIDropdown, setShowAIDropdown] = useState(false);
     const [aiLoading, setAILoading] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Manage dialog open state
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (selectedCommentId === comment._id && containerRef.current) {
+            containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [selectedCommentId]);
 
     const handleDeleteDialogOpen = () => {
         setOpenDeleteDialog(true);
@@ -93,7 +105,19 @@ export const CommentComponent = ({
     };
 
     return (
-        <div className="comment-container">
+        <div className="comment-container"  onClick={onClick}
+            style={{
+                border: selectedCommentId === comment._id ? ' 2px solidrgb(26, 77, 46)' : 'transparent',
+                borderRadius: '18px',
+                padding: '16px',
+                marginBottom: '12px',
+            transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+                cursor: 'pointer',
+                boxShadow: selectedCommentId === comment._id
+                ? '0 0 8px 3px rgba(43, 214, 21, 0.5)'
+                : 'none',
+                boxSizing: 'border-box'
+            }}>
             <div className="comment-header">
                 <UserDetails
                     user={comment.userId}
@@ -101,10 +125,13 @@ export const CommentComponent = ({
                 />
                 {bestAiComment == comment.userId._id && <Chip
                     label={'Our Users Best Pick'}
-                    color="success"
+                    color="primary"
                     variant="outlined"
                     sx={{ marginLeft: 'auto' }}
                 />}
+                {selectedCommentId == comment._id ? 
+                    <CheckIcon color="success" sx={{marginLeft: '2%'}} fontSize="large"/> 
+                    : null}
             </div>
             <div className="comment-content">
                 <Typography variant="body2" sx={{mb: 2}} className="comment-text">
@@ -249,7 +276,9 @@ interface CommentSectionProps {
     addComment?: (content: string) => void;
     refreshComments: () => void;
     bestAiComment?: string;
-    hideAddComment?: boolean;        
+    hideAddComment?: boolean; 
+    selectedCommentId?: string | null;
+    onCommentClick?: (commentId: string) => void;       
 }
 
 const CommentSection = ({
@@ -258,10 +287,28 @@ const CommentSection = ({
                             refreshComments,
                             commentsLoadingState,
                             bestAiComment,
-                            hideAddComment = false
+                            hideAddComment = false,
+                            selectedCommentId,
+                            onCommentClick
                         }: CommentSectionProps) => {
     const [commentText, setCommentText] = useState("");
     const {user} = useUser();
+    const bestAnswerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (selectedCommentId && bestAnswerRef.current) {
+            const bestAnswerElement = bestAnswerRef.current.querySelector(
+                `.comment-container[data-id="${selectedCommentId}"]`
+            );
+              console.log("Best Answer Element:", bestAnswerElement);
+            if (bestAnswerElement) {
+                bestAnswerElement.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",  
+                });
+            }
+        }
+    }, [selectedCommentId]); 
 
     const handleAddComment = () => {
         if (commentText.trim() && addComment) {
@@ -271,7 +318,7 @@ const CommentSection = ({
     };
 
     return (
-        <div className="comment-section">
+        <div className="comment-section" ref={bestAnswerRef}>
             {!hideAddComment && user && (
                 <div className="add-comment">
                     <AppTextField
@@ -303,6 +350,8 @@ const CommentSection = ({
                     showDividers={false}
                     refreshComments={refreshComments}
                     bestAiComment={bestAiComment ?? ""}
+                    selectedCommentId={selectedCommentId}
+                    onCommentClick={onCommentClick}
                 />
             </div>
     </div>
