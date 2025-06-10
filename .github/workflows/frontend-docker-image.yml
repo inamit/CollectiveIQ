@@ -1,6 +1,7 @@
 name: Build and Push Frontend Docker Image
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - "main"
@@ -27,6 +28,10 @@ jobs:
       env:
         PRIVATE_KEY: ${{ secrets.CLIENT_KEY_BASE64 }}
         CERT: ${{ secrets.CLIENT_CERT_BASE64 }}
+    - name: Use Prod Config
+      run: |
+        rm frontend/src/config.json
+        mv frontend/src/config.prod.json frontend/src/config.json
     - name: Get image tags
       id: tags
       run: |

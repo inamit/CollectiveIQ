@@ -1,4 +1,3 @@
-// PostTile.tsx
 import {
     Typography,
     Box,

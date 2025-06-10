@@ -62,6 +62,7 @@ const PostComponent = () => {
     const [isClosing, setIsCloseing] = useState(false);
     const [selectedCommentId, setSelectedCommentId] = useState<string | null>(null);
     const [commentsLoaded, setCommentsLoaded] = useState(false);
+    const [newClosingComment, setNewClosingComment] = useState<string>("");
 
     useEffect(() => {
         if (scrollContainerRef.current) {
@@ -90,8 +91,7 @@ const PostComponent = () => {
             }
         }
   }, [post, postId]);
-  
-  // Fetch comments when postId changes, but only if they haven't been loaded already
+
     useEffect(() => {
         if (postId && !commentsLoaded) {
             refreshComments();
@@ -99,9 +99,8 @@ const PostComponent = () => {
         }
     }, [postId, refreshComments, commentsLoaded]);
 
-    // Reset commentsLoaded flag when postId changes
     useEffect(() => {
-        setCommentsLoaded(false);  // Reset commentsLoaded flag when postId changes
+        setCommentsLoaded(false);
     }, [postId]);
 
     const createFile = async (imageUrl: string) => {
@@ -151,17 +150,39 @@ const PostComponent = () => {
     };
 
     const handleCommentClick = (id: string) => {
-        console.log(id);
         setSelectedCommentId(prevId => prevId === id ? null : id);
     };
 
-    const handleClosingConfirmed = () => {
-        const { request } = new PostsService(user!, setUser).closePost(postId!, selectedCommentId!);
-        request.then(() => {
-            setIsCloseing(false);
-            navigate(`${routes.POST}/${postId}`);
-        });
-        setIsCloseing(true);
+    const handleClosingConfirmed = async () => {
+        const postService = new PostsService(user!, setUser);
+
+        if (newClosingComment.trim()) {
+            const commentService = new CommentsService(user!, setUser);
+            const { request: commentRequest } = commentService.saveNewComment(newClosingComment.trim(), postId!);
+
+            commentRequest
+                .then((response) => {
+                    const commentId = response.data._id;
+                    const { request: closeRequest } = postService.closePost(postId!, commentId);
+
+                    closeRequest.then(() => {
+                        setIsCloseing(false);
+                        setNewClosingComment("");
+                        refreshPost();
+                        refreshComments();
+                    });
+                })
+                .catch(() => toast.error("Failed to add closing comment."));
+        } else if (selectedCommentId) {
+            const { request } = postService.closePost(postId!, selectedCommentId);
+
+            request.then(() => {
+                setIsCloseing(false);
+                refreshPost();
+            });
+        } else {
+            toast.warning("Please select or write a comment to close the post.");
+        }
     };
 
     const updatePost = () => {
@@ -445,22 +466,31 @@ const PostComponent = () => {
             </Box>
 
             <Dialog open={isClosing} onClose={() => setIsCloseing(false)}  className="custom-dialog">
-                <DialogTitle color="white">Close Post</DialogTitle>
+                <DialogTitle color="white">Found An Answer?</DialogTitle>
                 <DialogContent>
-                    <Typography color="white">
-                        Are you sure that you want to Close this question?
-                    </Typography>
-                    <Card sx={{ backgroundColor: '#1e1e1e', color: 'white' }}>
-                       <CommentSection
+                    <Typography color="white">Select the most helpful answer or write a new one</Typography>
+
+                    <Card sx={{ backgroundColor: '#1e1e1e', color: 'white', mt: 2 }}>
+                        <CommentSection
                             comments={comments}
                             refreshComments={refreshComments}
                             commentsLoadingState={commentsLoadingState}
                             bestAiComment={tag?.bestAi}
-                            hideAddComment={true}  
+                            hideAddComment={true}
                             selectedCommentId={selectedCommentId}
                             onCommentClick={handleCommentClick}
                         />
                     </Card>
+
+                    <AppTextField
+                        fullWidth
+                        multiline
+                        rows={3}
+                        placeholder="Or write your own closing comment..."
+                        value={newClosingComment}
+                        onChange={(e) => setNewClosingComment(e.target.value)}
+                        sx={{ mt: 2, backgroundColor: "white", borderRadius: 1 }}
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setIsCloseing(false)} color="error" variant="contained">

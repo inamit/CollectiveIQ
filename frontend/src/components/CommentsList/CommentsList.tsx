@@ -1,7 +1,7 @@
 import Divider from "@mui/material/Divider";
 import "./CommentsList.css";
 import {List, ListItem, Pagination, Skeleton} from "@mui/material";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {paginate} from "../../utils/pagination";
 import {LoadingState} from "../../services/loadingState";
 import _ from "lodash";
@@ -37,11 +37,18 @@ export default function CommentsList({
 }: CommentProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
-
-    const reorderedComments = selectedCommentId
+  const reorderedComments = selectedCommentId
     ? [comments.find((comment) => comment._id === selectedCommentId), ...comments.filter((comment) => comment._id !== selectedCommentId)]
     : comments;
-    const paginatedComments: Comment[][] = paginate(reorderedComments, maxCommentsPerPage);
+  const paginatedComments: Comment[][] = paginate(reorderedComments, maxCommentsPerPage);
+
+    useEffect(() => {
+        const totalPages = Math.ceil(reorderedComments.length / maxCommentsPerPage);
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+        }
+    }, [comments, currentPage, maxCommentsPerPage]);
+
 
     if (loadingState === LoadingState.LOADING) {
         const commentsSkeletons: React.JSX.Element[] = [];

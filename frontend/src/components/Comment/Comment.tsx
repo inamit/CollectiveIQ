@@ -27,7 +27,6 @@ import {LoadingState} from "../../services/loadingState.ts";
 import UserDetails from "../UserAvatar/UserDetails.tsx";
 import {LikesSection} from "../LikesSection/LikesSection.tsx";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useRef,useEffect } from "react";
 interface CommentProps {
     comment: Comment;
     refreshComments: () => void;
@@ -47,13 +46,6 @@ export const CommentComponent = ({
     const [showAIDropdown, setShowAIDropdown] = useState(false);
     const [aiLoading, setAILoading] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Manage dialog open state
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (selectedCommentId === comment._id && containerRef.current) {
-            containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }, [selectedCommentId]);
 
     const handleDeleteDialogOpen = () => {
         setOpenDeleteDialog(true);
@@ -84,9 +76,10 @@ export const CommentComponent = ({
 
         try {
             await commentService.httpClient.post(
-                `${config.backendURL}/ai/${selectedModel}`,
+                `${config.backendURL}/ai/response`,
                 {
                     input: comment.content,
+                    model: selectedModel,
                     parentCommentID: comment._id,
                 },
                 {
@@ -103,19 +96,23 @@ export const CommentComponent = ({
             setAILoading(false);
         }
     };
-
+    const isSelected = selectedCommentId === comment._id;
     return (
-        <div className="comment-container"  onClick={onClick}
+        <motion.div className="comment-container"  onClick={onClick}
+                    animate={{
+                        boxShadow: isSelected
+                            ? '0 0 8px 3px #617AFA'
+                            : 'none',
+                        scale: isSelected ? 1.03 : 1,
+                        borderColor: isSelected ? "#617AFA" : "transparent",
+                    }}
             style={{
-                border: selectedCommentId === comment._id ? ' 2px solidrgb(26, 77, 46)' : 'transparent',
+                border: isSelected ? ' 2px solid #617AFA ' : 'transparent',
                 borderRadius: '18px',
                 padding: '16px',
                 marginBottom: '12px',
-            transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
                 cursor: 'pointer',
-                boxShadow: selectedCommentId === comment._id
-                ? '0 0 8px 3px rgba(43, 214, 21, 0.5)'
-                : 'none',
                 boxSizing: 'border-box'
             }}>
             <div className="comment-header">
@@ -129,12 +126,26 @@ export const CommentComponent = ({
                     variant="outlined"
                     sx={{ marginLeft: 'auto' }}
                 />}
-                {selectedCommentId == comment._id ? 
-                    <CheckIcon color="success" sx={{marginLeft: '2%'}} fontSize="large"/> 
-                    : null}
+                {selectedCommentId === comment._id && (
+                    <CheckIcon
+                        color="success"
+                        sx={{
+                            position: 'absolute',
+                            top: -8,
+                            right: -8,
+                            fontSize: '28px',
+                            backgroundColor: 'white',
+                            borderRadius: '50%',
+                            boxShadow: '0 0 6px rgba(97, 122, 250, 0.6)',
+                            padding: '2px',
+                            zIndex: 10,
+                        }}
+                    />
+                )}
             </div>
+
             <div className="comment-content">
-                <Typography variant="body2" sx={{mb: 2}} className="comment-text">
+                <Typography variant="body2" sx={{ mb: 2 }} className="comment-text">
                     {comment.content}
                 </Typography>
                 <div className="comment-footer">
@@ -146,13 +157,14 @@ export const CommentComponent = ({
                             refresh={refreshComments}
                         />
                     </div>
+
                     <div
                         className="right-actions"
                         style={{
                             position: "relative",
                             display: "flex",
                             flexDirection: "row",
-                            gap: "8px", 
+                            gap: "8px",
                             alignItems: "center",
                             justifyContent: "flex-end",
                         }}
@@ -177,9 +189,9 @@ export const CommentComponent = ({
                                     }}
                                 >
                                     {[
-                                        {label: "Gemini", value: "gemini-response"},
-                                        {label: "Phi", value: "phi-response"},
-                                        {label: "Mistral", value: "mistral-response"},
+                                        {label: "Gemini", value: "gemini"},
+                                        {label: "Phi", value: "phi"},
+                                        {label: "Mistral", value: "mistral"},
                                     ].map((model) => (
                                         <Button
                                             key={model.value}
@@ -266,7 +278,8 @@ export const CommentComponent = ({
                     </div>
                 </div>
             </div>
-        </div>
+
+</motion.div>
     );
 };
 
@@ -276,9 +289,9 @@ interface CommentSectionProps {
     addComment?: (content: string) => void;
     refreshComments: () => void;
     bestAiComment?: string;
-    hideAddComment?: boolean; 
+    hideAddComment?: boolean;
     selectedCommentId?: string | null;
-    onCommentClick?: (commentId: string) => void;       
+    onCommentClick?: (commentId: string) => void;
 }
 
 const CommentSection = ({
@@ -293,22 +306,6 @@ const CommentSection = ({
                         }: CommentSectionProps) => {
     const [commentText, setCommentText] = useState("");
     const {user} = useUser();
-    const bestAnswerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        if (selectedCommentId && bestAnswerRef.current) {
-            const bestAnswerElement = bestAnswerRef.current.querySelector(
-                `.comment-container[data-id="${selectedCommentId}"]`
-            );
-              console.log("Best Answer Element:", bestAnswerElement);
-            if (bestAnswerElement) {
-                bestAnswerElement.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",  
-                });
-            }
-        }
-    }, [selectedCommentId]); 
 
     const handleAddComment = () => {
         if (commentText.trim() && addComment) {
@@ -318,7 +315,7 @@ const CommentSection = ({
     };
 
     return (
-        <div className="comment-section" ref={bestAnswerRef}>
+        <div className="comment-section">
             {!hideAddComment && user && (
                 <div className="add-comment">
                     <AppTextField

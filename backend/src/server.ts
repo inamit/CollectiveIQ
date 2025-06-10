@@ -56,7 +56,6 @@ app.use("/users", usersRoute);
 app.use("/chats", chatRoute);
 app.use("/ai", aiRoute);
 app.use("/tags", tagsRoute);
-initTagsList()
 /**
  * @swagger
  * paths:
@@ -93,12 +92,13 @@ initTagsList()
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/Error'
- */
+*/
 app.get("/similar-posts", authMiddleware, posts_controller.similarPosts);
 
 const initApp = async (): Promise<Express> => {
   try {
     await connectDB();
+    await initTagsList();
     return app;
   } catch (err) {
     throw new Error(`Error connecting to DB: ${err}`);
