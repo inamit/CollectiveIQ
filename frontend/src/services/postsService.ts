@@ -125,4 +125,18 @@ export class PostsService extends AbsLikeableService {
 
     return { request, cancel: () => controller.abort() };
   };
+
+  closePost = (postId: string, answerId: string) => {
+    const controller = new AbortController();
+    const request = this.httpClient.post<Post[]>(
+      `${config.backendURL}/posts/close`,
+      {
+        postId: postId,
+        answerId: answerId,
+        signal: controller.signal,
+      }
+    );
+    console.log("fetched!", postId, answerId)
+    return { request, cancel: () => controller.abort() };
+  };
 }

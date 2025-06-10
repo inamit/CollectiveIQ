@@ -17,6 +17,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CheckIcon from '@mui/icons-material/Check';
 import CommentSection from "../../components/Comment/Comment.tsx";
 import { useNavigate, useParams } from "react-router";
 import { useUser } from "../../context/userContext.tsx";
@@ -58,6 +59,10 @@ const PostComponent = () => {
     const [originalImage, setOriginalImage] = useState<File | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isClosing, setIsCloseing] = useState(false);
+    const [selectedCommentId, setSelectedCommentId] = useState<string | null>(null);
+    const [commentsLoaded, setCommentsLoaded] = useState(false);
+    const [newClosingComment, setNewClosingComment] = useState<string>("");
 
     useEffect(() => {
         if (scrollContainerRef.current) {
@@ -74,7 +79,7 @@ const PostComponent = () => {
                     setOriginalImage(file);
                 });
             }
-            if (post?.tag) {
+            if (post?.tag && !tag) {
                 const tagsService = new TagsService();
                 const { request } = tagsService.getTagbyName(post.tag);
                 request.then((response) => {
@@ -85,11 +90,18 @@ const PostComponent = () => {
                 });
             }
         }
-        if (postId) {
-        refreshComments();
-    }
-  }, [post, postId, refreshComments]);
+  }, [post, postId]);
 
+    useEffect(() => {
+        if (postId && !commentsLoaded) {
+            refreshComments();
+            setCommentsLoaded(true);
+        }
+    }, [postId, refreshComments, commentsLoaded]);
+
+    useEffect(() => {
+        setCommentsLoaded(false);
+    }, [postId]);
 
     const createFile = async (imageUrl: string) => {
         const urlArray = imageUrl.split("/");
@@ -116,6 +128,15 @@ const PostComponent = () => {
         }
     };
 
+    const toggleCloseMode = () => {
+        if (isEditing) {
+            setIsCloseing(false);
+            refreshPost();
+        } else {
+            setIsCloseing(true);
+        }
+    };  
+
     const confirmDeletePost = () => {
         setDeleteDialogOpen(true);
     };
@@ -126,6 +147,42 @@ const PostComponent = () => {
             setDeleteDialogOpen(false);
             navigate(routes.HOME);
         });
+    };
+
+    const handleCommentClick = (id: string) => {
+        setSelectedCommentId(prevId => prevId === id ? null : id);
+    };
+
+    const handleClosingConfirmed = async () => {
+        const postService = new PostsService(user!, setUser);
+
+        if (newClosingComment.trim()) {
+            const commentService = new CommentsService(user!, setUser);
+            const { request: commentRequest } = commentService.saveNewComment(newClosingComment.trim(), postId!);
+
+            commentRequest
+                .then((response) => {
+                    const commentId = response.data._id;
+                    const { request: closeRequest } = postService.closePost(postId!, commentId);
+
+                    closeRequest.then(() => {
+                        setIsCloseing(false);
+                        setNewClosingComment("");
+                        refreshPost();
+                        refreshComments();
+                    });
+                })
+                .catch(() => toast.error("Failed to add closing comment."));
+        } else if (selectedCommentId) {
+            const { request } = postService.closePost(postId!, selectedCommentId);
+
+            request.then(() => {
+                setIsCloseing(false);
+                refreshPost();
+            });
+        } else {
+            toast.warning("Please select or write a comment to close the post.");
+        }
     };
 
     const updatePost = () => {
@@ -178,6 +235,28 @@ const PostComponent = () => {
         return (<div>
             {user?._id === post?.userId?._id && !isEditing && (
                 <Box display="flex" gap={1} >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <IconButton
+                            size="small"
+                            onClick={toggleCloseMode}
+                            sx={{
+                                color: "success.main",
+                                "&:hover": {
+                                    backgroundColor: "secondary.main",
+                                },
+                                "& svg": {
+                                    fontSize: "1.5rem",
+                                },
+                            }}
+                        >
+                            <CheckIcon/>
+                        </IconButton>
+                    </motion.div>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -360,6 +439,7 @@ const PostComponent = () => {
                             refreshComments={refreshComments}
                             commentsLoadingState={commentsLoadingState}
                             bestAiComment={tag?.bestAi}
+                            selectedCommentId={post?.bestAnswer ?? undefined}
                         />
                     </Box>
                 );
@@ -384,6 +464,43 @@ const PostComponent = () => {
                     {!isEditing && getCommentsComponents()}
                 </Card>
             </Box>
+
+            <Dialog open={isClosing} onClose={() => setIsCloseing(false)}  className="custom-dialog">
+                <DialogTitle color="white">Found An Answer?</DialogTitle>
+                <DialogContent>
+                    <Typography color="white">Select the most helpful answer or write a new one</Typography>
+
+                    <Card sx={{ backgroundColor: '#1e1e1e', color: 'white', mt: 2 }}>
+                        <CommentSection
+                            comments={comments}
+                            refreshComments={refreshComments}
+                            commentsLoadingState={commentsLoadingState}
+                            bestAiComment={tag?.bestAi}
+                            hideAddComment={true}
+                            selectedCommentId={selectedCommentId}
+                            onCommentClick={handleCommentClick}
+                        />
+                    </Card>
+
+                    <AppTextField
+                        fullWidth
+                        multiline
+                        rows={3}
+                        placeholder="Or write your own closing comment..."
+                        value={newClosingComment}
+                        onChange={(e) => setNewClosingComment(e.target.value)}
+                        sx={{ mt: 2, backgroundColor: "white", borderRadius: 1 }}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setIsCloseing(false)} color="error" variant="contained">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleClosingConfirmed} color="primary" variant="contained">
+                        Submit
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
                 <DialogTitle>Delete Post</DialogTitle>

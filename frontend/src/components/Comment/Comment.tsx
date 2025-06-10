@@ -14,6 +14,7 @@ import {
     IconButton,
     Chip
 } from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
 import {motion, AnimatePresence} from "framer-motion";
 import Comment from "../../models/comment";
 import AppTextField from "../TextField/TextField";
@@ -26,17 +27,20 @@ import {LoadingState} from "../../services/loadingState.ts";
 import UserDetails from "../UserAvatar/UserDetails.tsx";
 import {LikesSection} from "../LikesSection/LikesSection.tsx";
 import DeleteIcon from "@mui/icons-material/Delete";
-
 interface CommentProps {
     comment: Comment;
     refreshComments: () => void;
     bestAiComment?: string
+    selectedCommentId?: string | null;
+    onClick?: () => void;
 }
 
 export const CommentComponent = ({
                                      comment,
                                      refreshComments,
                                      bestAiComment,
+                                     selectedCommentId,
+                                     onClick
                                  }: CommentProps) => {
     const {user, setUser} = useUser();
     const [showAIDropdown, setShowAIDropdown] = useState(false);
@@ -92,9 +96,25 @@ export const CommentComponent = ({
             setAILoading(false);
         }
     };
-
+    const isSelected = selectedCommentId === comment._id;
     return (
-        <div className="comment-container">
+        <motion.div className="comment-container"  onClick={onClick}
+                    animate={{
+                        boxShadow: isSelected
+                            ? '0 0 8px 3px #617AFA'
+                            : 'none',
+                        scale: isSelected ? 1.03 : 1,
+                        borderColor: isSelected ? "#617AFA" : "transparent",
+                    }}
+            style={{
+                border: isSelected ? ' 2px solid #617AFA ' : 'transparent',
+                borderRadius: '18px',
+                padding: '16px',
+                marginBottom: '12px',
+                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+                cursor: 'pointer',
+                boxSizing: 'border-box'
+            }}>
             <div className="comment-header">
                 <UserDetails
                     user={comment.userId}
@@ -102,13 +122,30 @@ export const CommentComponent = ({
                 />
                 {bestAiComment == comment.userId._id && <Chip
                     label={'Our Users Best Pick'}
-                    color="success"
+                    color="primary"
                     variant="outlined"
                     sx={{ marginLeft: 'auto' }}
                 />}
+                {selectedCommentId === comment._id && (
+                    <CheckIcon
+                        color="success"
+                        sx={{
+                            position: 'absolute',
+                            top: -8,
+                            right: -8,
+                            fontSize: '28px',
+                            backgroundColor: 'white',
+                            borderRadius: '50%',
+                            boxShadow: '0 0 6px rgba(97, 122, 250, 0.6)',
+                            padding: '2px',
+                            zIndex: 10,
+                        }}
+                    />
+                )}
             </div>
+
             <div className="comment-content">
-                <Typography variant="body2" sx={{mb: 2}} className="comment-text">
+                <Typography variant="body2" sx={{ mb: 2 }} className="comment-text">
                     {comment.content}
                 </Typography>
                 <div className="comment-footer">
@@ -120,13 +157,14 @@ export const CommentComponent = ({
                             refresh={refreshComments}
                         />
                     </div>
+
                     <div
                         className="right-actions"
                         style={{
                             position: "relative",
                             display: "flex",
                             flexDirection: "row",
-                            gap: "8px", 
+                            gap: "8px",
                             alignItems: "center",
                             justifyContent: "flex-end",
                         }}
@@ -240,16 +278,20 @@ export const CommentComponent = ({
                     </div>
                 </div>
             </div>
-        </div>
+
+</motion.div>
     );
 };
 
 interface CommentSectionProps {
     comments: Comment[] | undefined;
     commentsLoadingState?: LoadingState;
-    addComment: (content: string) => void;
+    addComment?: (content: string) => void;
     refreshComments: () => void;
-    bestAiComment?: string
+    bestAiComment?: string;
+    hideAddComment?: boolean;
+    selectedCommentId?: string | null;
+    onCommentClick?: (commentId: string) => void;
 }
 
 const CommentSection = ({
@@ -258,12 +300,15 @@ const CommentSection = ({
                             refreshComments,
                             commentsLoadingState,
                             bestAiComment,
+                            hideAddComment = false,
+                            selectedCommentId,
+                            onCommentClick
                         }: CommentSectionProps) => {
     const [commentText, setCommentText] = useState("");
     const {user} = useUser();
 
     const handleAddComment = () => {
-        if (commentText.trim()) {
+        if (commentText.trim() && addComment) {
             addComment(commentText);
             setCommentText("");
         }
@@ -271,7 +316,7 @@ const CommentSection = ({
 
     return (
         <div className="comment-section">
-            {user && (
+            {!hideAddComment && user && (
                 <div className="add-comment">
                     <AppTextField
                         multiline
@@ -295,15 +340,17 @@ const CommentSection = ({
             )}
 
       <div className="comments-list">
-        <CommentsList
-          maxCommentsPerPage={5}
-          comments={buildCommentTree(comments ?? [])}
-          loadingState={commentsLoadingState}
-          showDividers={false}
-          refreshComments={refreshComments}
-          bestAiComment={bestAiComment ?? ""}
-        />
-      </div>
+                <CommentsList
+                    maxCommentsPerPage={5}
+                    comments={buildCommentTree(comments ?? [])}
+                    loadingState={commentsLoadingState}
+                    showDividers={false}
+                    refreshComments={refreshComments}
+                    bestAiComment={bestAiComment ?? ""}
+                    selectedCommentId={selectedCommentId}
+                    onCommentClick={onCommentClick}
+                />
+            </div>
     </div>
   );
 

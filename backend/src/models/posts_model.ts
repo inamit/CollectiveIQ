@@ -1,6 +1,12 @@
 import mongoose, { Schema, Types } from "mongoose";
 import { USER_RESOURCE_NAME } from "./users_model";
 import { Likeable } from "./likeable";
+import { COMMENT_RESOURCE_NAME } from "./comments_model";
+
+export enum QuestionStatus {
+  Opened = "OPENED",
+  Closed = "CLOSED"
+}
 
 export interface IPost extends Likeable {
   _id: Types.ObjectId;
@@ -10,6 +16,8 @@ export interface IPost extends Likeable {
   imageUrl?: string;
   date?: Date;
   tag?: string;
+  status: QuestionStatus;
+  bestAnswer?: Types.ObjectId;
 }
 
 const postSchema = new Schema<IPost>({
@@ -46,6 +54,15 @@ const postSchema = new Schema<IPost>({
   },
   tag: {
     type: String,
+    required: false
+  },
+  status: {
+    type: String,
+    enum: Object.values(QuestionStatus),
+    default: QuestionStatus.Opened,
+  },
+  bestAnswer: { // cant ref to Comment because Circular Dependency Pattern
+    type: Schema.Types.ObjectId,
     required: false
   }
 });

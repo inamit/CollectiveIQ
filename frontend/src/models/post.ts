@@ -10,4 +10,6 @@ export default interface Post extends Likeable {
   date: string;
   tag: string;
   comments: Comment[];
+  status: string;
+  bestAnswer?: string;
 }

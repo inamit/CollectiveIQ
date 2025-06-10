@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { handleMongoQueryError } from "../db/db";
-import Post, { IPost, POST_RESOURCE_NAME } from "../models/posts_model";
+import Post, { IPost, POST_RESOURCE_NAME, QuestionStatus } from "../models/posts_model";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
 import { getAIResponse } from "../services/ai_service";
 import { toggleReaction } from "./likes_controller";
@@ -183,7 +183,7 @@ async function defineTagWithLLM(question: string, post_id: string) {
 const getLikedPosts = async (req: Request, res: Response): Promise<any> => {
   try {
     const userId = req.params.userId;
-    const likedPosts = await Post.find({ likes: userId }).exec();
+    const likedPosts = await Post.find({ likes: userId }).populate('userId', 'username avatarUrl email');;
     res.json(likedPosts);
   } catch (error) {
     res.status(500).send("Error fetching liked posts");
@@ -201,6 +201,25 @@ const similarPosts = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
+const closePost = async (req: Request, res: Response): Promise<any> => {
+  const postId = req.body.postId;
+  const answerId = req.body.answerId;
+  try {
+    console.log('fetched', postId, answerId)
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      {
+        status: QuestionStatus.Closed,
+        bestAnswer: answerId
+      },
+      { new: true, runValidators: true }
+    );
+    res.json(updatedPost);
+  } catch (error) {
+    res.status(500).send("Error update post`s status");
+  }
+};
+
 export default {
   getPosts,
   saveNewPost,
@@ -212,4 +231,5 @@ export default {
   dislikePost,
   getLikedPosts,
   similarPosts,
+  closePost,
 };

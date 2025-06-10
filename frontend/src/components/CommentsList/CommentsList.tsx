@@ -1,7 +1,7 @@
 import Divider from "@mui/material/Divider";
 import "./CommentsList.css";
 import {List, ListItem, Pagination, Skeleton} from "@mui/material";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {paginate} from "../../utils/pagination";
 import {LoadingState} from "../../services/loadingState";
 import _ from "lodash";
@@ -19,7 +19,9 @@ interface CommentProps {
   level?: number;
   showDividers?: boolean;
   refreshComments?: () => void;
-  bestAiComment?: string
+  bestAiComment?: string,
+  selectedCommentId?: string | null;
+  onCommentClick?: (commentId: string) => void;
 }
 
 export default function CommentsList({
@@ -29,12 +31,24 @@ export default function CommentsList({
   level = 0,
   showDividers = true,
   refreshComments = () => {},
-  bestAiComment
+  bestAiComment,
+  selectedCommentId,
+  onCommentClick
 }: CommentProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
+  const reorderedComments = selectedCommentId
+    ? [comments.find((comment) => comment._id === selectedCommentId), ...comments.filter((comment) => comment._id !== selectedCommentId)]
+    : comments;
+  const paginatedComments: Comment[][] = paginate(reorderedComments, maxCommentsPerPage);
 
-    const paginatedComments: Comment[][] = paginate(comments, maxCommentsPerPage);
+    useEffect(() => {
+        const totalPages = Math.ceil(reorderedComments.length / maxCommentsPerPage);
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+        }
+    }, [comments, currentPage, maxCommentsPerPage]);
+
 
     if (loadingState === LoadingState.LOADING) {
         const commentsSkeletons: React.JSX.Element[] = [];
@@ -85,6 +99,8 @@ export default function CommentsList({
                                     comment={comment}
                                     refreshComments={refreshComments}
                                     bestAiComment={bestAiComment ?? ""}
+                                    selectedCommentId={selectedCommentId}
+                                    onClick={() => onCommentClick?.(comment._id)}
                                 />
                             </ListItem>
 
@@ -118,6 +134,5 @@ export default function CommentsList({
             )
             }
         </div>
-    )
-        ;
+    );
 }
