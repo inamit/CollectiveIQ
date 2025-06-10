@@ -47,13 +47,6 @@ export const CommentComponent = ({
     const [showAIDropdown, setShowAIDropdown] = useState(false);
     const [aiLoading, setAILoading] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Manage dialog open state
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (selectedCommentId === comment._id && containerRef.current) {
-            containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }, [selectedCommentId]);
 
     const handleDeleteDialogOpen = () => {
         setOpenDeleteDialog(true);
@@ -106,7 +99,7 @@ export const CommentComponent = ({
     };
     const isSelected = selectedCommentId === comment._id;
     return (
-        <motion.div className="comment-container"  onClick={onClick} ref={containerRef}
+        <motion.div className="comment-container"  onClick={onClick}
                     animate={{
                         boxShadow: isSelected
                             ? '0 0 8px 3px #617AFA'
