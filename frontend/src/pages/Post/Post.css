@@ -4,6 +4,9 @@
 
 .post-container {
     background-color: #121212;
+    background-image: url('../../../public/abstract.jpg');
+    background-size: cover;
+    background-position: center;
     min-height: 100vh;
     padding: 32px;
     color: #fff;
