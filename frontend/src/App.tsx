@@ -4,7 +4,7 @@ import NavBar from "./components/NavBar/NavBar.tsx";
 import {ToastContainer} from "react-toastify";
 import {UserProvider} from "./context/userContext.tsx";
 import ChatComponent from "./components/Chat/ChatComponent.tsx"; // import this
-
+import "./App.css"
 function App() {
     const AUTO_CLOSE_TIME = 3000;
 

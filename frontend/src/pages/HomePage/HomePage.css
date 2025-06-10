@@ -1,9 +1,5 @@
 .homepage-container {
   padding: 20px;
-  background-color: #1f1f1f;
-  background-image: url('../../../public/abstract.jpg');
-  background-size: cover;
-  background-position: center;
 }
 
 .homepage-title {

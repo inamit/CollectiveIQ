@@ -4,9 +4,12 @@
 
 .App {
   text-align: center;
+  height: 100vh;
 }
 
 .appContainer {
   height: 100%;
-  background-color: red;
+  background-image: url('../public/abstract.jpg');
+  background-size: cover;
+  background-position: center;
 }
