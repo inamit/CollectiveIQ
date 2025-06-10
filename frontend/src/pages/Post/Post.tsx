@@ -486,7 +486,7 @@ const PostComponent = () => {
                         fullWidth
                         multiline
                         rows={3}
-                        placeholder="Or write your own closing comment..."
+                        placeholder="Or write your own answer..."
                         value={newClosingComment}
                         onChange={(e) => setNewClosingComment(e.target.value)}
                         sx={{ mt: 2, backgroundColor: "white", borderRadius: 1 }}
