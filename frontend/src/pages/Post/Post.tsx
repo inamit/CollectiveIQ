@@ -91,8 +91,7 @@ const PostComponent = () => {
             }
         }
   }, [post, postId]);
-  
-  // Fetch comments when postId changes, but only if they haven't been loaded already
+
     useEffect(() => {
         if (postId && !commentsLoaded) {
             refreshComments();
@@ -100,9 +99,8 @@ const PostComponent = () => {
         }
     }, [postId, refreshComments, commentsLoaded]);
 
-    // Reset commentsLoaded flag when postId changes
     useEffect(() => {
-        setCommentsLoaded(false);  // Reset commentsLoaded flag when postId changes
+        setCommentsLoaded(false);
     }, [postId]);
 
     const createFile = async (imageUrl: string) => {
