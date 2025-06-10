@@ -27,7 +27,6 @@ import {LoadingState} from "../../services/loadingState.ts";
 import UserDetails from "../UserAvatar/UserDetails.tsx";
 import {LikesSection} from "../LikesSection/LikesSection.tsx";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useRef,useEffect } from "react";
 interface CommentProps {
     comment: Comment;
     refreshComments: () => void;
