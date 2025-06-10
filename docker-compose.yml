@@ -7,7 +7,7 @@ services:
     environment:
       - DB_USERNAME=${MONGO_USER}
       - DB_PASSWORD=${MONGO_PASSWORD}
-      - DB_URL=${DB_URL}
+      - DB_HOST=${DB_URL}
       - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}
       - MODEL_NAME=all-MiniLM-L6-v2
@@ -22,21 +22,21 @@ services:
     environment:
       - NODE_ENV=production
       - DB_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${DB_URL}:${DB_PORT}/${DB_NAME}
-      - ACCESS_TOKEN_EXPIRATION='1d'
-      - REFRESH_TOKEN_EXPIRATION='2d'
+      - ACCESS_TOKEN_EXPIRATION=1d
+      - REFRESH_TOKEN_EXPIRATION=2d
       - TOKEN_SECRET=${TOKEN_SECRET}
       - FILE_SIZE_LIMIT=5242880
       - BASE_URL=https://collectiveiq.cs.colman.ac.il:3000/
       - SSL_PASSPHRASE=${SSL_PASSPHRASE}
-      - TAG_STRING="try to attempt the best tag to the follow string from the existed ones"
-      - TAG_LIST = "(javascript, python, java, c#, cooking, health, fitness, travel, photography, food, finance, business, politics, gaming, art, literature, music, sports, education, parenting, relationships, mental-health, science, psychology, philosophy, economics, design, self-improvement, entertainment, diy, gardening, pets, history, education, astrology, marketing, books, writing, programming, web-development, fashion, beauty, travel-tips, food-recipes, architecture, language, cooking-tips, makeup, nutrition, sleep, technology, meditation, cryptocurrency, environment, sustainability, yoga, mindfulness, law, photography-tips, holidays, crafts, social-media, startups, investments, real-estate, engineering, home-improvement, product-design, leadership, career-advice, teaching, relationships-advice, comedy, movies, nature, hiking, volunteering, self-care, happiness, music-production, graphic-design, web-design, acting, productivity, life-hacks, public-speaking, writing-tips, fashion-design, animal-welfare, charity, mindfulness-meditation, mental-wellbeing, spirituality, conflict-resolution, sociology, childhood-education, language-learning, travel-photography, personal-finance, sustainable-living)"
+      - TAG_STRING="try to attempt the best tag to the follow string from the existed ones, answer with one word only and only from the tags that you got from us!"
+      - TAG_LIST="JavaScript, Python, Java, C#, Cooking, Health, Fitness, Travel, Photography, Food, Finance, Business, Politics, Gaming, Art, Literature, Music, Sports, Education, Parenting, Relationships, Mental-Health, Science, Psychology, Philosophy, Economics, Design, Self-Improvement, Entertainment, DIY, Gardening, Pets, History, Education, Astrology, Marketing, Books, Writing, Programming, Web-Development, Fashion, Beauty, Travel-Tips, Food-Recipes, Architecture, Language, Cooking-Tips, Makeup, Nutrition, Sleep, Technology, Meditation, Cryptocurrency, Environment, Sustainability, Yoga, Mindfulness, Law, Photography-Tips, Holidays, Crafts, Social-Media, Startups, Investments, Real-Estate, Engineering, Home-Improvement, Product-Design, Leadership, Career-Advice, Teaching, Relationships-Advice, Comedy, Movies, Nature, Hiking, Volunteering, Self-Care, Happiness, Music-Production, Graphic-Design, Web-Design, Acting, Productivity, Life-Hacks, Public-Speaking, Writing-Tips, Fashion-Design, Animal-Welfare, Charity, Mindfulness-Meditation, Mental-Wellbeing, Spirituality, Conflict-Resolution, Sociology, Childhood-Education, Language-Learning, Travel-Photography, Personal-Finance, Sustainable-Living"
       - HUGGING_FACE_API_KEY=${HUGGING_FACE_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - MISTARL_API_URL="https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
+      - MISTARL_API_URL="https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3"
       - PHI_API_URL="https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct"
-      - GEMINI_USERID=681a2c65415bd74f3bc7ee70
-      - MISTRAL_USERID=681a2d45415bd74f3bc7eec4
-      - PHI_USERID=681a2d04415bd74f3bc7eea1
+      - GEMINI_USERID=684754652edbac2fbd17d541
+      - MISTRAL_USERID=684755392edbac2fbd17f25f
+      - PHI_USERID=684755532edbac2fbd17f280
       - SIMILAR_POSTS_URL=http://127.0.0.1:8000
       - SIMILAR_POSTS_TOP_K=5
     volumes:

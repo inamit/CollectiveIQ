@@ -2,16 +2,13 @@ import { Request, Response } from "express";
 import { handleMongoQueryError } from "../db/db";
 import Post, { IPost, POST_RESOURCE_NAME, QuestionStatus } from "../models/posts_model";
 import { saveFile } from "../middleware/file-storage/file-storage-middleware";
-import {
-  getGeminiResponse,
-  getPhiResponse,
-  getMistralResponse,
-} from "../services/ai_service";
+import { getAIResponse } from "../services/ai_service";
 import { toggleReaction } from "./likes_controller";
 import { deleteCommentsByPostId } from "../controllers/comments_controller";
 import { updateNumberOfPosts } from "./tags_controller";
 import { addPostToAlgorithm } from "../services/similar_posts_service";
 import { getSimilarPosts } from "../services/similar_posts_service";
+import { AIModel } from '../enums/AIModels'
 
 const getPosts = async (req: Request, res: Response): Promise<any> => {
   const { userId }: { userId?: string } = req.query;
@@ -32,11 +29,11 @@ const triggerAIResponses = async (
   postId: string
 ): Promise<void> => {
   try {
-    await Promise.all([
-      getGeminiResponse(content, postId),
-      getPhiResponse(content, postId),
-      getMistralResponse(content, postId),
-    ]);
+    await Promise.all(
+      Object.values(AIModel).map((model) =>
+        getAIResponse(model, content, "", postId, true)
+      )
+    );
     console.log("AI responses successfully triggered for post:", postId);
   } catch (error) {
     console.error("Error triggering AI responses for post:", postId, error);
@@ -169,7 +166,7 @@ const dislikePost = async (req: Request, res: Response): Promise<any> => {
 async function defineTagWithLLM(question: string, post_id: string) {
   try {
     const input = `${process.env.TAG_STRING}  ${process.env.TAG_LIST} the question: ${question}`;
-    const aiResponse = await getGeminiResponse(input);
+    const aiResponse = await getAIResponse("gemini", input, "", post_id, false);
     const updatedPost: IPost | null = await Post.findByIdAndUpdate(
       post_id,
       {

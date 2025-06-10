@@ -84,9 +84,10 @@ export const CommentComponent = ({
 
         try {
             await commentService.httpClient.post(
-                `${config.backendURL}/ai/${selectedModel}`,
+                `${config.backendURL}/ai/response`,
                 {
                     input: comment.content,
+                    model: selectedModel,
                     parentCommentID: comment._id,
                 },
                 {
@@ -179,10 +180,10 @@ export const CommentComponent = ({
                         <AnimatePresence>
                             {showAIDropdown && (
                                 <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    transition={{ duration: 0.2 }}
+                                    initial={{opacity: 0, y: 10}}
+                                    animate={{opacity: 1, y: 0}}
+                                    exit={{opacity: 0, y: 10}}
+                                    transition={{duration: 0.2}}
                                     style={{
                                         position: "absolute",
                                         bottom: "100%",
@@ -196,9 +197,9 @@ export const CommentComponent = ({
                                     }}
                                 >
                                     {[
-                                        { label: "Gemini", value: "gemini-response" },
-                                        { label: "Phi", value: "phi-response" },
-                                        { label: "Mistral", value: "mistral-response" },
+                                        {label: "Gemini", value: "gemini"},
+                                        {label: "Phi", value: "phi"},
+                                        {label: "Mistral", value: "mistral"},
                                     ].map((model) => (
                                         <Button
                                             key={model.value}
@@ -296,9 +297,9 @@ interface CommentSectionProps {
     addComment?: (content: string) => void;
     refreshComments: () => void;
     bestAiComment?: string;
-    hideAddComment?: boolean; 
+    hideAddComment?: boolean;
     selectedCommentId?: string | null;
-    onCommentClick?: (commentId: string) => void;       
+    onCommentClick?: (commentId: string) => void;
 }
 
 const CommentSection = ({
