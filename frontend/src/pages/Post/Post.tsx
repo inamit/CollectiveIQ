@@ -466,7 +466,7 @@ const PostComponent = () => {
             </Box>
 
             <Dialog open={isClosing} onClose={() => setIsCloseing(false)}  className="custom-dialog">
-                <DialogTitle color="white">Close Post</DialogTitle>
+                <DialogTitle color="white">Found An Answer?</DialogTitle>
                 <DialogContent>
                     <Typography color="white">Select the most helpful answer or write a new one</Typography>
 
