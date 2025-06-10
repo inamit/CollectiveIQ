@@ -158,7 +158,7 @@ const PostComponent = () => {
         const { request } = new PostsService(user!, setUser).closePost(postId!, selectedCommentId!);
         request.then(() => {
             setIsCloseing(false);
-            navigate(`${routes.POST}/${postId}`);
+            refreshPost();
         });
         setIsCloseing(true);
     };
