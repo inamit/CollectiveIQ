@@ -186,7 +186,7 @@ async function defineTagWithLLM(question: string, post_id: string) {
 const getLikedPosts = async (req: Request, res: Response): Promise<any> => {
   try {
     const userId = req.params.userId;
-    const likedPosts = await Post.find({ likes: userId }).exec();
+    const likedPosts = await Post.find({ likes: userId }).populate('userId', 'username avatarUrl email');;
     res.json(likedPosts);
   } catch (error) {
     res.status(500).send("Error fetching liked posts");
