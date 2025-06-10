@@ -15,7 +15,7 @@ function App() {
                     <ToastContainer autoClose={AUTO_CLOSE_TIME} position="top-center" />
                     <NavBar />
                     <div className="appContainer">
-                        <Outlet />
+                        <Outlet/>
                     </div>
                     <ChatComponent/>
                 </PostsProvider>

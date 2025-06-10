@@ -5,3 +5,8 @@
 .App {
   text-align: center;
 }
+
+.appContainer {
+  height: 100%;
+  background-color: red;
+}
