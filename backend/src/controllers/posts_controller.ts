@@ -35,7 +35,7 @@ const triggerAIResponses = async (
   try {
     await Promise.all(
       Object.values(AIModel).map((model) =>
-        getAIResponse(model, content, "", postId, true)
+        getAIResponse(model, content, undefined, postId, true)
       )
     );
     console.log("AI responses successfully triggered for post:", postId);
@@ -198,10 +198,10 @@ const getLikedPosts = async (req: Request, res: Response): Promise<any> => {
 };
 
 const similarPosts = async (req: Request, res: Response): Promise<any> => {
-  const params = req.params;
+  const params = req.query;
 
   try {
-    const similarPosts = await getSimilarPosts(params.title, params.content);
+    const similarPosts = await getSimilarPosts(params.title?.toString(), params.content?.toString());
     res.json(similarPosts);
   } catch (error) {
     res.status(500).send("Error fetching similar posts");

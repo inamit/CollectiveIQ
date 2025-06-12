@@ -25,11 +25,11 @@ export const addPostToAlgorithm = async (postId: string) => {
   }
 };
 
-export const getSimilarPosts = async (title: string, content: string) => {
+export const getSimilarPosts = async (title?: string, content?: string) => {
   try {
     const queryParams = new URLSearchParams({
-      title: encodeURIComponent(title),
-      content: encodeURIComponent(content),
+      title: encodeURIComponent(title || ""),
+      content: encodeURIComponent(content || ""),
       top_k: process.env.SIMILAR_POSTS_TOP_K || "5",
     });
 
