@@ -3,19 +3,9 @@ export interface AIPromptConfig {
   answer: string;
 }
 
-export const AI_PROMPTS: Record<string, AIPromptConfig> = {
-  gemini: {
-    question: "Here is a question: {question}.",
-    answer: "This is the answer: {answer}. Give your opinion on the answer.",
-  },
-  phi: {
-    question: "<|user|>{question}.",
-    answer: "<|assistant|>{answer} Give your opinion about this answer.<|end|>",
-  },
-  mistral: {
-    question: "# Question: {question}.",
-    answer: "# Answer: {answer}. Provide your opinion on the answer.",
-  },
+export const CHALLENGE_ME_PROMPT: AIPromptConfig = {
+  question: "Here is a question: {question}.",
+  answer: "This is the answer: {answer}. Give your opinion on the answer.",
 };
 
 export const DEFAULT_QUESTION_PROMPT =
