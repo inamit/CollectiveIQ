@@ -96,7 +96,11 @@ export const getAIResponse = async (
     const result = await geminiModel.generateContent(formattedInput);
     response = result.response.text().trim();
   } else {
-    response = await fetchGroqResponse(formattedInput, GROQ_MODELS[model]);
+    const groqModel = GROQ_MODELS[model];
+    if (!groqModel) {
+      throw new Error(`Unknown or unsupported model: ${model}`);
+    }
+    response = await fetchGroqResponse(formattedInput, groqModel);
   }
 
   if (addComment) {
