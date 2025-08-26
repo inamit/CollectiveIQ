@@ -25,7 +25,7 @@ const router: Router = Router();
  *           description: The user input or answer for the AI model
  *         model:
  *           type: string
- *           description: The AI model to use (e.g. gemini, phi, mistral)
+ *           description: The AI model to use (e.g. gemini, meta, llama)
  *         parentCommentID:
  *           type: string
  *           description: (Optional) Parent comment ID for threading
@@ -51,7 +51,7 @@ const router: Router = Router();
  *       tags:
  *         - AI
  *       summary: Get response from a configurable AI model
- *       description: Fetches a response from the specified AI model (Gemini, Phi, Mistral, etc.)
+ *       description: Fetches a response from the specified AI model (Gemini, Meta, Llama, etc.)
  *       operationId: getAIResponse
  *       requestBody:
  *         description: Input for the AI model
