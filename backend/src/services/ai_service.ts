@@ -76,6 +76,46 @@ const saveAIResponseAsComment = async (
   }
 };
 
+export const fetchGroqResponse = async (
+  input: string
+): Promise<string> => {
+  try {
+    const url = "https://api.groq.com/openai/v1/chat/completions";
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "meta-llama/llama-4-scout-17b-16e-instruct",
+        messages: [{ role: "user", content: input }],
+        temperature: 0.1,
+        max_tokens: 50,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(
+        `HTTP error! Status: ${response.status} - ${errorMessage}`
+      );
+    }
+
+    const data = await response.json();
+    console.log(
+      "Generated Answer:",
+      data.choices?.[0]?.message?.content?.trim() || "No response"
+    );
+
+    return data.choices?.[0]?.message?.content?.trim() || "";
+  } catch (error) {
+    console.error("Error fetching from Groq:", error);
+    throw error;
+  }
+};
+
+
 export const getAIResponse = async (
   model: string,
   question: string,
