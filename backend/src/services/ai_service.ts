@@ -7,6 +7,7 @@ import fetch from "node-fetch";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Comment from "../models/comments_model";
 import Post from "../models/posts_model";
+import { GROQ_MODELS } from "../config/groqModelsConfig";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -116,7 +117,6 @@ export const fetchGroqResponse = async (
   }
 };
 
-
 export const getAIResponse = async (
   model: string,
   question: string,
@@ -141,13 +141,7 @@ export const getAIResponse = async (
     const result = await geminiModel.generateContent(formattedInput);
     response = result.response.text().trim();
   } else {
-    const url =
-      model === "phi"
-        ? process.env.PHI_API_URL
-        : model === "mistral"
-        ? process.env.MISTRAL_API_URL
-        : "";
-    response = await fetchHuggingFaceResponse(url || "", formattedInput);
+    response = await fetchGroqResponse(formattedInput, GROQ_MODELS[model]);
   }
 
   if (addComment) {
