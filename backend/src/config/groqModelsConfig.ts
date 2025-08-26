@@ -1,4 +1,4 @@
 export const GROQ_MODELS: Record<string, string> = {
-  llama: "meta-llama/llama-4-scout-17b-16e-instruct",
-  gpt: "openai/gpt-oss-120b",
+  meta: "meta-llama/llama-4-scout-17b-16e-instruct",
+  llama: "llama-3.1-8b-instant",
 };
