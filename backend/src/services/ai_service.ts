@@ -12,43 +12,6 @@ import { GROQ_MODELS } from "../config/groqModelsConfig";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-const fetchHuggingFaceResponse = async (
-  url: string,
-  input: string
-): Promise<string> => {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        inputs: input,
-        parameters: {
-          max_new_tokens: 50,
-          temperature: 0.7,
-          return_full_text: false,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(
-        `HTTP error! Status: ${response.status} - ${errorMessage}`
-      );
-    }
-
-    const data = await response.json();
-    console.log("Generated Answer:", data[0]?.generated_text || "No response");
-    return data[0]?.generated_text;
-  } catch (error) {
-    console.error("Error fetching from Hugging Face:", error);
-    throw error;
-  }
-};
-
 const saveAIResponseAsComment = async (
   postId: string,
   content: string,
