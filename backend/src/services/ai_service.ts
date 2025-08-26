@@ -77,7 +77,8 @@ const saveAIResponseAsComment = async (
 };
 
 export const fetchGroqResponse = async (
-  input: string
+  input: string,
+  modelName: string
 ): Promise<string> => {
   try {
     const url = "https://api.groq.com/openai/v1/chat/completions";
@@ -88,7 +89,7 @@ export const fetchGroqResponse = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-4-scout-17b-16e-instruct",
+        model: modelName,
         messages: [{ role: "user", content: input }],
         temperature: 0.1,
         max_tokens: 50,
