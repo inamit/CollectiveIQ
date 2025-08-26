@@ -68,11 +68,6 @@ export const fetchGroqResponse = async (
     }
 
     const data = await response.json();
-    console.log(
-      "Generated Answer:",
-      data.choices?.[0]?.message?.content?.trim() || "No response"
-    );
-
     return data.choices?.[0]?.message?.content?.trim() || "";
   } catch (error) {
     console.error("Error fetching from Groq:", error);
