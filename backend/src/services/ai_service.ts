@@ -1,5 +1,5 @@
 import {
-  AI_PROMPTS,
+  CHALLENGE_ME_PROMPT,
   DEFAULT_QUESTION_PROMPT,
   formatPrompt,
 } from "../config/aiPropmtsConfig";
@@ -88,13 +88,10 @@ export const getAIResponse = async (
   addComment: boolean,
   parentCommentID?: string
 ): Promise<string> => {
-  const prompts = AI_PROMPTS[model];
-  if (!prompts) throw new Error("Unknown AI model");
-
-  let formattedInput = formatPrompt(prompts.question, { question });
+  let formattedInput = formatPrompt(CHALLENGE_ME_PROMPT.question, { question });
 
   if (answer) {
-    formattedInput += " " + formatPrompt(prompts.answer, { answer });
+    formattedInput += " " + formatPrompt(CHALLENGE_ME_PROMPT.answer, { answer });
   } else {
     formattedInput += " " + DEFAULT_QUESTION_PROMPT;
   }
