@@ -1,5 +1,5 @@
 import {
-  AI_PROMPTS,
+  CHALLENGE_ME_PROMPT,
   DEFAULT_QUESTION_PROMPT,
   formatPrompt,
 } from "../config/aiPropmtsConfig";
@@ -7,46 +7,10 @@ import fetch from "node-fetch";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Comment from "../models/comments_model";
 import Post from "../models/posts_model";
+import { GROQ_MODELS } from "../config/groqModelsConfig";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-const fetchHuggingFaceResponse = async (
-  url: string,
-  input: string
-): Promise<string> => {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        inputs: input,
-        parameters: {
-          max_new_tokens: 50,
-          temperature: 0.7,
-          return_full_text: false,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(
-        `HTTP error! Status: ${response.status} - ${errorMessage}`
-      );
-    }
-
-    const data = await response.json();
-    console.log("Generated Answer:", data[0]?.generated_text || "No response");
-    return data[0]?.generated_text;
-  } catch (error) {
-    console.error("Error fetching from Hugging Face:", error);
-    throw error;
-  }
-};
 
 const saveAIResponseAsComment = async (
   postId: string,
@@ -76,6 +40,41 @@ const saveAIResponseAsComment = async (
   }
 };
 
+export const fetchGroqResponse = async (
+  input: string,
+  modelName: string
+): Promise<string> => {
+  try {
+    const url = "https://api.groq.com/openai/v1/chat/completions";
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: modelName,
+        messages: [{ role: "user", content: input }],
+        temperature: 0.1,
+        max_tokens: 50,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(
+        `HTTP error! Status: ${response.status} - ${errorMessage}`
+      );
+    }
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content?.trim() || "";
+  } catch (error) {
+    console.error("Error fetching from Groq:", error);
+    throw error;
+  }
+};
+
 export const getAIResponse = async (
   model: string,
   question: string,
@@ -84,13 +83,10 @@ export const getAIResponse = async (
   addComment: boolean,
   parentCommentID?: string
 ): Promise<string> => {
-  const prompts = AI_PROMPTS[model];
-  if (!prompts) throw new Error("Unknown AI model");
-
-  let formattedInput = formatPrompt(prompts.question, { question });
+  let formattedInput = formatPrompt(CHALLENGE_ME_PROMPT.question, { question });
 
   if (answer) {
-    formattedInput += " " + formatPrompt(prompts.answer, { answer });
+    formattedInput += " " + formatPrompt(CHALLENGE_ME_PROMPT.answer, { answer });
   } else {
     formattedInput += " " + DEFAULT_QUESTION_PROMPT;
   }
@@ -100,13 +96,11 @@ export const getAIResponse = async (
     const result = await geminiModel.generateContent(formattedInput);
     response = result.response.text().trim();
   } else {
-    const url =
-      model === "phi"
-        ? process.env.PHI_API_URL
-        : model === "mistral"
-        ? process.env.MISTRAL_API_URL
-        : "";
-    response = await fetchHuggingFaceResponse(url || "", formattedInput);
+    const groqModel = GROQ_MODELS[model];
+    if (!groqModel) {
+      throw new Error(`Unknown or unsupported model: ${model}`);
+    }
+    response = await fetchGroqResponse(formattedInput, groqModel);
   }
 
   if (addComment) {

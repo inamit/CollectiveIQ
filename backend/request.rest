@@ -98,20 +98,20 @@ Content-Type: application/json
   "model": "gemini"
 }
 
-### Get response from Phi AI (configurable route)
+### Get response from Meta AI (configurable route)
 POST http://localhost:3000/ai/response?post_id=67f66c103aee1ed18a27f420
 Content-Type: application/json
 
 {
   "input": "Madrid is in England.",
-  "model": "phi"
+  "model": "meta"
 }
 
-### Get response from Mistral AI (configurable route)
+### Get response from Llama AI (configurable route)
 POST http://localhost:3000/ai/response?post_id=67f66c103aee1ed18a27f420
 Content-Type: application/json
 
 {
   "input": "Madrid is in England.",
-  "model": "mistral"
+  "model": "llama"
 }

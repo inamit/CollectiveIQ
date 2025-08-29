@@ -30,13 +30,11 @@ services:
       - SSL_PASSPHRASE=${SSL_PASSPHRASE}
       - TAG_STRING="try to attempt the best tag to the follow string from the existed ones, answer with one word only and only from the tags that you got from us!"
       - TAG_LIST="JavaScript, Python, Java, C#, Cooking, Health, Fitness, Travel, Photography, Food, Finance, Business, Politics, Gaming, Art, Literature, Music, Sports, Education, Parenting, Relationships, Mental-Health, Science, Psychology, Philosophy, Economics, Design, Self-Improvement, Entertainment, DIY, Gardening, Pets, History, Education, Astrology, Marketing, Books, Writing, Programming, Web-Development, Fashion, Beauty, Travel-Tips, Food-Recipes, Architecture, Language, Cooking-Tips, Makeup, Nutrition, Sleep, Technology, Meditation, Cryptocurrency, Environment, Sustainability, Yoga, Mindfulness, Law, Photography-Tips, Holidays, Crafts, Social-Media, Startups, Investments, Real-Estate, Engineering, Home-Improvement, Product-Design, Leadership, Career-Advice, Teaching, Relationships-Advice, Comedy, Movies, Nature, Hiking, Volunteering, Self-Care, Happiness, Music-Production, Graphic-Design, Web-Design, Acting, Productivity, Life-Hacks, Public-Speaking, Writing-Tips, Fashion-Design, Animal-Welfare, Charity, Mindfulness-Meditation, Mental-Wellbeing, Spirituality, Conflict-Resolution, Sociology, Childhood-Education, Language-Learning, Travel-Photography, Personal-Finance, Sustainable-Living"
-      - HUGGING_FACE_API_KEY=${HUGGING_FACE_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - MISTRAL_API_URL=https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3
-      - PHI_API_URL=https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct
       - GEMINI_USERID=684754652edbac2fbd17d541
-      - MISTRAL_USERID=684755392edbac2fbd17f25f
-      - PHI_USERID=684755532edbac2fbd17f280
+      - LLAMA_USERID=684755392edbac2fbd17f25f
+      - META_USERID=684755532edbac2fbd17f280
       - SIMILAR_POSTS_URL=http://10.10.248.152:8000
       - SIMILAR_POSTS_TOP_K=5
     volumes:
