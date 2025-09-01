@@ -21,5 +21,15 @@ export const chatSocket = (io: Server) => {
         socket.on("disconnect", () => {
             console.log("User disconnected:", socket.id);
         });
+
+        socket.on("typing", (data: { senderId: string; receiverId: string; senderUserName: string }) => {
+            const { senderId, receiverId, senderUserName } = data;
+            socket.to(receiverId).emit("typing", { senderId, senderUserName });
+        });
+
+        socket.on("stoppedTyping", (data: { senderId: string; receiverId: string; senderUserName?: string }) => {
+            const { senderId, receiverId } = data;
+            socket.to(receiverId).emit("stoppedTyping", { senderId });
+        });
     });
 };
