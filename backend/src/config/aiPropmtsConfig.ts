@@ -5,7 +5,7 @@ export interface AIPromptConfig {
 
 export const CHALLENGE_ME_PROMPT: AIPromptConfig = {
   question: "Here is a question: {question}.",
-  answer: "This is the answer: {answer}. Give your opinion on the answer.",
+  answer: "This is the answer: {answer}. Criticize the given answer, pointing out flaws, missing logic, or weaknesses. Then, provide your own answer to the question that you believe is stronger, more accurate, or more convincing.",
 };
 
 export const DEFAULT_QUESTION_PROMPT =
