@@ -292,6 +292,7 @@ interface CommentSectionProps {
     hideAddComment?: boolean;
     selectedCommentId?: string | null;
     onCommentClick?: (commentId: string) => void;
+    reorderSelected?: boolean;
 }
 
 const CommentSection = ({
@@ -302,7 +303,8 @@ const CommentSection = ({
                             bestAiComment,
                             hideAddComment = false,
                             selectedCommentId,
-                            onCommentClick
+                            onCommentClick,
+                            reorderSelected = true
                         }: CommentSectionProps) => {
     const [commentText, setCommentText] = useState("");
     const {user} = useUser();
@@ -349,6 +351,7 @@ const CommentSection = ({
                     bestAiComment={bestAiComment ?? ""}
                     selectedCommentId={selectedCommentId}
                     onCommentClick={onCommentClick}
+                    reorderSelected={reorderSelected}
                 />
             </div>
     </div>

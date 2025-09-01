@@ -440,6 +440,7 @@ const PostComponent = () => {
                             commentsLoadingState={commentsLoadingState}
                             bestAiComment={tag?.bestAi}
                             selectedCommentId={post?.bestAnswer ?? undefined}
+                            reorderSelected={true}
                         />
                     </Box>
                 );
@@ -479,6 +480,7 @@ const PostComponent = () => {
                             hideAddComment={true}
                             selectedCommentId={selectedCommentId}
                             onCommentClick={handleCommentClick}
+                            reorderSelected={false}
                         />
                     </Card>
 

@@ -22,6 +22,7 @@ interface CommentProps {
   bestAiComment?: string,
   selectedCommentId?: string | null;
   onCommentClick?: (commentId: string) => void;
+  reorderSelected?: boolean;
 }
 
 export default function CommentsList({
@@ -33,13 +34,16 @@ export default function CommentsList({
   refreshComments = () => {},
   bestAiComment,
   selectedCommentId,
-  onCommentClick
+  onCommentClick,
+  reorderSelected = true
 }: CommentProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
-  const reorderedComments = selectedCommentId
-    ? [comments.find((comment) => comment._id === selectedCommentId), ...comments.filter((comment) => comment._id !== selectedCommentId)]
-    : comments;
+    const reorderedComments = reorderSelected && selectedCommentId
+        ? [
+            comments.find((comment) => comment._id === selectedCommentId),
+            ...comments.filter((comment) => comment._id !== selectedCommentId),
+        ]:comments;
   const paginatedComments: Comment[][] = paginate(reorderedComments, maxCommentsPerPage);
 
     useEffect(() => {
@@ -104,7 +108,7 @@ export default function CommentsList({
                                 />
                             </ListItem>
 
-                            {showDividers && <Divider/>}
+                            {showDividers && <Divider/> }
 
                             {comment.replies && comment.replies.length > 0 && (
                                 <CommentsList
