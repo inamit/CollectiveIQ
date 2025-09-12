@@ -10,6 +10,8 @@ from app.ml.model import model
 from app.db.postsService import fetch_posts_from_db, fetch_post_by_id
 from app.ml.similarity import find_similar_posts
 from app.util.mongoHelper import fix_mongo_types
+from app.settings import settings
+from app.input.similarPostInput import SimilarPostInput
 
 logger = logging.getLogger('uvicorn.error')
 
@@ -25,10 +27,23 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-@app.get("/similar-posts")
-async def similar_posts(title: str = Query(...), content: str = Query(...), top_k: int = 5):
-    query_text = f"{title} {content}"
-    posts = find_similar_posts(query_text, top_k)
+@app.post("/similar-posts")
+async def similar_posts(
+    post: SimilarPostInput = Body(...),
+    top_k: int = 5,
+    similarity_threshold: float = Query(0.5, ge=0.0, le=1.0)
+):
+    """
+    Find similar posts based on title and content using cosine similarity.
+    
+    Args:
+        title: Post title
+        content: Post content
+        top_k: Maximum number of results (default: 5)
+        similarity_threshold: Minimum cosine similarity score (0-1, default: 0.5)
+    """
+    query_text = f"{post.title.strip()} {post.content.strip()}"
+    posts = find_similar_posts(query_text, top_k, similarity_threshold)
     return JSONResponse(content=fix_mongo_types(posts))
 
 

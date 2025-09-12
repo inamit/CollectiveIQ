@@ -25,16 +25,25 @@ export const addPostToAlgorithm = async (postId: string) => {
   }
 };
 
-export const getSimilarPosts = async (title?: string, content?: string) => {
+export const getSimilarPosts = async (
+  title?: string,
+  content?: string
+) => {
   try {
     const queryParams = new URLSearchParams({
-      title: encodeURIComponent(title || ""),
-      content: encodeURIComponent(content || ""),
       top_k: process.env.SIMILAR_POSTS_TOP_K || "5",
+      similarity_threshold: process.env.SIMILAR_POSTS_SIMILARITY_THRESHOLD || "0.5",
     });
 
     const response = await fetch(
-      `${algorithmUrl}/similar-posts?${queryParams.toString()}`
+      `${algorithmUrl}/similar-posts?${queryParams.toString()}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ title, content }),
+        headers: {
+          "Content-Type": "application/json",
+        }, 
+      }
     );
 
     if (!response.ok) {
