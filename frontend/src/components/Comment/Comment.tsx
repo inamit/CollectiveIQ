@@ -192,6 +192,7 @@ export const CommentComponent = ({
                                         {label: "Gemini", value: "gemini"},
                                         {label: "Meta", value: "meta"},
                                         {label: "Llama", value: "llama"},
+                                        {label: "Versatile", value: "versatile"},
                                     ].map((model) => (
                                         <Button
                                             key={model.value}
