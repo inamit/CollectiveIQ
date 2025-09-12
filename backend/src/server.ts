@@ -60,7 +60,7 @@ app.use("/tags", tagsRoute);
  * @swagger
  * paths:
  *  /similar-posts:
- *   get:
+ *   post:
  *     summary: Get similar posts
  *     tags:
  *      - Post
@@ -68,12 +68,12 @@ app.use("/tags", tagsRoute);
  *       - bearerAuth: []
  *     parameters:
  *      - name: title
- *        in: query
+ *        in: body
  *        required: true
  *        schema:
  *          type: string
  *      - name: content
- *        in: query
+ *        in: body
  *        required: true
  *        schema:
  *          type: string
