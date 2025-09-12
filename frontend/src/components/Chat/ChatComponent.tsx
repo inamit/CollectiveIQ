@@ -17,7 +17,9 @@ const ChatComponent = () => {
             const { request } = usersService.getAllUsers();
             request
                 .then((response) => {
-                    setUsers(response.data);
+                    const filtered = response.data
+                        .filter((u: User) => u._id !== user._id && !u.isAI)
+                    setUsers(filtered);
                 })
                 .catch((err) => {
                     console.error(err);
