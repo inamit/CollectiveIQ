@@ -198,7 +198,7 @@ const getLikedPosts = async (req: Request, res: Response): Promise<any> => {
 };
 
 const similarPosts = async (req: Request, res: Response): Promise<any> => {
-  const params = req.query;
+  const params = req.body;
 
   try {
     const similarPosts = await getSimilarPosts(params.title?.toString(), params.content?.toString());

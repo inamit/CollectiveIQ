@@ -115,10 +115,13 @@ export class PostsService extends AbsLikeableService {
 
   getSimilarPosts = (title: string, content: string) => {
     const controller = new AbortController();
-    const request = this.httpClient.get<Post[]>(
+    const request = this.httpClient.post<Post[]>(
       `${config.backendURL}/similar-posts`,
       {
-        params: { title, content },
+        title,
+        content,
+      },
+      {
         signal: controller.signal,
       }
     );

@@ -93,7 +93,7 @@ app.use("/tags", tagsRoute);
  *            schema:
  *              $ref: '#/components/schemas/Error'
 */
-app.get("/similar-posts", authMiddleware, posts_controller.similarPosts);
+app.post("/similar-posts", authMiddleware, posts_controller.similarPosts);
 
 const initApp = async (): Promise<Express> => {
   try {
