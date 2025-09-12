@@ -37,6 +37,7 @@ services:
       - META_USERID=68b15f570f65a43d115d63de
       - SIMILAR_POSTS_URL=http://10.10.248.152:8000
       - SIMILAR_POSTS_TOP_K=5
+      - SIMILAR_POSTS_SIMILARITY_THRESHOLD=0.5
     volumes:
       - ./backend/uploads:/app/uploads
     networks:

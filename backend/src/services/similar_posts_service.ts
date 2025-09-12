@@ -27,16 +27,12 @@ export const addPostToAlgorithm = async (postId: string) => {
 
 export const getSimilarPosts = async (
   title?: string,
-  content?: string,
-  topK?: number,
-  similarityThreshold?: number
+  content?: string
 ) => {
   try {
     const queryParams = new URLSearchParams({
-      top_k: (
-        topK || parseInt(process.env.SIMILAR_POSTS_TOP_K || "5")
-      ).toString(),
-      similarity_threshold: (similarityThreshold || 0.5).toString(),
+      top_k: process.env.SIMILAR_POSTS_TOP_K || "5",
+      similarity_threshold: process.env.SIMILAR_POSTS_SIMILARITY_THRESHOLD || "0.5",
     });
 
     const response = await fetch(
