@@ -93,9 +93,16 @@ const PostComponent = () => {
   }, [post, postId]);
 
     useEffect(() => {
-        if (postId && !commentsLoaded) {
-            refreshComments();
-            setCommentsLoaded(true);
+        if (postId) {
+            const commentsRefreshInterval = setInterval(() => {
+                refreshComments();
+            }, 5000); // Refresh comments every 5 seconds
+
+            if (!commentsLoaded) {
+                setCommentsLoaded(true);
+            }
+
+            return () => clearInterval(commentsRefreshInterval);
         }
     }, [postId, refreshComments, commentsLoaded]);
 

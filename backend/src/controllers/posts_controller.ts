@@ -60,8 +60,8 @@ const saveNewPost = async (req: Request, res: Response): Promise<any> => {
     const savedPost: IPost = await (await post.save()).populate("userId");
 
     await defineTagWithLLM(savedPost.content, String(savedPost._id));
-    await triggerAIResponses(savedPost.content, String(savedPost._id));
-    await addPostToAlgorithm(savedPost._id.toString());
+    triggerAIResponses(savedPost.content, String(savedPost._id));
+    addPostToAlgorithm(savedPost._id.toString());
 
     return res.json(savedPost);
   } catch (err: any) {
@@ -198,7 +198,7 @@ const getLikedPosts = async (req: Request, res: Response): Promise<any> => {
 };
 
 const similarPosts = async (req: Request, res: Response): Promise<any> => {
-  const params = req.query;
+  const params = req.body;
 
   try {
     const similarPosts = await getSimilarPosts(params.title?.toString(), params.content?.toString());
