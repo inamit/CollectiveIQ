@@ -25,7 +25,7 @@ class Model:
             return
             
         try:
-            texts = [f"{post.get('title', '')} {post.get('content', '')}" for post in posts]
+            texts = [f"{post.get('title', '').strip()} {post.get('content', '').strip()}" for post in posts]
             # Filter out empty texts
             valid_posts = [(text, post) for text, post in zip(texts, posts) if text.strip()]
             

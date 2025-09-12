@@ -42,7 +42,7 @@ async def similar_posts(
         top_k: Maximum number of results (default: 5)
         similarity_threshold: Minimum cosine similarity score (0-1, default: 0.5)
     """
-    query_text = f"{post.title} {post.content}"
+    query_text = f"{post.title.strip()} {post.content.strip()}"
     posts = find_similar_posts(query_text, top_k, similarity_threshold)
     return JSONResponse(content=fix_mongo_types(posts))
 
