@@ -1,5 +1,5 @@
-import "./ChatBox.scss";
 import React, { useEffect, useRef, useState } from "react";
+import "./ChatBox.scss";
 import socket from "../../sockets/socket.ts";
 import { Box, Button, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
@@ -30,7 +30,10 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
         const chatService = new ChatService(user, setUser);
         const { request } = chatService.getChatHistory(senderId, receiverId);
         request
-            .then((response) => setMessages(response.data))
+            .then((response) => {
+                setMessages(response.data);
+                socket.emit("markAsRead", { userId: senderId, fromUserId: receiverId });
+            })
             .catch((err) => console.error(err));
 
         socket.on("receiveMessage", (message: IMessage) => {

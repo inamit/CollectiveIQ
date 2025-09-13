@@ -8,6 +8,7 @@ export interface IUser {
     password: string;
     refreshTokens?: string[];
     avatarUrl?: string;
+    unreadCount?: number;
 }
 
 const userSchema = new Schema<IUser>({
@@ -39,6 +40,10 @@ const userSchema = new Schema<IUser>({
         type: String,
         required: false,
     },
+    unreadCount: {
+        type: Number,
+        default: 0,
+    }
 });
 
 userSchema.pre("save", async function (next) {
