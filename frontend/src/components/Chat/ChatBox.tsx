@@ -38,6 +38,7 @@ const ChatBox = ({ user, senderId, receiverId }: ChatBoxProps) => {
 
         socket.on("receiveMessage", (message: IMessage) => {
             setMessages((prev) => [...prev, message]);
+            socket.emit("markAsRead", { userId: senderId, fromUserId: receiverId });
         });
 
         socket.on("typing", (data: { senderId: string; senderUserName: string }) => {
