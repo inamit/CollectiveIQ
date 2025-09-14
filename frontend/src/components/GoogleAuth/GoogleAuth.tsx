@@ -23,6 +23,7 @@ export default function GoogleAuth() {
 
     const responseJson = response.data;
     const decodedAccessToken = jwtDecode<User>(responseJson.accessToken);
+    console.log(decodedAccessToken)
     setUser({
       username: decodedAccessToken.username,
       email: decodedAccessToken.email,
@@ -30,6 +31,7 @@ export default function GoogleAuth() {
       accessToken: responseJson.accessToken,
       avatarUrl: responseJson.avatarUrl,
       _id: decodedAccessToken._id,
+      unreadCount: 0
     });
     navigate(routes.HOME);
   };
