@@ -19,7 +19,7 @@ const ChatComponent = () => {
             request
                 .then((response) => {
                     const filtered = response.data
-                        .filter((u: User) => u._id !== user._id && !u.isAI)
+                        .filter((userI: User) => userI._id !== user._id && !userI.isAI)
                     setUsers(filtered);
                     filtered.forEach(receiver => {
                         socket.emit("getUnreadCountPerSender", { userId: user._id, fromUserId: receiver._id });
@@ -31,11 +31,11 @@ const ChatComponent = () => {
 
             socket.on("unreadCountPerSender", (data: { fromUserId: string; unreadCount: number }) => {
                 setUsers(prevUsers => {
-                    return prevUsers.map(u => {
-                        if (u._id === data.fromUserId) {
-                            return { ...u, unreadCount: data.unreadCount };
+                    return prevUsers.map(userI => {
+                        if (userI._id === data.fromUserId) {
+                            return { ...userI, unreadCount: data.unreadCount };
                         }
-                        return u;
+                        return userI;
                     });
                 });
             });

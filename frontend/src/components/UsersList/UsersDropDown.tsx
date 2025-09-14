@@ -47,7 +47,6 @@ const UserDropdown = ({
             <Badge
                 badgeContent={totalUnreadCount}
                 color="error"
-                // The "invisible" prop hides the badge when totalUnreadCount is 0
                 invisible={totalUnreadCount === 0}
             >
                 <Button
@@ -106,7 +105,7 @@ const UserDropdown = ({
                             <UserAvatar user={user} />
                         </ListItemIcon>
                         <ListItemText primary={user.username} />
-                        {user.unreadCount > 0 && (
+                        {user.unreadCount! > 0 && (
                             <Badge
                                 badgeContent={user.unreadCount}
                                 color="error"
