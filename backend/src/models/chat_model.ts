@@ -1,4 +1,4 @@
-import mongoose, {Schema, Types} from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 
 export interface IChat {
     _id?: string;
@@ -8,6 +8,7 @@ export interface IChat {
     message: string;
     timestamp: Date;
     isAi?: boolean;
+    isRead?: boolean;
 }
 
 const chatSchema = new Schema<IChat>({
@@ -33,6 +34,10 @@ const chatSchema = new Schema<IChat>({
         default: Date.now
     },
     isAi: {
+        type: Boolean,
+        default: false
+    },
+    isRead: {
         type: Boolean,
         default: false
     }

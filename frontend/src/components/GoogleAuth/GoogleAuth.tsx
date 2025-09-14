@@ -23,6 +23,7 @@ export default function GoogleAuth() {
 
     const responseJson = response.data;
     const decodedAccessToken = jwtDecode<User>(responseJson.accessToken);
+    console.log(decodedAccessToken)
     setUser({
       username: decodedAccessToken.username,
       email: decodedAccessToken.email,

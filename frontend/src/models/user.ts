@@ -9,4 +9,5 @@ export default interface User {
   accessToken?: string;
   refreshToken?: string;
   isAI?: boolean;
+  unreadCount?: number;
 }
