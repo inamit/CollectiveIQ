@@ -31,7 +31,6 @@ export default function GoogleAuth() {
       accessToken: responseJson.accessToken,
       avatarUrl: responseJson.avatarUrl,
       _id: decodedAccessToken._id,
-      unreadCount: 0
     });
     navigate(routes.HOME);
   };
